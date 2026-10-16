@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英语背单词 · 四级高频词汇</title>
+<style>
+  /* ==================== 全局样式与主题变量 ==================== */
+  :root {
+    /* 浅色主题变量 */
+    --bg: #f4f6fb;
+    --card-bg: #ffffff;
+    --text: #1f2430;
+    --text-sub: #6b7280;
+    --primary: #4f6ef7;
+    --primary-dark: #3b55d9;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --border: #e5e7eb;
+    --shadow: 0 10px 30px rgba(31, 36, 48, 0.08);
+    --chip-bg: #eef1ff;
+  }
+
+  /* 深色主题：给 <html> 或 <body> 加 .dark 类后覆盖变量 */
+  body.dark {
+    --bg: #12141c;
+    --card-bg: #1c1f2b;
+    --text: #e6e8ef;
+    --text-sub: #9aa1b2;
+    --primary: #6b84ff;
+    --primary-dark: #5870e8;
+    --success: #34d399;
+    --danger: #f87171;
+    --border: #2c3140;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    --chip-bg: #262b3b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background .3s, color .3s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ==================== 布局容器 ==================== */
+  .app {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* ==================== 顶部栏 ==================== */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  header h1 {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn {
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text);
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s, background .2s;
+  }
+  .icon-btn:hover { transform: translateY(-1px); background: var(--chip-bg); }
+  .icon-btn:active { transform: scale(.95); }
+
+  /* ==================== 统计面板 ==================== */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-card .num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+  }
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-top: 4px;
+  }
+
+  /* ==================== 模式切换 ==================== */
+  .mode-tabs {
+    display: flex;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 4px;
+    margin-bottom: 16px;
+    gap: 4px;
+  }
+  .mode-tabs button {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-sub);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .mode-tabs button.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79, 110, 247, .35);
+  }
+
+  /* ==================== 卡片 ==================== */
+  .card-wrap {
+    perspective: 1200px;
+    margin-bottom: 16px;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform .5s;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .card-back { transform: rotateY(180deg); }
+
+  .word {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: .5px;
+  }
+  .phonetic {
+    font-size: 15px;
+    color: var(--text-sub);
+    margin-top: 8px;
+    font-style: normal;
+  }
+  .meaning {
+    font-size: 22px;
+    margin-top: 16px;
+    font-weight: 600;
+  }
+  .hint {
+    font-size: 13px;
+    color: var(--text-sub);
+    margin-top: 18px;
+  }
+  .speak-btn {
+    margin-top: 16px;
+    border: none;
+    background: var(--chip-bg);
+    color: var(--primary);
+    font-size: 22px;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .speak-btn:hover { transform: scale(1.08); }
+  .speak-btn:active { transform: scale(.94); }
+
+  /* ==================== 认识 / 不认识按钮 ==================== */
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .btn {
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    transition: transform .15s, filter .2s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn.dont { background: var(--danger); }
+  .btn.know { background: var(--success); }
+  .btn:hover { filter: brightness(1.08); }
+
+  /* ==================== 拼写自测模式 ==================== */
+  .spell-panel { display: none; }
+  .spell-panel.visible { display: block; }
+
+  .spell-word {
+    font-size: 44px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .spell-pos {
+    text-align: center;
+    color: var(--text-sub);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  #spell-input {
+    width: 100%;
+    padding: 16px;
+    font-size: 20px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    background: var(--card-bg);
+    color: var(--text);
+    outline: none;
+    text-align: center;
+    letter-spacing: 1px;
+    transition: border-color .2s;
+  }
+  #spell-input:focus { border-color: var(--primary); }
+
+  .spell-result {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    text-align: center;
+    display: none;
+  }
+  .spell-result.correct { display: block; background: rgba(34,197,94,.12); color: var(--success); }
+  .spell-result.wrong { display: block; background: rgba(239,68,68,.12); color: var(--danger); }
+
+  .spell-actions { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn.check { background: var(--primary); grid-column: 1 / -1; }
+  .btn.skip { background: var(--text-sub); }
+
+  /* ==================== 听音选义模式 ==================== */
+  .listen-panel { display: none; }
+  .listen-panel.visible { display: block; }
+
+  .listen-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 32px 24px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .listen-play {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-size: 30px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(79, 110, 247, .4);
+    transition: transform .15s;
+  }
+  .listen-play:hover { transform: scale(1.06); }
+  .listen-play:active { transform: scale(.94); }
+  .listen-hint {
+    margin-top: 14px;
+    color: var(--text-sub);
+    font-size: 13px;
+  }
+
+  .listen-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .listen-opt {
+    padding: 16px 12px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    min-height: 56px;
+    line-height: 1.4;
+  }
+  .listen-opt:hover { border-color: var(--primary); }
+  .listen-opt.correct { border-color: var(--success); background: rgba(34,197,94,.12); color: var(--success); }
+  .listen-opt.wrong { border-color: var(--danger); background: rgba(239,68,68,.12); color: var(--danger); }
+
+  .listen-result {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    text-align: center;
+    display: none;
+  }
+  .listen-result.correct { display: block; background: rgba(34,197,94,.12); color: var(--success); }
+  .listen-result.wrong { display: block; background: rgba(239,68,68,.12); color: var(--danger); }
+
+  /* ==================== 错题本 ==================== */
+  .icon-btn { position: relative; }
+  .badge {
+    position: absolute; top: -4px; right: -4px;
+    background: var(--danger); color: #fff;
+    font-size: 10px; min-width: 16px; height: 16px;
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    padding: 0 4px; line-height: 1;
+  }
+  .badge.zero { display: none; }
+
+  .review-banner {
+    display: none;
+    align-items: center; justify-content: space-between;
+    gap: 10px;
+    background: rgba(79, 110, 247, .12);
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--primary);
+  }
+  .review-banner.visible { display: flex; }
+  .review-banner button {
+    border: none; background: var(--primary); color: #fff;
+    border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer;
+  }
+
+  .wrongbook-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, .5);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100; padding: 16px;
+  }
+  .wrongbook-overlay.visible { display: flex; }
+  .wrongbook {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%; max-width: 520px;
+    max-height: 82vh;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .wrongbook-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+  }
+  .wrongbook-head h2 { font-size: 18px; font-weight: 700; }
+  .wrongbook-meta { padding: 10px 20px; font-size: 13px; color: var(--text-sub); }
+  .wrongbook-list { flex: 1; overflow-y: auto; padding: 4px 12px; }
+  .wb-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 8px; border-bottom: 1px solid var(--border);
+  }
+  .wb-item:last-child { border-bottom: none; }
+  .wb-main { flex: 1; min-width: 0; }
+  .wb-word { font-weight: 700; font-size: 16px; }
+  .wb-mean { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+  .wb-speak, .wb-remove { flex-shrink: 0; }
+  .wb-remove { color: var(--success); }
+  .wb-empty { text-align: center; color: var(--text-sub); padding: 48px 0; font-size: 15px; }
+  .wrongbook-foot {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    padding: 16px 20px; border-top: 1px solid var(--border);
+  }
+  .btn.review { background: var(--primary); }
+  .btn.clear { background: var(--text-sub); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+
+  /* ==================== 提示与响应式 ==================== */
+  .tip {
+    text-align: center;
+    color: var(--text-sub);
+    font-size: 12px;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+  .progress {
+    font-size: 12px;
+    color: var(--text-sub);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 480px) {
+    .card { height: 260px; }
+    .word { font-size: 32px; }
+    .meaning { font-size: 19px; }
+    .spell-word { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- 顶部栏 -->
+  <header>
+    <h1>📚 背单词</h1>
+    <div class="header-actions">
+      <button class="icon-btn" id="wb-btn" title="错题本">📕<span class="badge" id="wb-badge">0</span></button>
+      <button class="icon-btn" id="theme-btn" title="切换主题">🌙</button>
+    </div>
+  </header>
+
+  <!-- 学习统计面板 -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num" id="stat-today">0</div>
+      <div class="label">今日学习</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-total">0</div>
+      <div class="label">累计学习</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-rate">0%</div>
+      <div class="label">正确率</div>
+    </div>
+  </div>
+
+  <!-- 学习模式切换 -->
+  <div class="mode-tabs">
+    <button id="tab-card" class="active">🃏 卡片模式</button>
+    <button id="tab-spell">✏️ 拼写自测</button>
+    <button id="tab-listen">🎧 听音选义</button>
+  </div>
+
+  <!-- 错题复习提示条（仅在复习错题时显示） -->
+  <div class="review-banner" id="review-banner">
+    <span>📕 正在复习错题本（<span id="review-count">0</span> 个）</span>
+    <button id="exit-review">退出复习</button>
+  </div>
+
+  <!-- ============ 卡片翻卡模式 ============ -->
+  <div id="card-mode">
+    <div class="progress" id="card-progress"></div>
+    <div class="card-wrap">
+      <div class="card" id="card">
+        <div class="card-face card-front">
+          <div class="word" id="front-word"></div>
+          <div class="phonetic" id="front-phonetic"></div>
+          <button class="speak-btn" id="front-speak" title="朗读">🔊</button>
+          <div class="hint">点击卡片查看释义</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="word" id="back-word"></div>
+          <div class="phonetic" id="back-phonetic"></div>
+          <div class="meaning" id="back-meaning"></div>
+          <button class="speak-btn" id="back-speak" title="朗读">🔊</button>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn dont" id="btn-dont">😕 不认识</button>
+      <button class="btn know" id="btn-know">😊 认识</button>
+    </div>
+  </div>
+
+  <!-- ============ 拼写自测模式 ============ -->
+  <div class="spell-panel" id="spell-mode">
+    <div class="progress" id="spell-progress"></div>
+    <div class="spell-word" id="spell-meaning"></div>
+    <div class="spell-pos">请根据中文释义，输入对应的英文单词</div>
+    <input type="text" id="spell-input" placeholder="在这里输入英文单词…" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="spell-result" id="spell-result"></div>
+    <div class="spell-actions">
+      <button class="btn check" id="btn-check">✅ 检查答案</button>
+      <button class="btn skip" id="btn-skip">⏭ 跳过</button>
+    </div>
+  </div>
+
+  <!-- ============ 听音选义模式 ============ -->
+  <div class="listen-panel" id="listen-mode">
+    <div class="progress" id="listen-progress"></div>
+    <div class="listen-box">
+      <button class="listen-play" id="listen-play" title="播放发音">🔊</button>
+      <div class="listen-hint">听发音，选择正确的英文释义（点击喇叭可重播）</div>
+    </div>
+    <div class="listen-options" id="listen-options"></div>
+    <div class="listen-result" id="listen-result"></div>
+  </div>
+
+  <p class="tip">💾 学习进度自动保存在浏览器中，刷新页面不丢失</p>
+</div>
+
+<!-- ============ 错题本面板（覆盖层） ============ -->
+<div class="wrongbook-overlay" id="wrongbook-overlay">
+  <div class="wrongbook">
+    <div class="wrongbook-head">
+      <h2>📕 错题本</h2>
+      <button class="icon-btn" id="wb-close" title="返回">✖️</button>
+    </div>
+    <div class="wrongbook-meta" id="wb-meta"></div>
+    <div class="wrongbook-list" id="wb-list"></div>
+    <div class="wrongbook-foot">
+      <button class="btn review" id="wb-review">🎯 复习错题</button>
+      <button class="btn clear" id="wb-clear">🗑 清空</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+ * 四级高频词汇表（放在代码最顶部，方便随时增删修改）
+ * 字段说明：word 英文单词 | phonetic 音标 | meaning 中文释义
+ * =================================================================== */
+const WORDS = [
+  { word: "abandon", phonetic: "/əˈbændən/", meaning: "v. 放弃；抛弃" },
+  { word: "ability", phonetic: "/əˈbɪləti/", meaning: "n. 能力；才能" },
+  { word: "absorb", phonetic: "/əbˈzɔːrb/", meaning: "v. 吸收；吸引" },
+  { word: "abstract", phonetic: "/ˈæbstrækt/", meaning: "adj. 抽象的 n. 摘要" },
+  { word: "academic", phonetic: "/ˌækəˈdemɪk/", meaning: "adj. 学术的；学院的" },
+  { word: "access", phonetic: "/ˈækses/", meaning: "n. 通道；接近 v. 访问" },
+  { word: "accompany", phonetic: "/əˈkʌmpəni/", meaning: "v. 陪伴；伴随" },
+  { word: "accomplish", phonetic: "/əˈkɑːmplɪʃ/", meaning: "v. 完成；实现" },
+  { word: "accurate", phonetic: "/ˈækjərət/", meaning: "adj. 准确的；精确的" },
+  { word: "achieve", phonetic: "/əˈtʃiːv/", meaning: "v. 达到；实现" },
+  { word: "acquire", phonetic: "/əˈkwaɪər/", meaning: "v. 获得；学到" },
+  { word: "adapt", phonetic: "/əˈdæpt/", meaning: "v. 适应；改编" },
+  { word: "adequate", phonetic: "/ˈædɪkwət/", meaning: "adj. 足够的；适当的" },
+  { word: "adjust", phonetic: "/əˈdʒʌst/", meaning: "v. 调整；适应" },
+  { word: "admire", phonetic: "/ədˈmaɪər/", meaning: "v. 钦佩；欣赏" },
+  { word: "advantage", phonetic: "/ədˈvæntɪdʒ/", meaning: "n. 优势；有利条件" },
+  { word: "afford", phonetic: "/əˈfɔːrd/", meaning: "v. 负担得起；提供" },
+  { word: "alternative", phonetic: "/ɔːlˈtɜːrnətɪv/", meaning: "n. 替代方案 adj. 供选择的" },
+  { word: "ambition", phonetic: "/æmˈbɪʃn/", meaning: "n. 雄心；抱负" },
+  { word: "analyze", phonetic: "/ˈænəlaɪz/", meaning: "v. 分析；解析" },
+  { word: "ancient", phonetic: "/ˈeɪnʃənt/", meaning: "adj. 古代的；古老的" },
+  { word: "annual", phonetic: "/ˈænjuəl/", meaning: "adj. 每年的 n. 年刊" },
+  { word: "anxious", phonetic: "/ˈæŋkʃəs/", meaning: "adj. 焦虑的；渴望的" },
+  { word: "apparent", phonetic: "/əˈpærənt/", meaning: "adj. 明显的；表面上的" },
+  { word: "appeal", phonetic: "/əˈpiːl/", meaning: "v./n. 呼吁；吸引；上诉" },
+  { word: "appreciate", phonetic: "/əˈpriːʃieɪt/", meaning: "v. 感激；欣赏" },
+  { word: "approach", phonetic: "/əˈproʊtʃ/", meaning: "v. 接近 n. 方法" },
+  { word: "appropriate", phonetic: "/əˈproʊpriət/", meaning: "adj. 适当的；恰当的" },
+  { word: "approve", phonetic: "/əˈpruːv/", meaning: "v. 批准；赞成" },
+  { word: "arise", phonetic: "/əˈraɪz/", meaning: "v. 出现；产生" },
+  { word: "arrange", phonetic: "/əˈreɪndʒ/", meaning: "v. 安排；整理" },
+  { word: "assess", phonetic: "/əˈses/", meaning: "v. 评估；评定" },
+  { word: "assist", phonetic: "/əˈsɪst/", meaning: "v. 帮助；协助" },
+  { word: "assume", phonetic: "/əˈsuːm/", meaning: "v. 假定；承担" },
+  { word: "attach", phonetic: "/əˈtætʃ/", meaning: "v. 附上；系上" },
+  { word: "attitude", phonetic: "/ˈætɪtuːd/", meaning: "n. 态度；看法" },
+  { word: "attract", phonetic: "/əˈtrækt/", meaning: "v. 吸引；引起" },
+  { word: "available", phonetic: "/əˈveɪləbl/", meaning: "adj. 可用的；可获得的" },
+  { word: "avoid", phonetic: "/əˈvɔɪd/", meaning: "v. 避免；避开" },
+  { word: "aware", phonetic: "/əˈwer/", meaning: "adj. 意识到的；知道的" },
+  { word: "balance", phonetic: "/ˈbæləns/", meaning: "n. 平衡 v. 使平衡" },
+  { word: "barrier", phonetic: "/ˈbæriər/", meaning: "n. 障碍；屏障" },
+  { word: "benefit", phonetic: "/ˈbenɪfɪt/", meaning: "n. 利益 v. 有益于" },
+  { word: "budget", phonetic: "/ˈbʌdʒɪt/", meaning: "n. 预算 v. 编预算" },
+  { word: "capacity", phonetic: "/kəˈpæsəti/", meaning: "n. 容量；能力" },
+  { word: "challenge", phonetic: "/ˈtʃælɪndʒ/", meaning: "n./v. 挑战" },
+  { word: "circumstance", phonetic: "/ˈsɜːrkəmstæns/", meaning: "n. 环境；情况" },
+  { word: "commit", phonetic: "/kəˈmɪt/", meaning: "v. 犯（罪）；承诺" },
+  { word: "community", phonetic: "/kəˈmjuːnəti/", meaning: "n. 社区；社会" },
+  { word: "compare", phonetic: "/kəmˈper/", meaning: "v. 比较；对比" },
+  { word: "compete", phonetic: "/kəmˈpiːt/", meaning: "v. 竞争；比赛" },
+  { word: "complex", phonetic: "/kəmˈpleks/", meaning: "adj. 复杂的 n. 综合体" },
+  { word: "concentrate", phonetic: "/ˈkɑːnsntreɪt/", meaning: "v. 集中；专心" },
+  { word: "concept", phonetic: "/ˈkɑːnsept/", meaning: "n. 概念；观念" },
+  { word: "concern", phonetic: "/kənˈsɜːrn/", meaning: "n./v. 关心；担忧" },
+  { word: "conclude", phonetic: "/kənˈkluːd/", meaning: "v. 得出结论；结束" },
+  { word: "conduct", phonetic: "/kənˈdʌkt/", meaning: "v. 进行；引导 n. 行为" },
+  { word: "confirm", phonetic: "/kənˈfɜːrm/", meaning: "v. 确认；证实" },
+  { word: "consequence", phonetic: "/ˈkɑːnsəkwens/", meaning: "n. 结果；后果" },
+  { word: "consider", phonetic: "/kənˈsɪdər/", meaning: "v. 考虑；认为" },
+  { word: "consist", phonetic: "/kənˈsɪst/", meaning: "v. 由…组成；在于" },
+  { word: "constant", phonetic: "/ˈkɑːnstənt/", meaning: "adj. 持续的；不变的" },
+  { word: "construct", phonetic: "/kənˈstrʌkt/", meaning: "v. 建造；构建" },
+  { word: "consume", phonetic: "/kənˈsuːm/", meaning: "v. 消耗；消费" },
+  { word: "contain", phonetic: "/kənˈteɪn/", meaning: "v. 包含；容纳" },
+  { word: "contribute", phonetic: "/kənˈtrɪbjuːt/", meaning: "v. 贡献；捐助" },
+  { word: "convey", phonetic: "/kənˈveɪ/", meaning: "v. 传达；运送" },
+  { word: "convince", phonetic: "/kənˈvɪns/", meaning: "v. 使信服；说服" },
+  { word: "cooperate", phonetic: "/koʊˈɑːpəreɪt/", meaning: "v. 合作；配合" },
+  { word: "crucial", phonetic: "/ˈkruːʃl/", meaning: "adj. 关键的；至关重要的" },
+  { word: "cultivate", phonetic: "/ˈkʌltɪveɪt/", meaning: "v. 培养；耕作" },
+  { word: "declare", phonetic: "/dɪˈkler/", meaning: "v. 宣布；声明" },
+  { word: "decline", phonetic: "/dɪˈklaɪn/", meaning: "v./n. 下降；拒绝" },
+  { word: "decrease", phonetic: "/dɪˈkriːs/", meaning: "v./n. 减少；降低" },
+  { word: "demonstrate", phonetic: "/ˈdemənstreɪt/", meaning: "v. 证明；演示；示威" },
+  { word: "deny", phonetic: "/dɪˈnaɪ/", meaning: "v. 否认；拒绝" },
+  { word: "derive", phonetic: "/dɪˈraɪv/", meaning: "v. 获得；源自" },
+  { word: "deserve", phonetic: "/dɪˈzɜːrv/", meaning: "v. 应得；值得" },
+  { word: "despite", phonetic: "/dɪˈspaɪt/", meaning: "prep. 尽管；不管" },
+  { word: "determine", phonetic: "/dɪˈtɜːrmɪn/", meaning: "v. 决定；确定" },
+  { word: "devote", phonetic: "/dɪˈvoʊt/", meaning: "v. 奉献；致力于" },
+  { word: "distinguish", phonetic: "/dɪˈstɪŋɡwɪʃ/", meaning: "v. 区分；辨别" },
+  { word: "distribute", phonetic: "/dɪˈstrɪbjuːt/", meaning: "v. 分配；分发" },
+  { word: "domestic", phonetic: "/dəˈmestɪk/", meaning: "adj. 国内的；家庭的" },
+  { word: "dominant", phonetic: "/ˈdɑːmɪnənt/", meaning: "adj. 支配的；占优势的" },
+  { word: "efficient", phonetic: "/ɪˈfɪʃnt/", meaning: "adj. 高效的；有效率的" },
+  { word: "eliminate", phonetic: "/ɪˈlɪmɪneɪt/", meaning: "v. 消除；淘汰" },
+  { word: "emerge", phonetic: "/iˈmɜːrdʒ/", meaning: "v. 出现；浮现" },
+  { word: "emphasize", phonetic: "/ˈemfəsaɪz/", meaning: "v. 强调；着重" },
+  { word: "enable", phonetic: "/ɪˈneɪbl/", meaning: "v. 使能够；使可能" },
+  { word: "encounter", phonetic: "/ɪnˈkaʊntər/", meaning: "v./n. 遭遇；邂逅" },
+  { word: "enhance", phonetic: "/ɪnˈhæns/", meaning: "v. 提高；增强" },
+  { word: "ensure", phonetic: "/ɪnˈʃʊr/", meaning: "v. 确保；保证" },
+  { word: "enthusiasm", phonetic: "/ɪnˈθuːziæzəm/", meaning: "n. 热情；热忱" },
+  { word: "essential", phonetic: "/ɪˈsenʃl/", meaning: "adj. 必要的；本质的" },
+  { word: "establish", phonetic: "/ɪˈstæblɪʃ/", meaning: "v. 建立；确立" },
+  { word: "estimate", phonetic: "/ˈestɪmeɪt/", meaning: "v./n. 估计；评估" },
+  { word: "evaluate", phonetic: "/ɪˈvæljueɪt/", meaning: "v. 评估；评价" },
+  { word: "evidence", phonetic: "/ˈevɪdəns/", meaning: "n. 证据；迹象" },
+  { word: "evident", phonetic: "/ˈevɪdənt/", meaning: "adj. 明显的；显然的" },
+  { word: "evolve", phonetic: "/iˈvɑːlv/", meaning: "v. 进化；演变" },
+  { word: "exceed", phonetic: "/ɪkˈsiːd/", meaning: "v. 超过；超越" },
+  { word: "expand", phonetic: "/ɪkˈspænd/", meaning: "v. 扩大；扩展" },
+  { word: "expose", phonetic: "/ɪkˈspoʊz/", meaning: "v. 暴露；揭露" },
+  { word: "extend", phonetic: "/ɪkˈstend/", meaning: "v. 延伸；扩大" },
+  { word: "facility", phonetic: "/fəˈsɪləti/", meaning: "n. 设施；设备" },
+  { word: "feature", phonetic: "/ˈfiːtʃər/", meaning: "n. 特征 v. 以…为特色" },
+  { word: "flexible", phonetic: "/ˈfleksəbl/", meaning: "adj. 灵活的；柔韧的" },
+  { word: "focus", phonetic: "/ˈfoʊkəs/", meaning: "v./n. 集中；焦点" },
+  { word: "fundamental", phonetic: "/ˌfʌndəˈmentl/", meaning: "adj. 基本的；根本的" },
+  { word: "generate", phonetic: "/ˈdʒenəreɪt/", meaning: "v. 产生；生成" },
+  { word: "global", phonetic: "/ˈɡloʊbl/", meaning: "adj. 全球的；整体的" },
+  { word: "gradual", phonetic: "/ˈɡrædʒuəl/", meaning: "adj. 逐渐的；渐进的" },
+  { word: "guarantee", phonetic: "/ˌɡærənˈtiː/", meaning: "v./n. 保证；担保" },
+  { word: "identify", phonetic: "/aɪˈdentɪfaɪ/", meaning: "v. 识别；确认" },
+  { word: "ignore", phonetic: "/ɪɡˈnɔːr/", meaning: "v. 忽视；不理睬" },
+  { word: "illustrate", phonetic: "/ˈɪləstreɪt/", meaning: "v. 说明；举例阐明" },
+  { word: "impact", phonetic: "/ˈɪmpækt/", meaning: "n. 影响；冲击" },
+  { word: "imply", phonetic: "/ɪmˈplaɪ/", meaning: "v. 暗示；意味着" },
+  { word: "impose", phonetic: "/ɪmˈpoʊz/", meaning: "v. 强加；征收" },
+  { word: "indicate", phonetic: "/ˈɪndɪkeɪt/", meaning: "v. 表明；指示" },
+  { word: "individual", phonetic: "/ˌɪndɪˈvɪdʒuəl/", meaning: "adj. 个人的 n. 个体" },
+  { word: "inevitable", phonetic: "/ɪnˈevɪtəbl/", meaning: "adj. 不可避免的" },
+  { word: "influence", phonetic: "/ˈɪnfluəns/", meaning: "n./v. 影响" },
+  { word: "initial", phonetic: "/ɪˈnɪʃl/", meaning: "adj. 最初的 n. 首字母" },
+  { word: "innovate", phonetic: "/ˈɪnəveɪt/", meaning: "v. 创新；革新" },
+  { word: "insist", phonetic: "/ɪnˈsɪst/", meaning: "v. 坚持；坚决主张" },
+  { word: "inspire", phonetic: "/ɪnˈspaɪər/", meaning: "v. 激励；鼓舞" },
+  { word: "install", phonetic: "/ɪnˈstɔːl/", meaning: "v. 安装；安置" },
+  { word: "intend", phonetic: "/ɪnˈtend/", meaning: "v. 打算；意图" },
+  { word: "interpret", phonetic: "/ɪnˈtɜːrprət/", meaning: "v. 解释；口译" },
+  { word: "invest", phonetic: "/ɪnˈvest/", meaning: "v. 投资；投入" },
+  { word: "involve", phonetic: "/ɪnˈvɑːlv/", meaning: "v. 涉及；包含；使参与" },
+  { word: "isolate", phonetic: "/ˈaɪsəleɪt/", meaning: "v. 隔离；孤立" },
+  { word: "justify", phonetic: "/ˈdʒʌstɪfaɪ/", meaning: "v. 证明…合理；辩护" },
+  { word: "maintain", phonetic: "/meɪnˈteɪn/", meaning: "v. 维持；保养；坚持" },
+  { word: "measure", phonetic: "/ˈmeʒər/", meaning: "v. 测量 n. 措施" },
+  { word: "motivate", phonetic: "/ˈmoʊtɪveɪt/", meaning: "v. 激励；激发" },
+  { word: "obtain", phonetic: "/əbˈteɪn/", meaning: "v. 获得；得到" },
+  { word: "obvious", phonetic: "/ˈɑːbviəs/", meaning: "adj. 明显的；显而易见的" },
+  { word: "occupy", phonetic: "/ˈɑːkjupaɪ/", meaning: "v. 占据；占用" },
+  { word: "occur", phonetic: "/əˈkɜːr/", meaning: "v. 发生；出现" },
+  { word: "opportunity", phonetic: "/ˌɑːpərˈtuːnəti/", meaning: "n. 机会；时机" },
+  { word: "participate", phonetic: "/pɑːrˈtɪsɪpeɪt/", meaning: "v. 参与；参加" },
+  { word: "perform", phonetic: "/pərˈfɔːrm/", meaning: "v. 执行；表演" },
+  { word: "phenomenon", phonetic: "/fəˈnɑːmɪnən/", meaning: "n. 现象" },
+  { word: "potential", phonetic: "/pəˈtenʃl/", meaning: "adj. 潜在的 n. 潜力" },
+  { word: "predict", phonetic: "/prɪˈdɪkt/", meaning: "v. 预测；预言" },
+  { word: "preserve", phonetic: "/prɪˈzɜːrv/", meaning: "v. 保护；保存" },
+  { word: "previous", phonetic: "/ˈpriːviəs/", meaning: "adj. 先前的；以往的" },
+  { word: "priority", phonetic: "/praɪˈɔːrəti/", meaning: "n. 优先；优先事项" },
+  { word: "purchase", phonetic: "/ˈpɜːrtʃəs/", meaning: "v./n. 购买" },
+  { word: "pursue", phonetic: "/pərˈsuː/", meaning: "v. 追求；从事" },
+  { word: "recover", phonetic: "/rɪˈkʌvər/", meaning: "v. 恢复；康复" },
+  { word: "reject", phonetic: "/rɪˈdʒekt/", meaning: "v. 拒绝；驳回" },
+  { word: "relevant", phonetic: "/ˈreləvənt/", meaning: "adj. 相关的；切题的" },
+  { word: "rely", phonetic: "/rɪˈlaɪ/", meaning: "v. 依赖；依靠" },
+  { word: "remarkable", phonetic: "/rɪˈmɑːrkəbl/", meaning: "adj. 显著的；非凡的" },
+  { word: "require", phonetic: "/rɪˈkwaɪər/", meaning: "v. 需要；要求" },
+  { word: "respond", phonetic: "/rɪˈspɑːnd/", meaning: "v. 回应；回答" },
+  { word: "restore", phonetic: "/rɪˈstɔːr/", meaning: "v. 恢复；修复" },
+  { word: "restrict", phonetic: "/rɪˈstrɪkt/", meaning: "v. 限制；约束" },
+  { word: "reveal", phonetic: "/rɪˈviːl/", meaning: "v. 揭示；透露" },
+  { word: "significant", phonetic: "/sɪɡˈnɪfɪkənt/", meaning: "adj. 重要的；显著的" },
+  { word: "specific", phonetic: "/spəˈsɪfɪk/", meaning: "adj. 具体的；特定的" },
+  { word: "strategy", phonetic: "/ˈstrætədʒi/", meaning: "n. 策略；战略" },
+  { word: "sufficient", phonetic: "/səˈfɪʃnt/", meaning: "adj. 足够的；充足的" },
+  { word: "survive", phonetic: "/sərˈvaɪv/", meaning: "v. 幸存；存活" },
+  { word: "tend", phonetic: "/tend/", meaning: "v. 倾向于；照料" },
+  { word: "transform", phonetic: "/trænsˈfɔːrm/", meaning: "v. 转变；改造" },
+  { word: "unique", phonetic: "/juˈniːk/", meaning: "adj. 独特的；唯一的" },
+  { word: "universal", phonetic: "/ˌjuːnɪˈvɜːrsl/", meaning: "adj. 普遍的；通用的" },
+  { word: "vary", phonetic: "/ˈveri/", meaning: "v. 变化；不同" },
+  { word: "vital", phonetic: "/ˈvaɪtl/", meaning: "adj. 至关重要的；有活力的" },
+  { word: "volume", phonetic: "/ˈvɑːljuːm/", meaning: "n. 体积；音量；卷" },
+  { word: "widespread", phonetic: "/ˈwaɪdspred/", meaning: "adj. 广泛的；普遍的" },
+
+  /* ==================== 扩充词库（第二组） ==================== */
+  { word: "absent", phonetic: "/ˈæbsənt/", meaning: "adj. 缺席的；心不在焉的" },
+  { word: "absolute", phonetic: "/ˈæbsəluːt/", meaning: "adj. 绝对的；完全的" },
+  { word: "accept", phonetic: "/əkˈsept/", meaning: "v. 接受；认可" },
+  { word: "accident", phonetic: "/ˈæksɪdənt/", meaning: "n. 事故；意外" },
+  { word: "account", phonetic: "/əˈkaʊnt/", meaning: "n. 账户；描述 v. 解释" },
+  { word: "accuse", phonetic: "/əˈkjuːz/", meaning: "v. 指控；谴责" },
+  { word: "acknowledge", phonetic: "/əkˈnɑːlɪdʒ/", meaning: "v. 承认；致谢" },
+  { word: "acquaintance", phonetic: "/əˈkweɪntəns/", meaning: "n. 熟人；相识" },
+  { word: "addition", phonetic: "/əˈdɪʃn/", meaning: "n. 增加；加法" },
+  { word: "address", phonetic: "/əˈdres/", meaning: "n. 地址 v. 处理；演讲" },
+  { word: "admit", phonetic: "/ədˈmɪt/", meaning: "v. 承认；准许进入" },
+  { word: "adopt", phonetic: "/əˈdɑːpt/", meaning: "v. 采用；收养" },
+  { word: "advance", phonetic: "/ədˈvæns/", meaning: "v./n. 前进；进步" },
+  { word: "advertise", phonetic: "/ˈædvərtaɪz/", meaning: "v. 做广告；宣传" },
+  { word: "advice", phonetic: "/ədˈvaɪs/", meaning: "n. 建议；忠告" },
+  { word: "affect", phonetic: "/əˈfekt/", meaning: "v. 影响；感动" },
+  { word: "agency", phonetic: "/ˈeɪdʒənsi/", meaning: "n. 代理机构；中介" },
+  { word: "agent", phonetic: "/ˈeɪdʒənt/", meaning: "n. 代理人；因素" },
+  { word: "agreement", phonetic: "/əˈɡriːmənt/", meaning: "n. 协议；一致" },
+  { word: "agriculture", phonetic: "/ˈæɡrɪkʌltʃər/", meaning: "n. 农业" },
+  { word: "aid", phonetic: "/eɪd/", meaning: "n./v. 援助；帮助" },
+  { word: "aim", phonetic: "/eɪm/", meaning: "n. 目标 v. 瞄准" },
+  { word: "alarm", phonetic: "/əˈlɑːrm/", meaning: "n. 警报；闹钟" },
+  { word: "alike", phonetic: "/əˈlaɪk/", meaning: "adj. 相似的 adv. 同样地" },
+  { word: "alive", phonetic: "/əˈlaɪv/", meaning: "adj. 活着的；活跃的" },
+  { word: "allow", phonetic: "/əˈlaʊ/", meaning: "v. 允许；准许" },
+  { word: "alter", phonetic: "/ˈɔːltər/", meaning: "v. 改变；更改" },
+  { word: "amaze", phonetic: "/əˈmeɪz/", meaning: "v. 使惊奇" },
+  { word: "amount", phonetic: "/əˈmaʊnt/", meaning: "n. 数量；总额" },
+  { word: "amuse", phonetic: "/əˈmjuːz/", meaning: "v. 逗乐；娱乐" },
+  { word: "announce", phonetic: "/əˈnaʊns/", meaning: "v. 宣布；宣告" },
+  { word: "annoy", phonetic: "/əˈnɔɪ/", meaning: "v. 使恼怒" },
+  { word: "anticipate", phonetic: "/ænˈtɪsɪpeɪt/", meaning: "v. 预期；预料" },
+  { word: "anxiety", phonetic: "/æŋˈzaɪəti/", meaning: "n. 焦虑；担忧" },
+  { word: "apart", phonetic: "/əˈpɑːrt/", meaning: "adv. 分开；相距" },
+  { word: "apologize", phonetic: "/əˈpɑːlədʒaɪz/", meaning: "v. 道歉" },
+  { word: "apply", phonetic: "/əˈplaɪ/", meaning: "v. 申请；应用" },
+  { word: "appoint", phonetic: "/əˈpɔɪnt/", meaning: "v. 任命；约定" },
+  { word: "argue", phonetic: "/ˈɑːrɡjuː/", meaning: "v. 争论；主张" },
+  { word: "argument", phonetic: "/ˈɑːrɡjumənt/", meaning: "n. 争论；论点" },
+  { word: "army", phonetic: "/ˈɑːrmi/", meaning: "n. 军队；大群" },
+  { word: "arrest", phonetic: "/əˈrest/", meaning: "v./n. 逮捕" },
+  { word: "arrive", phonetic: "/əˈraɪv/", meaning: "v. 到达" },
+  { word: "article", phonetic: "/ˈɑːrtɪkl/", meaning: "n. 文章；物品；冠词" },
+  { word: "ashamed", phonetic: "/əˈʃeɪmd/", meaning: "adj. 惭愧的；羞愧的" },
+  { word: "aside", phonetic: "/əˈsaɪd/", meaning: "adv. 在旁边；留出" },
+  { word: "aspect", phonetic: "/ˈæspekt/", meaning: "n. 方面；外观" },
+  { word: "associate", phonetic: "/əˈsoʊʃieɪt/", meaning: "v. 联想；交往 n. 同事" },
+  { word: "association", phonetic: "/əˌsoʊʃiˈeɪʃn/", meaning: "n. 协会；联系" },
+  { word: "astonish", phonetic: "/əˈstɑːnɪʃ/", meaning: "v. 使惊讶" },
+  { word: "atmosphere", phonetic: "/ˈætməsfɪr/", meaning: "n. 大气；气氛" },
+  { word: "attempt", phonetic: "/əˈtempt/", meaning: "v./n. 尝试；企图" },
+  { word: "attend", phonetic: "/əˈtend/", meaning: "v. 出席；照料" },
+  { word: "attention", phonetic: "/əˈtenʃn/", meaning: "n. 注意；关注" },
+  { word: "author", phonetic: "/ˈɔːθər/", meaning: "n. 作者；作家" },
+  { word: "authority", phonetic: "/əˈθɔːrəti/", meaning: "n. 权威；当局" },
+  { word: "automatic", phonetic: "/ˌɔːtəˈmætɪk/", meaning: "adj. 自动的" },
+  { word: "avenue", phonetic: "/ˈævənuː/", meaning: "n. 大街；途径" },
+  { word: "average", phonetic: "/ˈævərɪdʒ/", meaning: "n. 平均 adj. 平均的" },
+
+  { word: "background", phonetic: "/ˈbækɡraʊnd/", meaning: "n. 背景；经历" },
+  { word: "bargain", phonetic: "/ˈbɑːrɡən/", meaning: "n. 便宜货 v. 讨价还价" },
+  { word: "behave", phonetic: "/bɪˈheɪv/", meaning: "v. 表现；举止" },
+  { word: "behavior", phonetic: "/bɪˈheɪvjər/", meaning: "n. 行为；举止" },
+  { word: "belief", phonetic: "/bɪˈliːf/", meaning: "n. 信念；信仰" },
+  { word: "belong", phonetic: "/bɪˈlɔːŋ/", meaning: "v. 属于" },
+  { word: "beneath", phonetic: "/bɪˈniːθ/", meaning: "prep. 在…下方" },
+  { word: "beyond", phonetic: "/bɪˈjɑːnd/", meaning: "prep. 超出；超越" },
+  { word: "blame", phonetic: "/bleɪm/", meaning: "v./n. 责备；归咎" },
+  { word: "bother", phonetic: "/ˈbɑːðər/", meaning: "v. 打扰；烦扰" },
+  { word: "brief", phonetic: "/briːf/", meaning: "adj. 简短的 n. 摘要" },
+  { word: "brilliant", phonetic: "/ˈbrɪliənt/", meaning: "adj. 杰出的；灿烂的" },
+  { word: "burden", phonetic: "/ˈbɜːrdn/", meaning: "n. 负担 v. 使负重" },
+
+  { word: "calculate", phonetic: "/ˈkælkjuleɪt/", meaning: "v. 计算；估计" },
+  { word: "campaign", phonetic: "/kæmˈpeɪn/", meaning: "n. 运动；活动" },
+  { word: "candidate", phonetic: "/ˈkændɪdət/", meaning: "n. 候选人；应试者" },
+  { word: "capable", phonetic: "/ˈkeɪpəbl/", meaning: "adj. 有能力的" },
+  { word: "capital", phonetic: "/ˈkæpɪtl/", meaning: "n. 首都；资本" },
+  { word: "career", phonetic: "/kəˈrɪr/", meaning: "n. 职业；生涯" },
+  { word: "casual", phonetic: "/ˈkæʒuəl/", meaning: "adj. 随便的；偶然的" },
+  { word: "category", phonetic: "/ˈkætəɡɔːri/", meaning: "n. 类别；范畴" },
+  { word: "caution", phonetic: "/ˈkɔːʃn/", meaning: "n. 小心；谨慎" },
+  { word: "celebrate", phonetic: "/ˈselɪbreɪt/", meaning: "v. 庆祝" },
+  { word: "ceremony", phonetic: "/ˈserəmoʊni/", meaning: "n. 典礼；仪式" },
+  { word: "character", phonetic: "/ˈkærəktər/", meaning: "n. 性格；角色；字符" },
+  { word: "characteristic", phonetic: "/ˌkærəktəˈrɪstɪk/", meaning: "n. 特征 adj. 典型的" },
+  { word: "charge", phonetic: "/tʃɑːrdʒ/", meaning: "v. 收费；指控 n. 费用" },
+  { word: "cheat", phonetic: "/tʃiːt/", meaning: "v. 欺骗；作弊" },
+  { word: "civil", phonetic: "/ˈsɪvl/", meaning: "adj. 公民的；民用的" },
+  { word: "claim", phonetic: "/kleɪm/", meaning: "v./n. 声称；要求；索赔" },
+  { word: "climate", phonetic: "/ˈklaɪmət/", meaning: "n. 气候；风气" },
+  { word: "coach", phonetic: "/koʊtʃ/", meaning: "n. 教练 v. 辅导" },
+  { word: "collapse", phonetic: "/kəˈlæps/", meaning: "v./n. 倒塌；崩溃" },
+  { word: "colleague", phonetic: "/ˈkɑːliːɡ/", meaning: "n. 同事" },
+  { word: "combine", phonetic: "/kəmˈbaɪn/", meaning: "v. 结合；联合" },
+  { word: "comment", phonetic: "/ˈkɑːment/", meaning: "n./v. 评论" },
+  { word: "commercial", phonetic: "/kəˈmɜːrʃl/", meaning: "adj. 商业的 n. 广告" },
+  { word: "commitment", phonetic: "/kəˈmɪtmənt/", meaning: "n. 承诺；投入" },
+  { word: "common", phonetic: "/ˈkɑːmən/", meaning: "adj. 常见的；共同的" },
+  { word: "communicate", phonetic: "/kəˈmjuːnɪkeɪt/", meaning: "v. 交流；传达" },
+  { word: "companion", phonetic: "/kəmˈpæniən/", meaning: "n. 同伴；伙伴" },
+  { word: "competent", phonetic: "/ˈkɑːmpɪtənt/", meaning: "adj. 有能力的；胜任的" },
+  { word: "complain", phonetic: "/kəmˈpleɪn/", meaning: "v. 抱怨；投诉" },
+  { word: "complete", phonetic: "/kəmˈpliːt/", meaning: "v. 完成 adj. 完整的" },
+  { word: "complicate", phonetic: "/ˈkɑːmplɪkeɪt/", meaning: "v. 使复杂" },
+  { word: "component", phonetic: "/kəmˈpoʊnənt/", meaning: "n. 成分；组件" },
+  { word: "compose", phonetic: "/kəmˈpoʊz/", meaning: "v. 组成；创作" },
+  { word: "comprehend", phonetic: "/ˌkɑːmprɪˈhend/", meaning: "v. 理解；领悟" },
+  { word: "comprehensive", phonetic: "/ˌkɑːmprɪˈhensɪv/", meaning: "adj. 全面的；综合的" },
+  { word: "conceal", phonetic: "/kənˈsiːl/", meaning: "v. 隐藏；隐瞒" },
+  { word: "conclusion", phonetic: "/kənˈkluːʒn/", meaning: "n. 结论；结束" },
+  { word: "condition", phonetic: "/kənˈdɪʃn/", meaning: "n. 条件；状况" },
+  { word: "confident", phonetic: "/ˈkɑːnfɪdənt/", meaning: "adj. 自信的；确信的" },
+  { word: "confine", phonetic: "/kənˈfaɪn/", meaning: "v. 限制；禁闭" },
+  { word: "conflict", phonetic: "/ˈkɑːnflɪkt/", meaning: "n. 冲突；矛盾" },
+  { word: "confuse", phonetic: "/kənˈfjuːz/", meaning: "v. 使困惑；混淆" },
+  { word: "congratulate", phonetic: "/kənˈɡrætʃuleɪt/", meaning: "v. 祝贺" },
+  { word: "conquer", phonetic: "/ˈkɑːŋkər/", meaning: "v. 征服；克服" },
+  { word: "conscious", phonetic: "/ˈkɑːnʃəs/", meaning: "adj. 有意识的；自觉的" },
+  { word: "conservative", phonetic: "/kənˈsɜːrvətɪv/", meaning: "adj. 保守的" },
+  { word: "considerable", phonetic: "/kənˈsɪdərəbl/", meaning: "adj. 相当大的" },
+  { word: "consistent", phonetic: "/kənˈsɪstənt/", meaning: "adj. 一致的；坚持的" },
+  { word: "constitute", phonetic: "/ˈkɑːnstɪtuːt/", meaning: "v. 构成；组成" },
+  { word: "consult", phonetic: "/kənˈsʌlt/", meaning: "v. 咨询；查阅" },
+  { word: "contact", phonetic: "/ˈkɑːntækt/", meaning: "n./v. 联系；接触" },
+  { word: "contemporary", phonetic: "/kənˈtempəreri/", meaning: "adj. 当代的；同时代的" },
+  { word: "content", phonetic: "/ˈkɑːntent/", meaning: "n. 内容 adj. 满意的" },
+  { word: "contest", phonetic: "/ˈkɑːntest/", meaning: "n. 竞赛；争夺" },
+  { word: "contract", phonetic: "/ˈkɑːntrækt/", meaning: "n. 合同 v. 收缩" },
+  { word: "contrast", phonetic: "/ˈkɑːntræst/", meaning: "n./v. 对比；对照" },
+  { word: "controversy", phonetic: "/ˈkɑːntrəvɜːrsi/", meaning: "n. 争论；争议" },
+  { word: "convenient", phonetic: "/kənˈviːniənt/", meaning: "adj. 方便的" },
+  { word: "convention", phonetic: "/kənˈvenʃn/", meaning: "n. 惯例；会议" },
+  { word: "conversation", phonetic: "/ˌkɑːnvərˈseɪʃn/", meaning: "n. 会话；交谈" },
+  { word: "cope", phonetic: "/koʊp/", meaning: "v. 应付；处理" },
+  { word: "correspond", phonetic: "/ˌkɔːrəˈspɑːnd/", meaning: "v. 相符；通信" },
+  { word: "courage", phonetic: "/ˈkɜːrɪdʒ/", meaning: "n. 勇气；胆量" },
+  { word: "create", phonetic: "/kriˈeɪt/", meaning: "v. 创造；创作" },
+  { word: "credit", phonetic: "/ˈkredɪt/", meaning: "n. 信用；学分；功劳" },
+  { word: "crime", phonetic: "/kraɪm/", meaning: "n. 犯罪；罪行" },
+  { word: "crisis", phonetic: "/ˈkraɪsɪs/", meaning: "n. 危机；紧要关头" },
+  { word: "criticize", phonetic: "/ˈkrɪtɪsaɪz/", meaning: "v. 批评；评论" },
+  { word: "cure", phonetic: "/kjʊr/", meaning: "v./n. 治愈；治疗" },
+  { word: "curious", phonetic: "/ˈkjʊriəs/", meaning: "adj. 好奇的；奇怪的" },
+  { word: "current", phonetic: "/ˈkɜːrənt/", meaning: "adj. 当前的 n. 水流；电流" },
+  { word: "custom", phonetic: "/ˈkʌstəm/", meaning: "n. 习俗；海关" },
+
+  { word: "damage", phonetic: "/ˈdæmɪdʒ/", meaning: "n./v. 损害；损坏" },
+  { word: "debate", phonetic: "/dɪˈbeɪt/", meaning: "n./v. 辩论；讨论" },
+  { word: "decade", phonetic: "/ˈdekeɪd/", meaning: "n. 十年" },
+  { word: "decide", phonetic: "/dɪˈsaɪd/", meaning: "v. 决定；裁决" },
+  { word: "decision", phonetic: "/dɪˈsɪʒn/", meaning: "n. 决定；决议" },
+  { word: "decorate", phonetic: "/ˈdekəreɪt/", meaning: "v. 装饰；装潢" },
+  { word: "defeat", phonetic: "/dɪˈfiːt/", meaning: "v./n. 打败；失败" },
+  { word: "defend", phonetic: "/dɪˈfend/", meaning: "v. 保卫；辩护" },
+  { word: "define", phonetic: "/dɪˈfaɪn/", meaning: "v. 定义；界定" },
+  { word: "degree", phonetic: "/dɪˈɡriː/", meaning: "n. 程度；学位；度" },
+  { word: "delay", phonetic: "/dɪˈleɪ/", meaning: "v./n. 推迟；耽搁" },
+  { word: "deliberate", phonetic: "/dɪˈlɪbərət/", meaning: "adj. 故意的；深思熟虑的" },
+  { word: "deliver", phonetic: "/dɪˈlɪvər/", meaning: "v. 递送；发表" },
+  { word: "demand", phonetic: "/dɪˈmænd/", meaning: "n./v. 需求；要求" },
+  { word: "department", phonetic: "/dɪˈpɑːrtmənt/", meaning: "n. 部门；系" },
+  { word: "depend", phonetic: "/dɪˈpend/", meaning: "v. 依靠；取决于" },
+  { word: "deposit", phonetic: "/dɪˈpɑːzɪt/", meaning: "n. 存款；押金 v. 存放" },
+  { word: "describe", phonetic: "/dɪˈskraɪb/", meaning: "v. 描述；形容" },
+  { word: "desert", phonetic: "/ˈdezərt/", meaning: "n. 沙漠 v. 抛弃" },
+  { word: "design", phonetic: "/dɪˈzaɪn/", meaning: "n./v. 设计" },
+  { word: "desire", phonetic: "/dɪˈzaɪər/", meaning: "n./v. 渴望；欲望" },
+  { word: "destroy", phonetic: "/dɪˈstrɔɪ/", meaning: "v. 破坏；摧毁" },
+  { word: "detail", phonetic: "/ˈdiːteɪl/", meaning: "n. 细节；详情" },
+  { word: "detect", phonetic: "/dɪˈtekt/", meaning: "v. 察觉；检测" },
+  { word: "develop", phonetic: "/dɪˈveləp/", meaning: "v. 发展；开发" },
+  { word: "device", phonetic: "/dɪˈvaɪs/", meaning: "n. 设备；装置" },
+  { word: "differ", phonetic: "/ˈdɪfər/", meaning: "v. 不同；相异" },
+  { word: "direct", phonetic: "/dəˈrekt/", meaning: "adj. 直接的 v. 指导" },
+  { word: "disappear", phonetic: "/ˌdɪsəˈpɪr/", meaning: "v. 消失；不见" },
+  { word: "disappoint", phonetic: "/ˌdɪsəˈpɔɪnt/", meaning: "v. 使失望" },
+  { word: "discipline", phonetic: "/ˈdɪsəplɪn/", meaning: "n. 纪律；学科 v. 训练" },
+  { word: "discover", phonetic: "/dɪˈskʌvər/", meaning: "v. 发现" },
+  { word: "disease", phonetic: "/dɪˈziːz/", meaning: "n. 疾病" },
+  { word: "dismiss", phonetic: "/dɪsˈmɪs/", meaning: "v. 解散；解雇；不予理会" },
+  { word: "display", phonetic: "/dɪˈspleɪ/", meaning: "v./n. 展示；陈列" },
+  { word: "distance", phonetic: "/ˈdɪstəns/", meaning: "n. 距离；远处" },
+  { word: "distant", phonetic: "/ˈdɪstənt/", meaning: "adj. 遥远的；疏远的" },
+  { word: "divide", phonetic: "/dɪˈvaɪd/", meaning: "v. 分开；除" },
+  { word: "document", phonetic: "/ˈdɑːkjumənt/", meaning: "n. 文件；文档" },
+  { word: "donate", phonetic: "/ˈdoʊneɪt/", meaning: "v. 捐赠；捐献" },
+  { word: "double", phonetic: "/ˈdʌbl/", meaning: "adj. 双倍的 v. 加倍" },
+  { word: "doubt", phonetic: "/daʊt/", meaning: "n./v. 怀疑；疑虑" },
+  { word: "dramatic", phonetic: "/drəˈmætɪk/", meaning: "adj. 戏剧性的；显著的" },
+  { word: "duty", phonetic: "/ˈduːti/", meaning: "n. 责任；义务；关税" },
+
+  { word: "earn", phonetic: "/ɜːrn/", meaning: "v. 赚取；赢得" },
+  { word: "economy", phonetic: "/ɪˈkɑːnəmi/", meaning: "n. 经济；节约" },
+  { word: "educate", phonetic: "/ˈedʒukeɪt/", meaning: "v. 教育；培养" },
+  { word: "effect", phonetic: "/ɪˈfekt/", meaning: "n. 效果；影响" },
+  { word: "effort", phonetic: "/ˈefərt/", meaning: "n. 努力；成果" },
+  { word: "elder", phonetic: "/ˈeldər/", meaning: "adj. 年长的 n. 长者" },
+  { word: "elect", phonetic: "/ɪˈlekt/", meaning: "v. 选举；选择" },
+  { word: "element", phonetic: "/ˈelɪmənt/", meaning: "n. 元素；要素" },
+  { word: "embarrass", phonetic: "/ɪmˈbærəs/", meaning: "v. 使尴尬" },
+  { word: "emotion", phonetic: "/ɪˈmoʊʃn/", meaning: "n. 情感；情绪" },
+  { word: "employ", phonetic: "/ɪmˈplɔɪ/", meaning: "v. 雇用；使用" },
+  { word: "encourage", phonetic: "/ɪnˈkɜːrɪdʒ/", meaning: "v. 鼓励；促进" },
+  { word: "energy", phonetic: "/ˈenərdʒi/", meaning: "n. 能量；精力" },
+  { word: "engage", phonetic: "/ɪnˈɡeɪdʒ/", meaning: "v. 从事；订婚；吸引" },
+  { word: "engine", phonetic: "/ˈendʒɪn/", meaning: "n. 引擎；发动机" },
+  { word: "enormous", phonetic: "/ɪˈnɔːrməs/", meaning: "adj. 巨大的；庞大的" },
+  { word: "entertain", phonetic: "/ˌentərˈteɪn/", meaning: "v. 娱乐；招待" },
+  { word: "entire", phonetic: "/ɪnˈtaɪər/", meaning: "adj. 全部的；整个的" },
+  { word: "environment", phonetic: "/ɪnˈvaɪrənmənt/", meaning: "n. 环境" },
+  { word: "equal", phonetic: "/ˈiːkwəl/", meaning: "adj. 平等的 v. 等于" },
+  { word: "equip", phonetic: "/ɪˈkwɪp/", meaning: "v. 装备；配备" },
+  { word: "error", phonetic: "/ˈerər/", meaning: "n. 错误；差错" },
+  { word: "escape", phonetic: "/ɪˈskeɪp/", meaning: "v./n. 逃跑；逃避" },
+  { word: "especially", phonetic: "/ɪˈspeʃəli/", meaning: "adv. 尤其；特别" },
+  { word: "event", phonetic: "/ɪˈvent/", meaning: "n. 事件；比赛项目" },
+  { word: "eventually", phonetic: "/ɪˈventʃuəli/", meaning: "adv. 最终；终于" },
+  { word: "exact", phonetic: "/ɪɡˈzækt/", meaning: "adj. 精确的；确切的" },
+  { word: "examine", phonetic: "/ɪɡˈzæmɪn/", meaning: "v. 检查；考试" },
+  { word: "excellent", phonetic: "/ˈeksələnt/", meaning: "adj. 极好的；优秀的" },
+  { word: "except", phonetic: "/ɪkˈsept/", meaning: "prep. 除…之外" },
+  { word: "exchange", phonetic: "/ɪksˈtʃeɪndʒ/", meaning: "v./n. 交换；交流" },
+  { word: "excite", phonetic: "/ɪkˈsaɪt/", meaning: "v. 使兴奋；激发" },
+  { word: "exclude", phonetic: "/ɪkˈskluːd/", meaning: "v. 排除；不包括" },
+  { word: "excuse", phonetic: "/ɪkˈskjuːz/", meaning: "v. 原谅 n. 借口" },
+  { word: "exercise", phonetic: "/ˈeksərsaɪz/", meaning: "n./v. 锻炼；练习" },
+  { word: "exist", phonetic: "/ɪɡˈzɪst/", meaning: "v. 存在；生存" },
+  { word: "expect", phonetic: "/ɪkˈspekt/", meaning: "v. 期望；预料" },
+  { word: "expense", phonetic: "/ɪkˈspens/", meaning: "n. 花费；费用" },
+  { word: "experience", phonetic: "/ɪkˈspɪriəns/", meaning: "n. 经验；经历 v. 体验" },
+  { word: "experiment", phonetic: "/ɪkˈsperɪmənt/", meaning: "n. 实验；试验" },
+  { word: "expert", phonetic: "/ˈekspɜːrt/", meaning: "n. 专家 adj. 熟练的" },
+  { word: "explain", phonetic: "/ɪkˈspleɪn/", meaning: "v. 解释；说明" },
+  { word: "explore", phonetic: "/ɪkˈsplɔːr/", meaning: "v. 探索；考察" },
+  { word: "express", phonetic: "/ɪkˈspres/", meaning: "v. 表达 n. 快递" },
+  { word: "extreme", phonetic: "/ɪkˈstriːm/", meaning: "adj. 极端的 n. 极端" },
+
+  { word: "factor", phonetic: "/ˈfæktər/", meaning: "n. 因素；要素" },
+  { word: "familiar", phonetic: "/fəˈmɪliər/", meaning: "adj. 熟悉的；常见的" },
+  { word: "fashion", phonetic: "/ˈfæʃn/", meaning: "n. 时尚；方式" },
+  { word: "favor", phonetic: "/ˈfeɪvər/", meaning: "n. 恩惠；赞同 v. 支持" },
+  { word: "favorite", phonetic: "/ˈfeɪvərɪt/", meaning: "adj. 最喜爱的" },
+  { word: "feasible", phonetic: "/ˈfiːzəbl/", meaning: "adj. 可行的" },
+  { word: "figure", phonetic: "/ˈfɪɡjər/", meaning: "n. 数字；人物 v. 认为" },
+  { word: "finance", phonetic: "/ˈfaɪnæns/", meaning: "n. 金融；财政" },
+  { word: "firm", phonetic: "/fɜːrm/", meaning: "adj. 坚定的 n. 公司" },
+  { word: "fitness", phonetic: "/ˈfɪtnəs/", meaning: "n. 健康；适合" },
+  { word: "fluent", phonetic: "/ˈfluːənt/", meaning: "adj. 流利的" },
+  { word: "forbid", phonetic: "/fərˈbɪd/", meaning: "v. 禁止" },
+  { word: "forecast", phonetic: "/ˈfɔːrkæst/", meaning: "n./v. 预报；预测" },
+  { word: "foreign", phonetic: "/ˈfɔːrən/", meaning: "adj. 外国的；外来的" },
+  { word: "former", phonetic: "/ˈfɔːrmər/", meaning: "adj. 以前的；前者的" },
+  { word: "fortune", phonetic: "/ˈfɔːrtʃən/", meaning: "n. 财富；运气" },
+  { word: "frequent", phonetic: "/ˈfriːkwənt/", meaning: "adj. 频繁的；经常的" },
+  { word: "furthermore", phonetic: "/ˌfɜːrðərˈmɔːr/", meaning: "adv. 此外；而且" },
+
+  { word: "gather", phonetic: "/ˈɡæðər/", meaning: "v. 聚集；收集" },
+  { word: "generous", phonetic: "/ˈdʒenərəs/", meaning: "adj. 慷慨的；大方的" },
+  { word: "genuine", phonetic: "/ˈdʒenjuɪn/", meaning: "adj. 真正的；真诚的" },
+  { word: "gesture", phonetic: "/ˈdʒestʃər/", meaning: "n. 手势；姿态" },
+  { word: "govern", phonetic: "/ˈɡʌvərn/", meaning: "v. 统治；管理" },
+  { word: "grant", phonetic: "/ɡrænt/", meaning: "v. 授予；同意 n. 拨款" },
+  { word: "grateful", phonetic: "/ˈɡreɪtfl/", meaning: "adj. 感激的" },
+  { word: "grow", phonetic: "/ɡroʊ/", meaning: "v. 生长；增长" },
+  { word: "guilty", phonetic: "/ˈɡɪlti/", meaning: "adj. 有罪的；内疚的" },
+
+  { word: "habit", phonetic: "/ˈhæbɪt/", meaning: "n. 习惯；习性" },
+  { word: "handle", phonetic: "/ˈhændl/", meaning: "v. 处理 n. 把手" },
+  { word: "harm", phonetic: "/hɑːrm/", meaning: "n./v. 伤害；损害" },
+  { word: "harvest", phonetic: "/ˈhɑːrvɪst/", meaning: "n./v. 收获；收割" },
+  { word: "hesitate", phonetic: "/ˈhezɪteɪt/", meaning: "v. 犹豫；踌躇" },
+  { word: "hire", phonetic: "/ˈhaɪər/", meaning: "v./n. 雇用；租用" },
+  { word: "horizon", phonetic: "/həˈraɪzn/", meaning: "n. 地平线；眼界" },
+  { word: "host", phonetic: "/hoʊst/", meaning: "n. 主人；主持人 v. 主办" },
+  { word: "humble", phonetic: "/ˈhʌmbl/", meaning: "adj. 谦虚的；卑微的" },
+
+  { word: "ideal", phonetic: "/aɪˈdiːəl/", meaning: "adj. 理想的 n. 理想" },
+  { word: "identical", phonetic: "/aɪˈdentɪkl/", meaning: "adj. 完全相同的" },
+  { word: "idle", phonetic: "/ˈaɪdl/", meaning: "adj. 空闲的；懒散的" },
+  { word: "imagine", phonetic: "/ɪˈmædʒɪn/", meaning: "v. 想象；设想" },
+  { word: "imitate", phonetic: "/ˈɪmɪteɪt/", meaning: "v. 模仿；仿效" },
+  { word: "immediate", phonetic: "/ɪˈmiːdiət/", meaning: "adj. 立即的；直接的" },
+  { word: "immense", phonetic: "/ɪˈmens/", meaning: "adj. 巨大的；无边的" },
+  { word: "import", phonetic: "/ɪmˈpɔːrt/", meaning: "v./n. 进口；输入" },
+  { word: "importance", phonetic: "/ɪmˈpɔːrtns/", meaning: "n. 重要性" },
+  { word: "impress", phonetic: "/ɪmˈpres/", meaning: "v. 给…留下印象" },
+  { word: "improve", phonetic: "/ɪmˈpruːv/", meaning: "v. 改善；提高" },
+  { word: "include", phonetic: "/ɪnˈkluːd/", meaning: "v. 包括；包含" },
+  { word: "income", phonetic: "/ˈɪnkʌm/", meaning: "n. 收入；所得" },
+  { word: "increase", phonetic: "/ɪnˈkriːs/", meaning: "v./n. 增加；增长" },
+  { word: "independent", phonetic: "/ˌɪndɪˈpendənt/", meaning: "adj. 独立的；自主的" },
+  { word: "industry", phonetic: "/ˈɪndəstri/", meaning: "n. 工业；行业" },
+  { word: "inform", phonetic: "/ɪnˈfɔːrm/", meaning: "v. 通知；告知" },
+  { word: "injure", phonetic: "/ˈɪndʒər/", meaning: "v. 伤害；损害" },
+  { word: "inquire", phonetic: "/ɪnˈkwaɪər/", meaning: "v. 询问；调查" },
+  { word: "instance", phonetic: "/ˈɪnstəns/", meaning: "n. 例子；实例" },
+  { word: "instant", phonetic: "/ˈɪnstənt/", meaning: "adj. 立即的 n. 瞬间" },
+  { word: "institute", phonetic: "/ˈɪnstɪtuːt/", meaning: "n. 学院；研究所" },
+  { word: "instruct", phonetic: "/ɪnˈstrʌkt/", meaning: "v. 指导；指示" },
+  { word: "instrument", phonetic: "/ˈɪnstrəmənt/", meaning: "n. 仪器；乐器" },
+  { word: "insurance", phonetic: "/ɪnˈʃʊrəns/", meaning: "n. 保险" },
+  { word: "intelligence", phonetic: "/ɪnˈtelɪdʒəns/", meaning: "n. 智力；情报" },
+  { word: "intense", phonetic: "/ɪnˈtens/", meaning: "adj. 强烈的；紧张的" },
+  { word: "intention", phonetic: "/ɪnˈtenʃn/", meaning: "n. 意图；打算" },
+  { word: "interest", phonetic: "/ˈɪntrəst/", meaning: "n. 兴趣；利息 v. 使感兴趣" },
+  { word: "interfere", phonetic: "/ˌɪntərˈfɪr/", meaning: "v. 干涉；妨碍" },
+  { word: "internal", phonetic: "/ɪnˈtɜːrnl/", meaning: "adj. 内部的；国内的" },
+  { word: "interrupt", phonetic: "/ˌɪntəˈrʌpt/", meaning: "v. 打断；中断" },
+  { word: "introduce", phonetic: "/ˌɪntrəˈduːs/", meaning: "v. 介绍；引入" },
+  { word: "invent", phonetic: "/ɪnˈvent/", meaning: "v. 发明；虚构" },
+  { word: "investigate", phonetic: "/ɪnˈvestɪɡeɪt/", meaning: "v. 调查；研究" },
+  { word: "invite", phonetic: "/ɪnˈvaɪt/", meaning: "v. 邀请；招致" },
+  { word: "issue", phonetic: "/ˈɪʃuː/", meaning: "n. 问题；发行 v. 发布" },
+
+  { word: "journey", phonetic: "/ˈdʒɜːrni/", meaning: "n. 旅行；旅程" },
+  { word: "judge", phonetic: "/dʒʌdʒ/", meaning: "n. 法官 v. 判断；审判" },
+  { word: "justice", phonetic: "/ˈdʒʌstɪs/", meaning: "n. 正义；公正" },
+
+  { word: "keen", phonetic: "/kiːn/", meaning: "adj. 热心的；敏锐的" },
+  { word: "knowledge", phonetic: "/ˈnɑːlɪdʒ/", meaning: "n. 知识；学问" },
+
+  { word: "labor", phonetic: "/ˈleɪbər/", meaning: "n. 劳动；劳工" },
+  { word: "lack", phonetic: "/læk/", meaning: "n./v. 缺乏；不足" },
+  { word: "launch", phonetic: "/lɔːntʃ/", meaning: "v. 发射；发起 n. 启动" },
+  { word: "legal", phonetic: "/ˈliːɡl/", meaning: "adj. 法律的；合法的" },
+  { word: "leisure", phonetic: "/ˈliːʒər/", meaning: "n. 闲暇；空闲" },
+  { word: "liberal", phonetic: "/ˈlɪbərəl/", meaning: "adj. 自由的；慷慨的" },
+  { word: "license", phonetic: "/ˈlaɪsns/", meaning: "n. 执照；许可" },
+  { word: "likely", phonetic: "/ˈlaɪkli/", meaning: "adj. 可能的 adv. 很可能" },
+  { word: "limit", phonetic: "/ˈlɪmɪt/", meaning: "n. 限制 v. 限定" },
+  { word: "locate", phonetic: "/ˈloʊkeɪt/", meaning: "v. 位于；定位" },
+  { word: "logic", phonetic: "/ˈlɑːdʒɪk/", meaning: "n. 逻辑；推理" },
+  { word: "loyal", phonetic: "/ˈlɔɪəl/", meaning: "adj. 忠诚的；忠实的" },
+  { word: "luxury", phonetic: "/ˈlʌkʃəri/", meaning: "n. 奢侈；奢侈品" },
+
+  { word: "magnificent", phonetic: "/mæɡˈnɪfɪsnt/", meaning: "adj. 壮丽的；宏伟的" },
+  { word: "major", phonetic: "/ˈmeɪdʒər/", meaning: "adj. 主要的 n. 专业" },
+  { word: "manage", phonetic: "/ˈmænɪdʒ/", meaning: "v. 管理；设法做到" },
+  { word: "manner", phonetic: "/ˈmænər/", meaning: "n. 方式；举止；礼貌" },
+  { word: "manufacture", phonetic: "/ˌmænjuˈfæktʃər/", meaning: "v./n. 制造；生产" },
+  { word: "marry", phonetic: "/ˈmæri/", meaning: "v. 结婚；嫁娶" },
+  { word: "material", phonetic: "/məˈtɪriəl/", meaning: "n. 材料 adj. 物质的" },
+  { word: "mature", phonetic: "/məˈtʃʊr/", meaning: "adj. 成熟的 v. 成熟" },
+  { word: "means", phonetic: "/miːnz/", meaning: "n. 方法；手段" },
+  { word: "medicine", phonetic: "/ˈmedɪsn/", meaning: "n. 医学；药物" },
+  { word: "mental", phonetic: "/ˈmentl/", meaning: "adj. 精神的；心理的" },
+  { word: "mention", phonetic: "/ˈmenʃn/", meaning: "v./n. 提及；说起" },
+  { word: "merely", phonetic: "/ˈmɪrli/", meaning: "adv. 仅仅；只不过" },
+  { word: "method", phonetic: "/ˈmeθəd/", meaning: "n. 方法；办法" },
+  { word: "mild", phonetic: "/maɪld/", meaning: "adj. 温和的；轻微的" },
+  { word: "minor", phonetic: "/ˈmaɪnər/", meaning: "adj. 较小的；次要的" },
+  { word: "miracle", phonetic: "/ˈmɪrəkl/", meaning: "n. 奇迹" },
+  { word: "mission", phonetic: "/ˈmɪʃn/", meaning: "n. 使命；任务" },
+  { word: "mobile", phonetic: "/ˈmoʊbl/", meaning: "adj. 移动的；可动的" },
+  { word: "modest", phonetic: "/ˈmɑːdɪst/", meaning: "adj. 谦虚的；适度的" },
+  { word: "modify", phonetic: "/ˈmɑːdɪfaɪ/", meaning: "v. 修改；调整" },
+  { word: "moral", phonetic: "/ˈmɔːrəl/", meaning: "adj. 道德的 n. 寓意" },
+  { word: "motive", phonetic: "/ˈmoʊtɪv/", meaning: "n. 动机；目的" },
+  { word: "mutual", phonetic: "/ˈmjuːtʃuəl/", meaning: "adj. 相互的；共同的" },
+
+  { word: "native", phonetic: "/ˈneɪtɪv/", meaning: "adj. 本国的；天生的" },
+  { word: "negative", phonetic: "/ˈneɡətɪv/", meaning: "adj. 消极的；否定的" },
+  { word: "neglect", phonetic: "/nɪˈɡlekt/", meaning: "v./n. 忽视；疏忽" },
+  { word: "negotiate", phonetic: "/nɪˈɡoʊʃieɪt/", meaning: "v. 谈判；协商" },
+  { word: "nervous", phonetic: "/ˈnɜːrvəs/", meaning: "adj. 紧张的；神经的" },
+  { word: "neutral", phonetic: "/ˈnuːtrəl/", meaning: "adj. 中立的；中性的" },
+  { word: "nevertheless", phonetic: "/ˌnevərðəˈles/", meaning: "adv. 然而；不过" },
+  { word: "normal", phonetic: "/ˈnɔːrml/", meaning: "adj. 正常的；标准的" },
+  { word: "notice", phonetic: "/ˈnoʊtɪs/", meaning: "v. 注意 n. 通知" },
+  { word: "numerous", phonetic: "/ˈnuːmərəs/", meaning: "adj. 众多的；许多的" },
+
+  { word: "objective", phonetic: "/əbˈdʒektɪv/", meaning: "n. 目标 adj. 客观的" },
+  { word: "obligation", phonetic: "/ˌɑːblɪˈɡeɪʃn/", meaning: "n. 义务；责任" },
+  { word: "observe", phonetic: "/əbˈzɜːrv/", meaning: "v. 观察；遵守" },
+  { word: "obstacle", phonetic: "/ˈɑːbstəkl/", meaning: "n. 障碍；阻碍" },
+  { word: "occasion", phonetic: "/əˈkeɪʒn/", meaning: "n. 场合；时机" },
+  { word: "offer", phonetic: "/ˈɔːfər/", meaning: "v./n. 提供；提议" },
+  { word: "operate", phonetic: "/ˈɑːpəreɪt/", meaning: "v. 操作；经营；手术" },
+  { word: "opinion", phonetic: "/əˈpɪnjən/", meaning: "n. 意见；看法" },
+  { word: "opponent", phonetic: "/əˈpoʊnənt/", meaning: "n. 对手；反对者" },
+  { word: "oppose", phonetic: "/əˈpoʊz/", meaning: "v. 反对；对抗" },
+  { word: "option", phonetic: "/ˈɑːpʃn/", meaning: "n. 选择；选项" },
+  { word: "ordinary", phonetic: "/ˈɔːrdneri/", meaning: "adj. 普通的；平常的" },
+  { word: "organize", phonetic: "/ˈɔːrɡənaɪz/", meaning: "v. 组织；安排" },
+  { word: "origin", phonetic: "/ˈɔːrɪdʒɪn/", meaning: "n. 起源；出身" },
+  { word: "outcome", phonetic: "/ˈaʊtkʌm/", meaning: "n. 结果；后果" },
+  { word: "outline", phonetic: "/ˈaʊtlaɪn/", meaning: "n. 大纲；轮廓 v. 概述" },
+  { word: "overcome", phonetic: "/ˌoʊvərˈkʌm/", meaning: "v. 克服；战胜" },
+  { word: "owe", phonetic: "/oʊ/", meaning: "v. 欠；归功于" },
+  { word: "own", phonetic: "/oʊn/", meaning: "adj. 自己的 v. 拥有" },
+
+  { word: "pace", phonetic: "/peɪs/", meaning: "n. 步伐；速度" },
+  { word: "pain", phonetic: "/peɪn/", meaning: "n. 疼痛；痛苦" },
+  { word: "panel", phonetic: "/ˈpænl/", meaning: "n. 面板；专家组" },
+  { word: "parallel", phonetic: "/ˈpærəlel/", meaning: "adj. 平行的 n. 相似物" },
+  { word: "particular", phonetic: "/pərˈtɪkjələr/", meaning: "adj. 特定的；特别的" },
+  { word: "partner", phonetic: "/ˈpɑːrtnər/", meaning: "n. 伙伴；搭档" },
+  { word: "passion", phonetic: "/ˈpæʃn/", meaning: "n. 激情；热情" },
+  { word: "patience", phonetic: "/ˈpeɪʃns/", meaning: "n. 耐心；忍耐" },
+  { word: "pattern", phonetic: "/ˈpætərn/", meaning: "n. 模式；图案" },
+  { word: "pause", phonetic: "/pɔːz/", meaning: "v./n. 暂停；停顿" },
+  { word: "peculiar", phonetic: "/pɪˈkjuːliər/", meaning: "adj. 奇特的；特有的" },
+  { word: "perceive", phonetic: "/pərˈsiːv/", meaning: "v. 感知；察觉" },
+  { word: "percent", phonetic: "/pərˈsent/", meaning: "n. 百分比" },
+  { word: "permanent", phonetic: "/ˈpɜːrmənənt/", meaning: "adj. 永久的；长期的" },
+  { word: "permit", phonetic: "/pərˈmɪt/", meaning: "v. 允许 n. 许可证" },
+  { word: "persist", phonetic: "/pərˈsɪst/", meaning: "v. 坚持；持续" },
+  { word: "perspective", phonetic: "/pərˈspektɪv/", meaning: "n. 观点；视角" },
+  { word: "persuade", phonetic: "/pərˈsweɪd/", meaning: "v. 说服；劝说" },
+  { word: "pessimistic", phonetic: "/ˌpesɪˈmɪstɪk/", meaning: "adj. 悲观的" },
+  { word: "physical", phonetic: "/ˈfɪzɪkl/", meaning: "adj. 身体的；物理的" },
+  { word: "pleasant", phonetic: "/ˈpleznt/", meaning: "adj. 令人愉快的" },
+  { word: "plenty", phonetic: "/ˈplenti/", meaning: "n. 丰富；大量" },
+  { word: "policy", phonetic: "/ˈpɑːləsi/", meaning: "n. 政策；方针" },
+  { word: "pollution", phonetic: "/pəˈluːʃn/", meaning: "n. 污染" },
+  { word: "popular", phonetic: "/ˈpɑːpjələr/", meaning: "adj. 流行的；受欢迎的" },
+  { word: "portion", phonetic: "/ˈpɔːrʃn/", meaning: "n. 部分；一份" },
+  { word: "positive", phonetic: "/ˈpɑːzətɪv/", meaning: "adj. 积极的；肯定的" },
+  { word: "possess", phonetic: "/pəˈzes/", meaning: "v. 拥有；占有" },
+  { word: "poverty", phonetic: "/ˈpɑːvərti/", meaning: "n. 贫穷；贫困" },
+  { word: "practical", phonetic: "/ˈpræktɪkl/", meaning: "adj. 实际的；实用的" },
+  { word: "precious", phonetic: "/ˈpreʃəs/", meaning: "adj. 珍贵的；宝贵的" },
+  { word: "precise", phonetic: "/prɪˈsaɪs/", meaning: "adj. 精确的；准确的" },
+  { word: "prefer", phonetic: "/prɪˈfɜːr/", meaning: "v. 更喜欢；宁愿" },
+  { word: "pregnant", phonetic: "/ˈpreɡnənt/", meaning: "adj. 怀孕的" },
+  { word: "prepare", phonetic: "/prɪˈper/", meaning: "v. 准备；预备" },
+  { word: "present", phonetic: "/ˈpreznt/", meaning: "adj. 出席的 n. 礼物 v. 呈现" },
+  { word: "pressure", phonetic: "/ˈpreʃər/", meaning: "n. 压力；压强" },
+  { word: "prevent", phonetic: "/prɪˈvent/", meaning: "v. 防止；阻止" },
+  { word: "primary", phonetic: "/ˈpraɪmeri/", meaning: "adj. 主要的；初级的" },
+  { word: "principle", phonetic: "/ˈprɪnsəpl/", meaning: "n. 原则；原理" },
+  { word: "private", phonetic: "/ˈpraɪvət/", meaning: "adj. 私人的；私有的" },
+  { word: "privilege", phonetic: "/ˈprɪvəlɪdʒ/", meaning: "n. 特权；优惠" },
+  { word: "process", phonetic: "/ˈprɑːses/", meaning: "n. 过程 v. 处理" },
+  { word: "produce", phonetic: "/prəˈduːs/", meaning: "v. 生产；产生" },
+  { word: "profession", phonetic: "/prəˈfeʃn/", meaning: "n. 职业；专业" },
+  { word: "profit", phonetic: "/ˈprɑːfɪt/", meaning: "n. 利润；利益" },
+  { word: "progress", phonetic: "/ˈprɑːɡres/", meaning: "n./v. 进步；进展" },
+  { word: "project", phonetic: "/ˈprɑːdʒekt/", meaning: "n. 项目 v. 投射；规划" },
+  { word: "promote", phonetic: "/prəˈmoʊt/", meaning: "v. 促进；提升；宣传" },
+  { word: "proper", phonetic: "/ˈprɑːpər/", meaning: "adj. 适当的；正确的" },
+  { word: "propose", phonetic: "/prəˈpoʊz/", meaning: "v. 提议；求婚" },
+  { word: "protect", phonetic: "/prəˈtekt/", meaning: "v. 保护；防护" },
+  { word: "prove", phonetic: "/pruːv/", meaning: "v. 证明；证实" },
+  { word: "provide", phonetic: "/prəˈvaɪd/", meaning: "v. 提供；供给" },
+  { word: "publish", phonetic: "/ˈpʌblɪʃ/", meaning: "v. 出版；发表" },
+  { word: "punish", phonetic: "/ˈpʌnɪʃ/", meaning: "v. 惩罚；处罚" },
+  { word: "purpose", phonetic: "/ˈpɜːrpəs/", meaning: "n. 目的；意图" },
+
+  { word: "quality", phonetic: "/ˈkwɑːləti/", meaning: "n. 质量；品质" },
+  { word: "quantity", phonetic: "/ˈkwɑːntəti/", meaning: "n. 数量；大量" },
+  { word: "quit", phonetic: "/kwɪt/", meaning: "v. 停止；辞职" },
+
+  { word: "range", phonetic: "/reɪndʒ/", meaning: "n. 范围 v. 排列；变动" },
+  { word: "rapid", phonetic: "/ˈræpɪd/", meaning: "adj. 迅速的；快速的" },
+  { word: "rare", phonetic: "/rer/", meaning: "adj. 稀有的；罕见的" },
+  { word: "rather", phonetic: "/ˈræðər/", meaning: "adv. 相当；宁愿" },
+  { word: "react", phonetic: "/riˈækt/", meaning: "v. 反应；回应" },
+  { word: "realize", phonetic: "/ˈriːəlaɪz/", meaning: "v. 意识到；实现" },
+  { word: "reasonable", phonetic: "/ˈriːznəbl/", meaning: "adj. 合理的；通情达理的" },
+  { word: "recall", phonetic: "/rɪˈkɔːl/", meaning: "v./n. 回忆；召回" },
+  { word: "receive", phonetic: "/rɪˈsiːv/", meaning: "v. 收到；接待" },
+  { word: "recent", phonetic: "/ˈriːsnt/", meaning: "adj. 最近的；近来的" },
+  { word: "recognize", phonetic: "/ˈrekəɡnaɪz/", meaning: "v. 认出；承认" },
+  { word: "recommend", phonetic: "/ˌrekəˈmend/", meaning: "v. 推荐；建议" },
+  { word: "reduce", phonetic: "/rɪˈduːs/", meaning: "v. 减少；降低" },
+  { word: "refer", phonetic: "/rɪˈfɜːr/", meaning: "v. 提及；参考" },
+  { word: "reflect", phonetic: "/rɪˈflekt/", meaning: "v. 反映；反射；思考" },
+  { word: "reform", phonetic: "/rɪˈfɔːrm/", meaning: "v./n. 改革；改良" },
+  { word: "refuse", phonetic: "/rɪˈfjuːz/", meaning: "v. 拒绝" },
+  { word: "regard", phonetic: "/rɪˈɡɑːrd/", meaning: "v. 看待 n. 关心；方面" },
+  { word: "region", phonetic: "/ˈriːdʒən/", meaning: "n. 地区；区域" },
+  { word: "regret", phonetic: "/rɪˈɡret/", meaning: "v./n. 后悔；遗憾" },
+  { word: "regular", phonetic: "/ˈreɡjələr/", meaning: "adj. 规律的；常规的" },
+  { word: "relate", phonetic: "/rɪˈleɪt/", meaning: "v. 联系；相关；讲述" },
+  { word: "release", phonetic: "/rɪˈliːs/", meaning: "v./n. 释放；发布" },
+  { word: "relieve", phonetic: "/rɪˈliːv/", meaning: "v. 缓解；减轻" },
+  { word: "remain", phonetic: "/rɪˈmeɪn/", meaning: "v. 保持；剩下" },
+  { word: "remind", phonetic: "/rɪˈmaɪnd/", meaning: "v. 提醒；使想起" },
+  { word: "remove", phonetic: "/rɪˈmuːv/", meaning: "v. 移除；去掉" },
+  { word: "rent", phonetic: "/rent/", meaning: "n. 租金 v. 出租" },
+  { word: "replace", phonetic: "/rɪˈpleɪs/", meaning: "v. 代替；替换" },
+  { word: "represent", phonetic: "/ˌreprɪˈzent/", meaning: "v. 代表；表示" },
+  { word: "reputation", phonetic: "/ˌrepjuˈteɪʃn/", meaning: "n. 名誉；声望" },
+  { word: "request", phonetic: "/rɪˈkwest/", meaning: "n./v. 请求；要求" },
+  { word: "rescue", phonetic: "/ˈreskjuː/", meaning: "v./n. 营救；救援" },
+  { word: "research", phonetic: "/rɪˈsɜːrtʃ/", meaning: "n./v. 研究；调查" },
+  { word: "reserve", phonetic: "/rɪˈzɜːrv/", meaning: "v. 预订；保留 n. 储备" },
+  { word: "resist", phonetic: "/rɪˈzɪst/", meaning: "v. 抵抗；抵制" },
+  { word: "resolve", phonetic: "/rɪˈzɑːlv/", meaning: "v. 解决；决心" },
+  { word: "resource", phonetic: "/ˈriːsɔːrs/", meaning: "n. 资源；财力" },
+  { word: "respect", phonetic: "/rɪˈspekt/", meaning: "n./v. 尊重；尊敬" },
+  { word: "responsible", phonetic: "/rɪˈspɑːnsəbl/", meaning: "adj. 负责的；有责任的" },
+  { word: "retire", phonetic: "/rɪˈtaɪər/", meaning: "v. 退休；退役" },
+  { word: "reward", phonetic: "/rɪˈwɔːrd/", meaning: "n. 奖励；报酬 v. 奖赏" },
+  { word: "risk", phonetic: "/rɪsk/", meaning: "n. 风险 v. 冒险" },
+  { word: "routine", phonetic: "/ruːˈtiːn/", meaning: "n. 常规；惯例" },
+  { word: "rude", phonetic: "/ruːd/", meaning: "adj. 粗鲁的；无礼的" },
+
+  { word: "salary", phonetic: "/ˈsæləri/", meaning: "n. 薪水；工资" },
+  { word: "satisfy", phonetic: "/ˈsætɪsfaɪ/", meaning: "v. 满足；使满意" },
+  { word: "scale", phonetic: "/skeɪl/", meaning: "n. 规模；刻度；天平" },
+  { word: "scene", phonetic: "/siːn/", meaning: "n. 场景；现场" },
+  { word: "schedule", phonetic: "/ˈskedʒuːl/", meaning: "n. 时间表 v. 安排" },
+  { word: "scholar", phonetic: "/ˈskɑːlər/", meaning: "n. 学者" },
+  { word: "score", phonetic: "/skɔːr/", meaning: "n. 分数 v. 得分" },
+  { word: "secure", phonetic: "/sɪˈkjʊr/", meaning: "adj. 安全的 v. 获得；保护" },
+  { word: "seek", phonetic: "/siːk/", meaning: "v. 寻找；寻求" },
+  { word: "select", phonetic: "/sɪˈlekt/", meaning: "v. 选择 adj. 精选的" },
+  { word: "sensible", phonetic: "/ˈsensəbl/", meaning: "adj. 明智的；合情理的" },
+  { word: "separate", phonetic: "/ˈsepəreɪt/", meaning: "v. 分开 adj. 分离的" },
+  { word: "serve", phonetic: "/sɜːrv/", meaning: "v. 服务；供应" },
+  { word: "settle", phonetic: "/ˈsetl/", meaning: "v. 解决；定居" },
+  { word: "severe", phonetic: "/sɪˈvɪr/", meaning: "adj. 严重的；严厉的" },
+  { word: "share", phonetic: "/ʃer/", meaning: "v. 分享 n. 份额" },
+  { word: "shift", phonetic: "/ʃɪft/", meaning: "v./n. 转移；轮班" },
+  { word: "sincere", phonetic: "/sɪnˈsɪr/", meaning: "adj. 真诚的；诚挚的" },
+  { word: "situation", phonetic: "/ˌsɪtʃuˈeɪʃn/", meaning: "n. 情况；处境" },
+  { word: "skill", phonetic: "/skɪl/", meaning: "n. 技能；技巧" },
+  { word: "slight", phonetic: "/slaɪt/", meaning: "adj. 轻微的；细小的" },
+  { word: "smooth", phonetic: "/smuːð/", meaning: "adj. 光滑的；顺利的" },
+  { word: "social", phonetic: "/ˈsoʊʃl/", meaning: "adj. 社会的；社交的" },
+  { word: "society", phonetic: "/səˈsaɪəti/", meaning: "n. 社会；社团" },
+  { word: "solution", phonetic: "/səˈluːʃn/", meaning: "n. 解决办法；溶液" },
+  { word: "solve", phonetic: "/sɑːlv/", meaning: "v. 解决；解答" },
+  { word: "somehow", phonetic: "/ˈsʌmhaʊ/", meaning: "adv. 以某种方式；不知怎么" },
+  { word: "source", phonetic: "/sɔːrs/", meaning: "n. 来源；源头" },
+  { word: "spare", phonetic: "/sper/", meaning: "adj. 空闲的 v. 抽出；饶恕" },
+  { word: "special", phonetic: "/ˈspeʃl/", meaning: "adj. 特别的；专门的" },
+  { word: "species", phonetic: "/ˈspiːʃiːz/", meaning: "n. 物种；种类" },
+  { word: "spend", phonetic: "/spend/", meaning: "v. 花费；度过" },
+  { word: "spirit", phonetic: "/ˈspɪrɪt/", meaning: "n. 精神；情绪" },
+  { word: "spread", phonetic: "/spred/", meaning: "v./n. 传播；展开" },
+  { word: "stable", phonetic: "/ˈsteɪbl/", meaning: "adj. 稳定的 n. 马厩" },
+  { word: "standard", phonetic: "/ˈstændərd/", meaning: "n. 标准 adj. 标准的" },
+  { word: "state", phonetic: "/steɪt/", meaning: "n. 状态；州；国家 v. 陈述" },
+  { word: "status", phonetic: "/ˈsteɪtəs/", meaning: "n. 地位；状态" },
+  { word: "steady", phonetic: "/ˈstedi/", meaning: "adj. 稳定的；平稳的" },
+  { word: "stick", phonetic: "/stɪk/", meaning: "v. 粘住；坚持 n. 棍棒" },
+  { word: "stimulate", phonetic: "/ˈstɪmjuleɪt/", meaning: "v. 刺激；激励" },
+  { word: "structure", phonetic: "/ˈstrʌktʃər/", meaning: "n. 结构；构造" },
+  { word: "struggle", phonetic: "/ˈstrʌɡl/", meaning: "v./n. 挣扎；奋斗" },
+  { word: "subject", phonetic: "/ˈsʌbdʒɪkt/", meaning: "n. 主题；学科；主语" },
+  { word: "submit", phonetic: "/səbˈmɪt/", meaning: "v. 提交；屈服" },
+  { word: "substance", phonetic: "/ˈsʌbstəns/", meaning: "n. 物质；实质" },
+  { word: "substitute", phonetic: "/ˈsʌbstɪtuːt/", meaning: "n. 替代品 v. 替代" },
+  { word: "succeed", phonetic: "/səkˈsiːd/", meaning: "v. 成功；继承" },
+  { word: "suffer", phonetic: "/ˈsʌfər/", meaning: "v. 遭受；忍受" },
+  { word: "suggest", phonetic: "/səˈdʒest/", meaning: "v. 建议；暗示" },
+  { word: "suitable", phonetic: "/ˈsuːtəbl/", meaning: "adj. 合适的；适宜的" },
+  { word: "summary", phonetic: "/ˈsʌməri/", meaning: "n. 摘要；总结" },
+  { word: "supply", phonetic: "/səˈplaɪ/", meaning: "v. 供应 n. 供给" },
+  { word: "support", phonetic: "/səˈpɔːrt/", meaning: "v./n. 支持；支撑" },
+  { word: "suppose", phonetic: "/səˈpoʊz/", meaning: "v. 假定；猜想" },
+  { word: "surface", phonetic: "/ˈsɜːrfɪs/", meaning: "n. 表面；外观" },
+  { word: "surround", phonetic: "/səˈraʊnd/", meaning: "v. 包围；环绕" },
+  { word: "survey", phonetic: "/ˈsɜːrveɪ/", meaning: "n. 调查；测量 v. 审视" },
+  { word: "suspect", phonetic: "/səˈspekt/", meaning: "v. 怀疑 n. 嫌疑人" },
+  { word: "sustain", phonetic: "/səˈsteɪn/", meaning: "v. 维持；支撑；承受" },
+  { word: "symbol", phonetic: "/ˈsɪmbl/", meaning: "n. 象征；符号" },
+
+  { word: "talent", phonetic: "/ˈtælənt/", meaning: "n. 天赋；才能" },
+  { word: "target", phonetic: "/ˈtɑːrɡɪt/", meaning: "n. 目标；靶子 v. 瞄准" },
+  { word: "task", phonetic: "/tæsk/", meaning: "n. 任务；工作" },
+  { word: "technique", phonetic: "/tekˈniːk/", meaning: "n. 技术；技巧" },
+  { word: "technology", phonetic: "/tekˈnɑːlədʒi/", meaning: "n. 技术；工艺" },
+  { word: "temporary", phonetic: "/ˈtempəreri/", meaning: "adj. 临时的；暂时的" },
+  { word: "tendency", phonetic: "/ˈtendənsi/", meaning: "n. 趋势；倾向" },
+  { word: "term", phonetic: "/tɜːrm/", meaning: "n. 学期；术语；条款" },
+  { word: "territory", phonetic: "/ˈterətɔːri/", meaning: "n. 领土；领域" },
+  { word: "theory", phonetic: "/ˈθɪəri/", meaning: "n. 理论；学说" },
+  { word: "thorough", phonetic: "/ˈθɜːroʊ/", meaning: "adj. 彻底的；周到的" },
+  { word: "threat", phonetic: "/θret/", meaning: "n. 威胁；恐吓" },
+  { word: "thus", phonetic: "/ðʌs/", meaning: "adv. 因此；这样" },
+  { word: "tolerate", phonetic: "/ˈtɑːləreɪt/", meaning: "v. 容忍；忍受" },
+  { word: "tough", phonetic: "/tʌf/", meaning: "adj. 艰难的；坚韧的" },
+  { word: "trace", phonetic: "/treɪs/", meaning: "v. 追踪 n. 痕迹" },
+  { word: "tradition", phonetic: "/trəˈdɪʃn/", meaning: "n. 传统；惯例" },
+  { word: "transfer", phonetic: "/trænsˈfɜːr/", meaning: "v./n. 转移；调动" },
+  { word: "translate", phonetic: "/trænsˈleɪt/", meaning: "v. 翻译；转化" },
+  { word: "transport", phonetic: "/ˈtrænspɔːrt/", meaning: "n./v. 运输；运送" },
+  { word: "treat", phonetic: "/triːt/", meaning: "v. 对待；治疗；款待" },
+  { word: "trend", phonetic: "/trend/", meaning: "n. 趋势；潮流" },
+  { word: "trial", phonetic: "/ˈtraɪəl/", meaning: "n. 试验；审判" },
+  { word: "trick", phonetic: "/trɪk/", meaning: "n. 诡计；窍门 v. 欺骗" },
+  { word: "trouble", phonetic: "/ˈtrʌbl/", meaning: "n. 麻烦；困难" },
+  { word: "typical", phonetic: "/ˈtɪpɪkl/", meaning: "adj. 典型的；有代表性的" },
+
+  { word: "ultimate", phonetic: "/ˈʌltɪmət/", meaning: "adj. 最终的；根本的" },
+  { word: "undergo", phonetic: "/ˌʌndərˈɡoʊ/", meaning: "v. 经历；承受" },
+  { word: "understand", phonetic: "/ˌʌndərˈstænd/", meaning: "v. 理解；懂得" },
+  { word: "unite", phonetic: "/juˈnaɪt/", meaning: "v. 联合；团结" },
+  { word: "universe", phonetic: "/ˈjuːnɪvɜːrs/", meaning: "n. 宇宙；世界" },
+  { word: "unless", phonetic: "/ənˈles/", meaning: "conj. 除非；如果不" },
+  { word: "unusual", phonetic: "/ʌnˈjuːʒuəl/", meaning: "adj. 不寻常的；独特的" },
+  { word: "update", phonetic: "/ˌʌpˈdeɪt/", meaning: "v./n. 更新；升级" },
+  { word: "urge", phonetic: "/ɜːrdʒ/", meaning: "v. 敦促 n. 强烈欲望" },
+  { word: "urgent", phonetic: "/ˈɜːrdʒənt/", meaning: "adj. 紧急的；急迫的" },
+  { word: "usage", phonetic: "/ˈjuːsɪdʒ/", meaning: "n. 用法；使用" },
+
+  { word: "valuable", phonetic: "/ˈvæljuəbl/", meaning: "adj. 有价值的；贵重的" },
+  { word: "value", phonetic: "/ˈvæljuː/", meaning: "n. 价值 v. 重视" },
+  { word: "variety", phonetic: "/vəˈraɪəti/", meaning: "n. 多样；种类" },
+  { word: "various", phonetic: "/ˈveriəs/", meaning: "adj. 各种各样的" },
+  { word: "vast", phonetic: "/væst/", meaning: "adj. 广阔的；大量的" },
+  { word: "vehicle", phonetic: "/ˈviːəkl/", meaning: "n. 车辆；交通工具" },
+  { word: "venture", phonetic: "/ˈventʃər/", meaning: "n. 冒险 v. 敢于" },
+  { word: "version", phonetic: "/ˈvɜːrʒn/", meaning: "n. 版本；说法" },
+  { word: "victim", phonetic: "/ˈvɪktɪm/", meaning: "n. 受害者；牺牲品" },
+  { word: "view", phonetic: "/vjuː/", meaning: "n. 观点；景色 v. 看待" },
+  { word: "violate", phonetic: "/ˈvaɪəleɪt/", meaning: "v. 违反；侵犯" },
+  { word: "violence", phonetic: "/ˈvaɪələns/", meaning: "n. 暴力；猛烈" },
+  { word: "virtue", phonetic: "/ˈvɜːrtʃuː/", meaning: "n. 美德；优点" },
+  { word: "visible", phonetic: "/ˈvɪzəbl/", meaning: "adj. 可见的；明显的" },
+  { word: "vision", phonetic: "/ˈvɪʒn/", meaning: "n. 视力；愿景" },
+  { word: "vocabulary", phonetic: "/vəˈkæbjəleri/", meaning: "n. 词汇；词汇量" },
+  { word: "volunteer", phonetic: "/ˌvɑːlənˈtɪr/", meaning: "n. 志愿者 v. 自愿" },
+
+  { word: "wealth", phonetic: "/welθ/", meaning: "n. 财富；丰富" },
+  { word: "weapon", phonetic: "/ˈwepən/", meaning: "n. 武器" },
+  { word: "welfare", phonetic: "/ˈwelfer/", meaning: "n. 福利；幸福" },
+  { word: "whereas", phonetic: "/ˌwerˈæz/", meaning: "conj. 然而；鉴于" },
+  { word: "willing", phonetic: "/ˈwɪlɪŋ/", meaning: "adj. 愿意的；乐意的" },
+  { word: "wisdom", phonetic: "/ˈwɪzdəm/", meaning: "n. 智慧；明智" },
+  { word: "witness", phonetic: "/ˈwɪtnəs/", meaning: "n. 目击者 v. 目击" },
+  { word: "wonder", phonetic: "/ˈwʌndər/", meaning: "v. 想知道 n. 奇迹" },
+  { word: "worth", phonetic: "/wɜːrθ/", meaning: "adj. 值得的 n. 价值" },
+  { word: "worthwhile", phonetic: "/ˌwɜːrθˈwaɪl/", meaning: "adj. 值得做的" }
+];
+
+/* ===================================================================
+ * 核心数据与状态管理
+ * =================================================================== */
+const STORAGE_KEY = "wordbook_records_v1";   // localStorage 存储键名
+
+// 默认学习记录结构
+const DEFAULT_DATA = {
+  records: {},          // { 单词: { count: 学习次数, correct: 正确次数, know: 是否认识 } }
+  today: "2026-01-01",  // 记录今日学习对应的日期
+  todayCount: 0,        // 今日学习数量
+  totalCount: 0,        // 累计学习数量
+  totalCorrect: 0,      // 累计正确次数
+  wrongBook: []         // 错题本：存放答错/不认识的单词
+};
+
+let data = loadData();          // 从 localStorage 加载数据
+let currentWord = null;         // 当前正在学习的单词对象
+let currentIndex = -1;          // 当前单词在复习队列中的下标
+let queue = [];                 // 复习队列（生词排在前面）
+let mode = "card";              // 当前模式：card / spell / listen
+let listenOptions = [];         // 当前听音题的选项列表
+let listenAnswered = false;     // 当前听音题是否已作答
+let spellAnswered = false;      // 当前拼写题是否已作答（防止重复判定）
+let reviewingWrong = false;     // 是否正在复习错题
+
+/* ---------- 数据持久化 ---------- */
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // 合并默认值，防止旧数据结构缺少字段导致报错
+      return { ...DEFAULT_DATA, ...parsed, records: parsed.records || {}, wrongBook: Array.isArray(parsed.wrongBook) ? parsed.wrongBook : [] };
+    }
+  } catch (e) { /* 数据损坏时忽略，重新开始 */ }
+  return { ...DEFAULT_DATA, records: {} };
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) { /* 存储失败（如隐私模式）时静默处理 */ }
+}
+
+/* ===================================================================
+ * 复习队列：生词优先
+ * 每个单词维护一个“待复习权重”，不认识的词权重更高、更靠前
+ * =================================================================== */
+function buildQueue() {
+  // 复习错题时只对错题本中的单词建队，否则使用完整词库
+  let source = WORDS;
+  if (reviewingWrong) {
+    const wrongWords = WORDS.filter(function (w) {
+      return data.wrongBook.indexOf(w.word) !== -1;
+    });
+    if (wrongWords.length > 0) {
+      source = wrongWords;
+    } else {
+      // 复习过程中错题全部掌握，自动退出复习模式
+      reviewingWrong = false;
+      document.getElementById("review-banner").classList.remove("visible");
+    }
+  }
+
+  // 计算每个单词的复习优先级：不认识记 2 分，认识记 0 分，从未学过的记 1 分
+  const scored = source.map(function (w, idx) {
+    const rec = data.records[w.word];
+    let priority = 1; // 默认：新词
+    if (rec) {
+      priority = rec.know ? 0 : 2; // 认识=0（靠后），不认识=2（最优先）
+    }
+    // 加入少量随机扰动，避免每次都按固定顺序
+    return { word: w, idx: idx, priority: priority + Math.random() * 0.5 };
+  });
+  // 按优先级降序排列，生词在前
+  scored.sort(function (a, b) { return b.priority - a.priority; });
+  queue = scored;
+  currentIndex = 0;
+}
+
+/* 从队列取出当前单词，若走到队尾则重新洗牌建队 */
+function nextWord() {
+  if (currentIndex >= queue.length) {
+    buildQueue(); // 一轮学完，重新按生词优先排序
+  }
+  currentWord = queue[currentIndex].word;
+}
+
+/* ===================================================================
+ * 统计面板更新
+ * =================================================================== */
+function updateStats() {
+  // 跨天后重置“今日学习”计数
+  const todayStr = new Date().toISOString().slice(0, 10);
+  if (data.today !== todayStr) {
+    data.today = todayStr;
+    data.todayCount = 0;
+    saveData();
+  }
+  document.getElementById("stat-today").textContent = data.todayCount;
+  document.getElementById("stat-total").textContent = data.totalCount;
+  const rate = data.totalCount === 0
+    ? 0
+    : Math.round((data.totalCorrect / data.totalCount) * 100);
+  document.getElementById("stat-rate").textContent = rate + "%";
+}
+
+/* ===================================================================
+ * 卡片模式渲染
+ * =================================================================== */
+function renderCard() {
+  if (!currentWord) return;
+  document.getElementById("front-word").textContent = currentWord.word;
+  document.getElementById("front-phonetic").textContent = currentWord.phonetic;
+  document.getElementById("back-word").textContent = currentWord.word;
+  document.getElementById("back-phonetic").textContent = currentWord.phonetic;
+  document.getElementById("back-meaning").textContent = currentWord.meaning;
+
+  // 进度显示：当前是第几个 / 总共多少个
+  document.getElementById("card-progress").textContent =
+    "第 " + (currentIndex + 1) + " / " + queue.length + " 个单词";
+
+  // 每次换词时重置翻卡状态（回到正面）
+  document.getElementById("card").classList.remove("flipped");
+}
+
+/* ===================================================================
+ * 拼写自测模式渲染
+ * =================================================================== */
+function renderSpell() {
+  if (!currentWord) return;
+  spellAnswered = false;
+  document.getElementById("spell-meaning").textContent = currentWord.meaning;
+  document.getElementById("spell-input").value = "";
+  document.getElementById("spell-result").className = "spell-result";
+  document.getElementById("spell-result").textContent = "";
+  document.getElementById("spell-progress").textContent =
+    "第 " + (currentIndex + 1) + " / " + queue.length + " 个单词";
+  // 自动聚焦输入框
+  setTimeout(() => document.getElementById("spell-input").focus(), 50);
+}
+
+/* ===================================================================
+ * 记录一次学习结果
+ * @param know  是否认识 / 拼写是否正确
+ * =================================================================== */
+function recordResult(correct) {
+  const w = currentWord.word;
+  // 初始化该单词的记录
+  if (!data.records[w]) {
+    data.records[w] = { count: 0, correct: 0, know: false };
+  }
+  const rec = data.records[w];
+  rec.count += 1;
+  if (correct) {
+    rec.correct += 1;
+    rec.know = true;    // 认识 / 拼写正确，标记为已掌握
+  } else {
+    rec.know = false;   // 不认识 / 拼写错误，标记为生词，下次优先复习
+  }
+
+  // 更新错题本：答错加入，答对移出
+  if (correct) {
+    const wi = data.wrongBook.indexOf(w);
+    if (wi !== -1) data.wrongBook.splice(wi, 1);
+  } else if (data.wrongBook.indexOf(w) === -1) {
+    data.wrongBook.push(w);
+  }
+
+  // 更新全局统计
+  data.totalCount += 1;
+  if (correct) data.totalCorrect += 1;
+  data.todayCount += 1;
+
+  saveData();
+  updateStats();
+  updateWrongBadge();
+
+  // 跳到下一个单词
+  currentIndex += 1;
+  nextWord();
+  renderCurrent();
+}
+
+/* 根据当前模式渲染对应界面 */
+function renderCurrent() {
+  if (mode === "card") {
+    renderCard();
+  } else if (mode === "spell") {
+    renderSpell();
+  } else {
+    renderListen();
+  }
+}
+
+/* ===================================================================
+ * 听音选义模式渲染
+ * =================================================================== */
+function renderListen() {
+  if (!currentWord) return;
+  listenAnswered = false;
+
+  // 构造 4 个选项：1 个正确释义 + 3 个从其它单词随机抽取的干扰释义
+  const correct = currentWord.meaning;
+  const others = WORDS.filter(function (w) { return w.word !== currentWord.word; });
+  const distractorMeanings = [];
+  const shuffled = shuffleArray(others);
+  for (let i = 0; i < shuffled.length && distractorMeanings.length < 3; i++) {
+    const m = shuffled[i].meaning;
+    // 避免与正确答案或已有干扰项重复
+    if (m !== correct && distractorMeanings.indexOf(m) === -1) {
+      distractorMeanings.push(m);
+    }
+  }
+  // 若干扰项不足 3 个（极小概率），从整个词库兜底补齐
+  if (distractorMeanings.length < 3) {
+    const all = WORDS.map(function (w) { return w.meaning; });
+    for (let i = 0; i < all.length && distractorMeanings.length < 3; i++) {
+      if (all[i] !== correct && distractorMeanings.indexOf(all[i]) === -1) {
+        distractorMeanings.push(all[i]);
+      }
+    }
+  }
+
+  // 正确答案 + 干扰项混合后再次洗牌
+  listenOptions = shuffleArray([correct].concat(distractorMeanings));
+
+  // 渲染选项按钮
+  const box = document.getElementById("listen-options");
+  box.innerHTML = "";
+  listenOptions.forEach(function (opt, i) {
+    const btn = document.createElement("button");
+    btn.className = "listen-opt";
+    btn.textContent = opt;
+    btn.dataset.index = i;
+    btn.addEventListener("click", function () { checkListen(i); });
+    box.appendChild(btn);
+  });
+
+  document.getElementById("listen-result").textContent = "";
+  document.getElementById("listen-result").className = "listen-result";
+  document.getElementById("listen-progress").textContent =
+    "第 " + (currentIndex + 1) + " / " + queue.length + " 个单词";
+
+  // 自动朗读单词
+  speak(currentWord.word);
+}
+
+/* 数组洗牌工具函数（返回新数组，不修改原数组） */
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 听音选义：判断所选选项是否正确 */
+function checkListen(index) {
+  if (listenAnswered) return; // 已作答，忽略重复点击
+  listenAnswered = true;
+
+  const correct = listenOptions[index] === currentWord.meaning;
+  const btns = document.querySelectorAll(".listen-opt");
+  const resultEl = document.getElementById("listen-result");
+
+  // 高亮：正确选项标绿，选错的标红，并禁用所有选项
+  btns.forEach(function (btn, i) {
+    btn.disabled = true;
+    if (listenOptions[i] === currentWord.meaning) {
+      btn.classList.add("correct");
+    } else if (i === index) {
+      btn.classList.add("wrong");
+    }
+  });
+
+  if (correct) {
+    resultEl.textContent = "✅ 选择正确！ " + currentWord.word + " — " + currentWord.meaning;
+    resultEl.className = "listen-result correct";
+  } else {
+    resultEl.textContent = "❌ 选择错误，正确释义：" + currentWord.meaning;
+    resultEl.className = "listen-result wrong";
+  }
+
+  // 显示结果后延迟 1.2 秒自动进入下一题
+  setTimeout(function () { recordResult(correct); }, 1200);
+}
+
+/* ===================================================================
+ * 单词朗读（使用浏览器内置语音合成 API，无需联网）
+ * =================================================================== */
+function speak(word) {
+  // 若浏览器不支持语音合成则直接返回
+  if (!window.speechSynthesis) return;
+  // 先停止上一次尚未结束的朗读，避免重叠
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(word);
+  utter.lang = "en-US";   // 英语发音
+  utter.rate = 0.9;       // 语速稍慢，便于跟读
+  window.speechSynthesis.speak(utter);
+}
+
+/* ===================================================================
+ * 模式切换
+ * =================================================================== */
+function setMode(m) {
+  mode = m;
+  document.getElementById("tab-card").classList.toggle("active", m === "card");
+  document.getElementById("tab-spell").classList.toggle("active", m === "spell");
+  document.getElementById("tab-listen").classList.toggle("active", m === "listen");
+  document.getElementById("card-mode").style.display = m === "card" ? "block" : "none";
+  document.getElementById("spell-mode").classList.toggle("visible", m === "spell");
+  document.getElementById("listen-mode").classList.toggle("visible", m === "listen");
+  renderCurrent();
+}
+
+/* ===================================================================
+ * 主题切换
+ * =================================================================== */
+function toggleTheme() {
+  const dark = document.body.classList.toggle("dark");
+  document.getElementById("theme-btn").textContent = dark ? "☀️" : "🌙";
+  // 保存主题偏好
+  try { localStorage.setItem("wordbook_theme", dark ? "dark" : "light"); } catch (e) {}
+}
+
+function loadTheme() {
+  let dark = false;
+  try { dark = localStorage.getItem("wordbook_theme") === "dark"; } catch (e) {}
+  if (dark) {
+    document.body.classList.add("dark");
+    document.getElementById("theme-btn").textContent = "☀️";
+  }
+}
+
+/* ===================================================================
+ * 事件绑定
+ * =================================================================== */
+function bindEvents() {
+  // 卡片点击翻面（点击朗读按钮时不触发翻面）
+  document.getElementById("card").addEventListener("click", function () {
+    this.classList.toggle("flipped");
+  });
+
+  // 卡片正反面朗读按钮
+  document.getElementById("front-speak").addEventListener("click", function (e) {
+    e.stopPropagation(); // 阻止冒泡，避免同时翻卡
+    speak(currentWord.word);
+  });
+  document.getElementById("back-speak").addEventListener("click", function (e) {
+    e.stopPropagation();
+    speak(currentWord.word);
+  });
+
+  // 认识 / 不认识
+  document.getElementById("btn-know").addEventListener("click", function () {
+    recordResult(true);
+  });
+  document.getElementById("btn-dont").addEventListener("click", function () {
+    recordResult(false);
+  });
+
+  // 拼写检查
+  document.getElementById("btn-check").addEventListener("click", checkSpell);
+  document.getElementById("spell-input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") checkSpell(); // 回车直接检查
+  });
+
+  // 跳过（记作不认识/错误，但不显示答案，直接换词）
+  document.getElementById("btn-skip").addEventListener("click", function () {
+    recordResult(false);
+  });
+
+  // 模式切换
+  document.getElementById("tab-card").addEventListener("click", function () { setMode("card"); });
+  document.getElementById("tab-spell").addEventListener("click", function () { setMode("spell"); });
+  document.getElementById("tab-listen").addEventListener("click", function () { setMode("listen"); });
+
+  // 听音选义：点击喇叭重播发音
+  document.getElementById("listen-play").addEventListener("click", function () {
+    speak(currentWord.word);
+  });
+
+  // 错题本：打开 / 关闭 / 复习 / 清空 / 退出复习
+  document.getElementById("wb-btn").addEventListener("click", openWrongBook);
+  document.getElementById("wb-close").addEventListener("click", closeWrongBook);
+  document.getElementById("wrongbook-overlay").addEventListener("click", function (e) {
+    if (e.target === this) closeWrongBook(); // 点击遮罩空白处关闭
+  });
+  document.getElementById("wb-review").addEventListener("click", startWrongReview);
+  document.getElementById("wb-clear").addEventListener("click", function () {
+    data.wrongBook = [];
+    saveData();
+    updateWrongBadge();
+    renderWrongBook();
+    if (reviewingWrong) exitWrongReview(); // 正在复习时清空，则退出复习
+  });
+  document.getElementById("exit-review").addEventListener("click", exitWrongReview);
+
+  // 主题切换
+  document.getElementById("theme-btn").addEventListener("click", toggleTheme);
+}
+
+/* 拼写检查逻辑 */
+function checkSpell() {
+  const input = document.getElementById("spell-input").value.trim();
+  if (!input || spellAnswered) return; // 空输入或已作答不处理
+  spellAnswered = true;
+  const correct = input.toLowerCase() === currentWord.word.toLowerCase();
+  const resultEl = document.getElementById("spell-result");
+
+  if (correct) {
+    resultEl.textContent = "✅ 回答正确！ " + currentWord.word;
+    resultEl.className = "spell-result correct";
+  } else {
+    resultEl.textContent = "❌ 回答错误，正确答案：" + currentWord.word;
+    resultEl.className = "spell-result wrong";
+    // 拼错时朗读正确发音，加深记忆
+    speak(currentWord.word);
+  }
+
+  // 显示结果后延迟 1.2 秒自动进入下一个词
+  setTimeout(function () {
+    // 若期间用户已切词，避免重复记录
+    recordResult(correct);
+  }, 1200);
+}
+
+/* ===================================================================
+ * 错题本
+ * =================================================================== */
+function updateWrongBadge() {
+  const n = data.wrongBook.length;
+  const badge = document.getElementById("wb-badge");
+  badge.textContent = n;
+  badge.classList.toggle("zero", n === 0);
+}
+
+function openWrongBook() {
+  renderWrongBook();
+  document.getElementById("wrongbook-overlay").classList.add("visible");
+}
+
+function closeWrongBook() {
+  document.getElementById("wrongbook-overlay").classList.remove("visible");
+}
+
+function renderWrongBook() {
+  const list = document.getElementById("wb-list");
+  list.innerHTML = "";
+  document.getElementById("wb-meta").textContent = "共 " + data.wrongBook.length + " 个错题";
+
+  // 错题本为空时的占位提示
+  if (data.wrongBook.length === 0) {
+    list.innerHTML = '<div class="wb-empty">🎉 太棒了，暂无错题！</div>';
+    document.getElementById("wb-review").disabled = true;
+    document.getElementById("wb-clear").disabled = true;
+    return;
+  }
+  document.getElementById("wb-review").disabled = false;
+  document.getElementById("wb-clear").disabled = false;
+
+  // 逐条渲染错题
+  data.wrongBook.forEach(function (wordStr) {
+    const w = WORDS.find(function (x) { return x.word === wordStr; });
+    if (!w) return; // 词库中已删除该词时跳过
+
+    const item = document.createElement("div");
+    item.className = "wb-item";
+
+    // 单词 + 音标 + 释义
+    const main = document.createElement("div");
+    main.className = "wb-main";
+    const wordEl = document.createElement("div");
+    wordEl.className = "wb-word";
+    wordEl.textContent = w.word;
+    const phEl = document.createElement("span");
+    phEl.style.cssText = "color:var(--text-sub);font-size:12px;font-weight:400";
+    phEl.textContent = " " + w.phonetic;
+    wordEl.appendChild(phEl);
+    const meanEl = document.createElement("div");
+    meanEl.className = "wb-mean";
+    meanEl.textContent = w.meaning;
+    main.appendChild(wordEl);
+    main.appendChild(meanEl);
+
+    // 朗读按钮
+    const speakBtn = document.createElement("button");
+    speakBtn.className = "icon-btn wb-speak";
+    speakBtn.textContent = "🔊";
+    speakBtn.title = "朗读";
+    speakBtn.addEventListener("click", function () { speak(w.word); });
+
+    // 标记已掌握并移除
+    const rmBtn = document.createElement("button");
+    rmBtn.className = "icon-btn wb-remove";
+    rmBtn.textContent = "✓";
+    rmBtn.title = "标记已掌握并移除";
+    rmBtn.addEventListener("click", function () {
+      const idx = data.wrongBook.indexOf(w.word);
+      if (idx !== -1) data.wrongBook.splice(idx, 1);
+      saveData();
+      updateWrongBadge();
+      renderWrongBook();
+    });
+
+    item.appendChild(main);
+    item.appendChild(speakBtn);
+    item.appendChild(rmBtn);
+    list.appendChild(item);
+  });
+}
+
+/* 开始复习错题（在当前模式下仅学习错题本中的单词） */
+function startWrongReview() {
+  if (data.wrongBook.length === 0) return; // 没错题不启动
+  reviewingWrong = true;
+  closeWrongBook();
+  buildQueue();
+  nextWord();
+  renderCurrent();
+  document.getElementById("review-banner").classList.add("visible");
+  document.getElementById("review-count").textContent = data.wrongBook.length;
+}
+
+/* 退出错题复习，恢复正常学习 */
+function exitWrongReview() {
+  reviewingWrong = false;
+  document.getElementById("review-banner").classList.remove("visible");
+  buildQueue();
+  nextWord();
+  renderCurrent();
+}
+
+/* ===================================================================
+ * 初始化
+ * =================================================================== */
+function init() {
+  loadTheme();
+  buildQueue();
+  nextWord();
+  renderCurrent();
+  updateStats();
+  updateWrongBadge();
+  bindEvents();
+}
+
+init();
+</script>
+</body>
+</html>
