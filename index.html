@@ -8,8 +8,8 @@
   /* ==================== 全局样式与主题变量 ==================== */
   :root {
     /* 浅色主题变量 */
-    --bg: #f4f6fb;
-    --card-bg: #ffffff;
+    --bg: #e9f3e6;
+    --card-bg: rgba(255, 255, 255, 0.78);
     --text: #1f2430;
     --text-sub: #6b7280;
     --primary: #4f6ef7;
@@ -23,17 +23,21 @@
 
   /* 深色主题：给 <html> 或 <body> 加 .dark 类后覆盖变量 */
   body.dark {
-    --bg: #12141c;
-    --card-bg: #1c1f2b;
+    --bg: #16211a;
+    --card-bg: rgba(28, 31, 43, 0.80);
     --text: #e6e8ef;
     --text-sub: #9aa1b2;
     --primary: #6b84ff;
     --primary-dark: #5870e8;
     --success: #34d399;
     --danger: #f87171;
-    --border: #2c3140;
+    --border: #3a4a3e;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-    --chip-bg: #262b3b;
+    --chip-bg: rgba(38, 43, 59, 0.85);
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(255, 255, 255, 0.07), transparent 62%),
+      linear-gradient(160deg, #1c2a20 0%, #17241b 42%, #122019 100%);
+    background-attachment: fixed;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,7 +45,10 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
       "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    background: var(--bg);
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(255, 255, 255, 0.55), transparent 62%),
+      linear-gradient(160deg, #eaf6e7 0%, #dcefd4 34%, #cbe6c2 68%, #b9dcb0 100%);
+    background-attachment: fixed;
     color: var(--text);
     min-height: 100vh;
     transition: background .3s, color .3s;
@@ -145,7 +152,7 @@
   .card {
     position: relative;
     width: 100%;
-    height: 300px;
+    height: 360px;
     cursor: pointer;
     transform-style: preserve-3d;
     transition: transform .5s;
@@ -186,6 +193,19 @@
     margin-top: 16px;
     font-weight: 600;
   }
+  .example {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: var(--chip-bg);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.5;
+    text-align: left;
+    width: 100%;
+  }
+  .example .en { font-style: italic; color: var(--text); }
+  .example .cn { margin-top: 3px; }
   .hint {
     font-size: 13px;
     color: var(--text-sub);
@@ -426,14 +446,221 @@
   }
 
   @media (max-width: 480px) {
-    .card { height: 260px; }
+    .card { height: 340px; }
     .word { font-size: 32px; }
     .meaning { font-size: 19px; }
     .spell-word { font-size: 36px; }
   }
+
+  /* ==================== 森林背景与落叶动画 ==================== */
+  .leaves {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+  }
+  .leaf {
+    position: absolute;
+    top: -8vh;
+    opacity: 0;
+    animation-name: leafDrift;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: 15s;
+    user-select: none;
+    will-change: transform;
+  }
+  @keyframes leafDrift {
+    0%   { transform: translate3d(0, -6vh, 0) rotate(0deg); opacity: 0; }
+    8%   { opacity: .5; }
+    50%  { transform: translate3d(4vw, 46vh, 0) rotate(170deg); opacity: .5; }
+    92%  { opacity: .45; }
+    100% { transform: translate3d(-3vw, 108vh, 0) rotate(340deg); opacity: 0; }
+  }
+
+  /* 半透明卡片统一毛玻璃效果 */
+  .stat-card, .card-face, .listen-box, .mode-tabs, .wrongbook, .review-banner,
+  .quiz-setup, .quiz-question, .quiz-report, .ai-window {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* ==================== 单词测验 ==================== */
+  .quiz-panel { display: none; }
+  .quiz-panel.visible { display: block; }
+  .quiz-setup, .quiz-question, .quiz-report {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 22px 20px;
+    margin-bottom: 16px;
+  }
+  .quiz-setup h3, .quiz-report h3 {
+    font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 16px;
+  }
+  .quiz-field { margin-bottom: 14px; }
+  .quiz-field label {
+    display: block; font-size: 13px; color: var(--text-sub); margin-bottom: 8px;
+  }
+  .quiz-seg { display: flex; gap: 8px; }
+  .quiz-seg button {
+    flex: 1; padding: 9px 0; border: 1px solid var(--border);
+    background: var(--chip-bg); color: var(--text); border-radius: 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all .15s;
+  }
+  .quiz-seg button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn.start { background: var(--primary); width: 100%; }
+
+  .quiz-qtype {
+    text-align: center; font-size: 13px; color: var(--text-sub); margin-bottom: 8px;
+  }
+  .quiz-prompt {
+    font-size: 38px; font-weight: 800; text-align: center; margin: 10px 0 18px;
+    letter-spacing: .5px;
+  }
+  .quiz-blank-meaning {
+    font-size: 24px; font-weight: 700; text-align: center; margin: 16px 0 20px;
+    line-height: 1.5;
+  }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .quiz-opt {
+    padding: 14px 12px; border: 2px solid var(--border); border-radius: 14px;
+    background: var(--card-bg); color: var(--text); font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all .15s; line-height: 1.4; min-height: 54px;
+  }
+  .quiz-opt:hover { border-color: var(--primary); }
+  .quiz-opt.correct { border-color: var(--success); background: rgba(34,197,94,.14); color: var(--success); }
+  .quiz-opt.wrong { border-color: var(--danger); background: rgba(239,68,68,.14); color: var(--danger); }
+  .quiz-opt:disabled { cursor: default; }
+  #quiz-input {
+    width: 100%; padding: 15px; font-size: 19px; border: 2px solid var(--border);
+    border-radius: 14px; background: var(--card-bg); color: var(--text); outline: none;
+    text-align: center; letter-spacing: 1px; transition: border-color .2s;
+  }
+  #quiz-input:focus { border-color: var(--primary); }
+  #quiz-submit { width: 100%; margin-top: 12px; }
+  .quiz-feedback {
+    margin-top: 14px; padding: 14px; border-radius: 12px; font-size: 15px;
+    text-align: center; display: none;
+  }
+  .quiz-feedback.correct { display: block; background: rgba(34,197,94,.12); color: var(--success); }
+  .quiz-feedback.wrong { display: block; background: rgba(239,68,68,.12); color: var(--danger); }
+
+  .quiz-score { font-size: 40px; font-weight: 800; text-align: center; color: var(--primary); }
+  .quiz-acc { text-align: center; color: var(--text-sub); font-size: 14px; margin: 6px 0 16px; }
+  .quiz-wrong-list { margin-bottom: 16px; }
+  .quiz-wrong-item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .quiz-wrong-item:last-child { border-bottom: none; }
+  .qw-main { flex: 1; min-width: 0; }
+  .qw-word { font-weight: 700; font-size: 16px; }
+  .qw-mean { font-size: 13px; color: var(--text-sub); margin-top: 3px; }
+  .quiz-report-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .quiz-empty { text-align: center; color: var(--text-sub); padding: 16px 0; font-size: 15px; }
+
+  /* ==================== AI 单词助手 ==================== */
+  .ai-fab {
+    position: fixed; right: 20px; bottom: 20px; z-index: 200;
+    width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--primary); color: #fff; font-size: 26px;
+    box-shadow: 0 8px 22px rgba(0,0,0,.28); transition: transform .15s;
+  }
+  .ai-fab:hover { transform: scale(1.08); }
+  .ai-fab:active { transform: scale(.95); }
+  .ai-window {
+    position: fixed; right: 20px; bottom: 92px; z-index: 200;
+    width: min(340px, calc(100vw - 32px)); height: 480px;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 20px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; overflow: hidden;
+    transform: translateY(20px) scale(.96); opacity: 0; pointer-events: none;
+    transition: transform .22s, opacity .22s;
+  }
+  .ai-window.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+  .ai-head {
+    display: flex; align-items: center; gap: 8px; padding: 13px 16px;
+    border-bottom: 1px solid var(--border); font-weight: 700; font-size: 15px;
+  }
+  .ai-head .title { flex: 1; }
+  .ai-head .icon-btn { width: 32px; height: 32px; font-size: 15px; }
+  .ai-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .ai-msg { max-width: 82%; padding: 9px 12px; border-radius: 14px; font-size: 14px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+  .ai-msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .ai-msg.assistant { align-self: flex-start; background: var(--chip-bg); color: var(--text); border-bottom-left-radius: 4px; }
+  .ai-msg.sys { align-self: center; background: transparent; color: var(--text-sub); font-size: 12px; text-align: center; }
+  .ai-foot { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--border); }
+  .ai-foot input {
+    flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px;
+    background: var(--chip-bg); color: var(--text); outline: none; font-size: 14px;
+  }
+  .ai-foot input:focus { border-color: var(--primary); }
+  .ai-foot button { padding: 0 16px; border: none; border-radius: 12px; background: var(--primary); color: #fff; font-weight: 700; cursor: pointer; }
+
+  /* 选中单词后浮现的查询按钮 */
+  .ai-tooltip {
+    position: fixed; z-index: 300; transform: translate(-50%, -120%);
+    background: var(--primary); color: #fff; border: none; border-radius: 999px;
+    padding: 7px 13px; font-size: 13px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,.25); display: none;
+  }
+
+  /* ==================== 四六级刷题 ==================== */
+  .cet-panel { display: none; }
+  .cet-panel.visible { display: block; }
+  .cet-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .cet-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .cet-level-seg { flex: 1; min-width: 170px; }
+  .cet-stat { font-size: 13px; color: var(--text-sub); white-space: nowrap; }
+  .cet-tag { font-size: 13px; color: var(--text-sub); text-align: center; margin-bottom: 8px; }
+  .cet-stem { font-size: 22px; font-weight: 700; text-align: center; margin: 8px 0 18px; line-height: 1.5; }
+  .cet-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .cet-opt {
+    padding: 13px 12px; border: 2px solid var(--border); border-radius: 14px;
+    background: var(--card-bg); color: var(--text); font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all .15s; line-height: 1.4; min-height: 50px; text-align: left;
+  }
+  .cet-opt:hover { border-color: var(--primary); }
+  .cet-opt.selected { border-color: var(--primary); color: var(--primary); }
+  .cet-opt.correct { border-color: var(--success); background: rgba(34,197,94,.14); color: var(--success); }
+  .cet-opt.wrong { border-color: var(--danger); background: rgba(239,68,68,.14); color: var(--danger); }
+  .cet-opt:disabled { cursor: default; }
+  #cet-submit:disabled { opacity: .45; cursor: not-allowed; }
+  .cet-explain {
+    margin-top: 12px; padding: 14px 16px; border-radius: 12px;
+    background: var(--chip-bg); border: 1px solid var(--border);
+    font-size: 14px; line-height: 1.7;
+  }
+  .cet-explain .ce-title { font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+  #cet-next { width: 100%; margin-top: 12px; }
+  .cet-wb-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px;
+    background: var(--primary); color: #fff; margin-right: 6px; vertical-align: 2px;
+  }
+
+  @media (max-width: 480px) {
+    .quiz-prompt { font-size: 30px; }
+    .quiz-blank-meaning { font-size: 20px; }
+    .quiz-options { grid-template-columns: 1fr; }
+    .cet-stem { font-size: 18px; }
+    .cet-options { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
+
+<!-- 森林背景漂浮落叶 -->
+<div class="leaves" id="leaves" aria-hidden="true"></div>
 
 <div class="app">
   <!-- 顶部栏 -->
@@ -466,11 +693,13 @@
     <button id="tab-card" class="active">🃏 卡片模式</button>
     <button id="tab-spell">✏️ 拼写自测</button>
     <button id="tab-listen">🎧 听音选义</button>
+    <button id="tab-quiz">📝 单词测验</button>
+    <button id="tab-cet">📚 四六级刷题</button>
   </div>
 
   <!-- 错题复习提示条（仅在复习错题时显示） -->
   <div class="review-banner" id="review-banner">
-    <span>📕 正在复习错题本（<span id="review-count">0</span> 个）</span>
+    <span>📕 正在复习（<span id="review-count">0</span> 个单词）</span>
     <button id="exit-review">退出复习</button>
   </div>
 
@@ -489,6 +718,10 @@
           <div class="word" id="back-word"></div>
           <div class="phonetic" id="back-phonetic"></div>
           <div class="meaning" id="back-meaning"></div>
+          <div class="example" id="back-example">
+            <div class="en" id="back-example-en"></div>
+            <div class="cn" id="back-example-cn"></div>
+          </div>
           <button class="speak-btn" id="back-speak" title="朗读">🔊</button>
         </div>
       </div>
@@ -506,6 +739,10 @@
     <div class="spell-pos">请根据中文释义，输入对应的英文单词</div>
     <input type="text" id="spell-input" placeholder="在这里输入英文单词…" autocomplete="off" autocapitalize="off" spellcheck="false">
     <div class="spell-result" id="spell-result"></div>
+    <div class="example" id="spell-example" style="display:none">
+      <div class="en" id="spell-example-en"></div>
+      <div class="cn" id="spell-example-cn"></div>
+    </div>
     <div class="spell-actions">
       <button class="btn check" id="btn-check">✅ 检查答案</button>
       <button class="btn skip" id="btn-skip">⏭ 跳过</button>
@@ -523,7 +760,83 @@
     <div class="listen-result" id="listen-result"></div>
   </div>
 
-  <p class="tip">💾 学习进度自动保存在浏览器中，刷新页面不丢失</p>
+  <!-- ============ 单词测验模式 ============ -->
+  <div class="quiz-panel" id="quiz-mode">
+    <!-- 开始界面 -->
+    <div class="quiz-setup" id="quiz-setup">
+      <h3>📝 单词测验</h3>
+      <div class="quiz-field">
+        <label>题量</label>
+        <div class="quiz-seg" id="quiz-count">
+          <button data-n="5">5</button>
+          <button data-n="10" class="active">10</button>
+          <button data-n="20">20</button>
+        </div>
+      </div>
+      <div class="quiz-field">
+        <label>题型</label>
+        <div class="quiz-seg" id="quiz-type">
+          <button data-t="mix" class="active">混合</button>
+          <button data-t="choice">选择题</button>
+          <button data-t="blank">默写填空</button>
+        </div>
+      </div>
+      <button class="btn start" id="quiz-start">🚀 开始测验</button>
+    </div>
+
+    <!-- 答题界面 -->
+    <div class="quiz-question" id="quiz-question" style="display:none">
+      <div class="progress" id="quiz-progress"></div>
+      <div class="quiz-qtype" id="quiz-qtype"></div>
+      <div id="quiz-choice">
+        <div class="quiz-prompt" id="quiz-choice-prompt"></div>
+        <div class="quiz-options" id="quiz-options"></div>
+      </div>
+      <div id="quiz-blank" style="display:none">
+        <div class="quiz-blank-meaning" id="quiz-blank-meaning"></div>
+        <input type="text" id="quiz-input" placeholder="输入对应的英文单词…" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="btn check" id="quiz-submit">✅ 确认答案</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+    </div>
+
+    <!-- 报告界面 -->
+    <div class="quiz-report" id="quiz-report" style="display:none">
+      <h3>📊 测验报告</h3>
+      <div class="quiz-score" id="quiz-score"></div>
+      <div class="quiz-acc" id="quiz-acc"></div>
+      <div class="quiz-wrong-list" id="quiz-wrong-list"></div>
+      <div class="quiz-report-actions">
+        <button class="btn review" id="quiz-to-review">🎯 错题加入复习队列</button>
+        <button class="btn start" id="quiz-again">🔁 再来一次</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 四六级刷题模式 ============ -->
+  <div class="cet-panel" id="cet-mode">
+    <div class="cet-card">
+      <div class="cet-head">
+        <div class="quiz-seg cet-level-seg" id="cet-level">
+          <button data-level="4" class="active">四级题库</button>
+          <button data-level="6">六级题库</button>
+        </div>
+        <div class="cet-stat" id="cet-stat"></div>
+        <button class="icon-btn" id="cet-wb-btn" title="四六级错题本">📕</button>
+      </div>
+      <div id="cet-question">
+        <div class="cet-tag" id="cet-tag"></div>
+        <div class="cet-stem" id="cet-stem"></div>
+        <div class="cet-options" id="cet-options"></div>
+        <button class="btn check" id="cet-submit">✅ 提交答案</button>
+        <div class="quiz-feedback" id="cet-result"></div>
+        <div class="cet-explain" id="cet-explain" style="display:none"></div>
+        <button class="btn start" id="cet-next" style="display:none">➡ 下一题</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="tip">💾 学习进度与聊天记录自动保存在浏览器中，刷新页面不丢失</p>
 </div>
 
 <!-- ============ 错题本面板（覆盖层） ============ -->
@@ -541,6 +854,38 @@
     </div>
   </div>
 </div>
+
+<!-- ============ 四六级错题本面板（覆盖层） ============ -->
+<div class="wrongbook-overlay" id="cet-wb-overlay">
+  <div class="wrongbook">
+    <div class="wrongbook-head">
+      <h2>📕 四六级错题本</h2>
+      <button class="icon-btn" id="cet-wb-close" title="返回">✖️</button>
+    </div>
+    <div class="wrongbook-meta" id="cet-wb-meta"></div>
+    <div class="wrongbook-list" id="cet-wb-list"></div>
+    <div class="wrongbook-foot">
+      <button class="btn review" id="cet-wb-review">🎯 重刷错题</button>
+      <button class="btn clear" id="cet-wb-clear">🗑 清空</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ AI 单词助手（右下角悬浮） ============ -->
+<button class="ai-fab" id="ai-fab" title="AI 单词助手">🤖</button>
+<div class="ai-window" id="ai-window">
+  <div class="ai-head">
+    <span class="title">🤖 AI 单词助手</span>
+    <button class="icon-btn" id="ai-clear" title="清空记录">🗑</button>
+    <button class="icon-btn" id="ai-close" title="收起">✖️</button>
+  </div>
+  <div class="ai-body" id="ai-body"></div>
+  <div class="ai-foot">
+    <input type="text" id="ai-input" placeholder="输入单词或问题…" autocomplete="off">
+    <button id="ai-send">发送</button>
+  </div>
+</div>
+<button class="ai-tooltip" id="ai-tooltip">🔍 查 AI</button>
 
 <script>
 /* ===================================================================
@@ -1359,6 +1704,822 @@ const WORDS = [
 ];
 
 /* ===================================================================
+ * 例句库（升级新增）：为每个单词补充英文例句与中文翻译
+ * 键为单词本身，值含 en（英文例句）与 cn（中文翻译）
+ * 例句在卡片背面、以及拼写自测作答后展示，帮助在语境中记忆
+ * =================================================================== */
+const EXAMPLES = {
+  "abandon": { en: "He had to abandon his plan because of the heavy rain.", cn: "因为大雨，他不得不放弃计划。" },
+  "ability": { en: "She has the ability to solve difficult problems.", cn: "她有解决难题的能力。" },
+  "absorb": { en: "Plants absorb water through their roots.", cn: "植物通过根部吸收水分。" },
+  "abstract": { en: "This is an abstract concept that is hard to explain.", cn: "这是一个难以解释的抽象概念。" },
+  "academic": { en: "He has made great progress in his academic studies.", cn: "他在学业上取得了很大进步。" },
+  "access": { en: "Students have free access to the library.", cn: "学生可以免费使用图书馆。" },
+  "accompany": { en: "I will accompany you to the station.", cn: "我会陪你去车站。" },
+  "accomplish": { en: "She worked hard to accomplish her goal.", cn: "她努力工作以实现目标。" },
+  "accurate": { en: "The report gives an accurate description of the situation.", cn: "报告准确地描述了情况。" },
+  "achieve": { en: "You can achieve success if you keep trying.", cn: "如果你不断努力，就能取得成功。" },
+  "acquire": { en: "Children acquire language very quickly.", cn: "孩子学语言非常快。" },
+  "adapt": { en: "It takes time to adapt to a new environment.", cn: "适应新环境需要时间。" },
+  "adequate": { en: "Make sure you get adequate sleep every night.", cn: "确保每晚有足够的睡眠。" },
+  "adjust": { en: "You can adjust the height of the chair.", cn: "你可以调节椅子的高度。" },
+  "admire": { en: "I admire her courage and honesty.", cn: "我钦佩她的勇气和诚实。" },
+  "advantage": { en: "Speaking English well gives you an advantage in your job.", cn: "英语说得好对工作有利。" },
+  "afford": { en: "I can't afford to buy a new car now.", cn: "我现在买不起新车。" },
+  "alternative": { en: "We have no alternative but to wait.", cn: "我们别无选择，只能等待。" },
+  "ambition": { en: "Her ambition is to become a doctor.", cn: "她的抱负是成为一名医生。" },
+  "analyze": { en: "Scientists analyze the data carefully.", cn: "科学家仔细分析数据。" },
+  "ancient": { en: "We visited an ancient temple in the city.", cn: "我们参观了城里的一座古庙。" },
+  "annual": { en: "The company holds an annual meeting every January.", cn: "公司每年一月举行年会。" },
+  "anxious": { en: "She felt anxious before the exam.", cn: "考试前她感到焦虑。" },
+  "apparent": { en: "It was apparent that he was tired.", cn: "很明显他累了。" },
+  "appeal": { en: "The idea of working abroad appeals to me.", cn: "出国工作的想法很吸引我。" },
+  "appreciate": { en: "I really appreciate your help.", cn: "我非常感激你的帮助。" },
+  "approach": { en: "We need a new approach to solving this problem.", cn: "我们需要新的方法来解决这个问题。" },
+  "appropriate": { en: "Please wear appropriate clothes for the interview.", cn: "面试时请穿合适的衣服。" },
+  "approve": { en: "The manager approved my request for leave.", cn: "经理批准了我的请假请求。" },
+  "arise": { en: "Problems may arise if we don't plan ahead.", cn: "如果我们不提前计划，可能会出现麻烦。" },
+  "arrange": { en: "I will arrange a meeting for next week.", cn: "我会安排下周的一次会议。" },
+  "assess": { en: "Teachers assess students' progress every term.", cn: "老师每学期评估学生的进步。" },
+  "assist": { en: "Two nurses assisted the doctor during the operation.", cn: "手术中两名护士协助医生。" },
+  "assume": { en: "I assume you have heard the news.", cn: "我想你已经听说这个消息了。" },
+  "attach": { en: "Please attach your photo to the form.", cn: "请把照片贴在表格上。" },
+  "attitude": { en: "A positive attitude helps you succeed.", cn: "积极的态度有助于你成功。" },
+  "attract": { en: "The new movie attracted a large audience.", cn: "这部新电影吸引了大批观众。" },
+  "available": { en: "The book is available in the library.", cn: "这本书在图书馆可以借到。" },
+  "avoid": { en: "Try to avoid making the same mistake again.", cn: "尽量避免再犯同样的错误。" },
+  "aware": { en: "I was not aware of the danger.", cn: "我没有意识到危险。" },
+  "balance": { en: "You need to keep a balance between work and rest.", cn: "你需要在工作和休息之间保持平衡。" },
+  "barrier": { en: "Language is often a barrier to communication.", cn: "语言常常是交流的障碍。" },
+  "benefit": { en: "Regular exercise benefits your health.", cn: "经常锻炼对健康有益。" },
+  "budget": { en: "We have a limited budget for this project.", cn: "这个项目的预算有限。" },
+  "capacity": { en: "The hall has a seating capacity of 500.", cn: "大厅可容纳五百人。" },
+  "challenge": { en: "Learning a new language is a big challenge.", cn: "学习一门新语言是一个很大的挑战。" },
+  "circumstance": { en: "Under no circumstances should you give up.", cn: "无论如何你都不应该放弃。" },
+  "commit": { en: "He committed a serious mistake.", cn: "他犯了一个严重的错误。" },
+  "community": { en: "We should serve our community.", cn: "我们应该为社区服务。" },
+  "compare": { en: "Compare the two answers and find the difference.", cn: "比较这两个答案并找出区别。" },
+  "compete": { en: "Several teams will compete for the prize.", cn: "几支队伍将竞争这个奖项。" },
+  "complex": { en: "This is a complex problem that needs careful thought.", cn: "这是一个需要仔细思考的复杂问题。" },
+  "concentrate": { en: "Please concentrate on your work.", cn: "请专心工作。" },
+  "concept": { en: "The concept of time is difficult for young children.", cn: "时间的概念对小孩子来说很难。" },
+  "concern": { en: "The safety of the children is our main concern.", cn: "孩子们的安全是我们最关心的问题。" },
+  "conclude": { en: "The study concludes that exercise improves health.", cn: "研究得出结论：锻炼能改善健康。" },
+  "conduct": { en: "They conducted a survey among the students.", cn: "他们在学生中进行了一项调查。" },
+  "confirm": { en: "Please confirm your order before paying.", cn: "请在付款前确认订单。" },
+  "consequence": { en: "Every action has its consequences.", cn: "每个行为都有其后果。" },
+  "consider": { en: "Please consider my suggestion carefully.", cn: "请认真考虑我的建议。" },
+  "consist": { en: "The team consists of ten members.", cn: "这个团队由十名成员组成。" },
+  "constant": { en: "The machine needs constant care.", cn: "这台机器需要经常维护。" },
+  "construct": { en: "They plan to construct a new bridge here.", cn: "他们计划在这里建一座新桥。" },
+  "consume": { en: "This car consumes a lot of fuel.", cn: "这辆车耗油很多。" },
+  "contain": { en: "This box contains many old photos.", cn: "这个盒子里装着许多旧照片。" },
+  "contribute": { en: "Everyone should contribute to protecting the environment.", cn: "每个人都应为保护环境做贡献。" },
+  "convey": { en: "Please convey my thanks to your parents.", cn: "请向你的父母转达我的谢意。" },
+  "convince": { en: "He tried to convince me to join the club.", cn: "他试图说服我加入俱乐部。" },
+  "cooperate": { en: "The two companies decided to cooperate on the project.", cn: "两家公司决定在这个项目上合作。" },
+  "crucial": { en: "Good planning is crucial to success.", cn: "好的规划对成功至关重要。" },
+  "cultivate": { en: "Reading helps cultivate the mind.", cn: "阅读有助于培养心智。" },
+  "declare": { en: "The government declared a state of emergency.", cn: "政府宣布进入紧急状态。" },
+  "decline": { en: "The number of visitors declined this year.", cn: "今年游客数量下降了。" },
+  "decrease": { en: "The price of the phone has decreased.", cn: "这款手机的价格下降了。" },
+  "demonstrate": { en: "The teacher demonstrated how to use the tool.", cn: "老师演示了如何使用这个工具。" },
+  "deny": { en: "He denied breaking the window.", cn: "他否认打破了窗户。" },
+  "derive": { en: "Many English words derive from Latin.", cn: "许多英语单词源自拉丁语。" },
+  "deserve": { en: "You deserve a rest after such hard work.", cn: "辛苦工作之后你应该休息一下。" },
+  "despite": { en: "Despite the rain, we went for a walk.", cn: "尽管下雨，我们还是去散步了。" },
+  "determine": { en: "We must determine the cause of the problem.", cn: "我们必须查明问题的原因。" },
+  "devote": { en: "She devoted her life to helping the poor.", cn: "她一生致力于帮助穷人。" },
+  "distinguish": { en: "It is hard to distinguish the twins.", cn: "很难分辨这对双胞胎。" },
+  "distribute": { en: "The teacher distributed the papers to the students.", cn: "老师把试卷分发给学生。" },
+  "domestic": { en: "The country's domestic economy is growing.", cn: "这个国家的国内经济正在增长。" },
+  "dominant": { en: "He is the dominant figure in the team.", cn: "他是队里的核心人物。" },
+  "efficient": { en: "This is a more efficient way to work.", cn: "这是更高效的工作方式。" },
+  "eliminate": { en: "We must eliminate all the errors in the report.", cn: "我们必须消除报告中的所有错误。" },
+  "emerge": { en: "The sun emerged from behind the clouds.", cn: "太阳从云层后面露了出来。" },
+  "emphasize": { en: "The teacher emphasized the importance of practice.", cn: "老师强调了练习的重要性。" },
+  "enable": { en: "This program enables you to learn English faster.", cn: "这个程序让你更快地学英语。" },
+  "encounter": { en: "I encountered many difficulties on the way.", cn: "一路上我遇到了许多困难。" },
+  "enhance": { en: "Good lighting can enhance the beauty of a room.", cn: "好的灯光能提升房间的美感。" },
+  "ensure": { en: "Please ensure that the door is locked.", cn: "请确保门已锁好。" },
+  "enthusiasm": { en: "He showed great enthusiasm for the project.", cn: "他对这个项目表现出极大的热情。" },
+  "essential": { en: "Water is essential to life.", cn: "水对生命是必不可少的。" },
+  "establish": { en: "The company was established in 1990.", cn: "这家公司成立于1990年。" },
+  "estimate": { en: "We estimate that the work will take two weeks.", cn: "我们估计这项工作需要两周。" },
+  "evaluate": { en: "We need to evaluate the results carefully.", cn: "我们需要仔细评估结果。" },
+  "evidence": { en: "There is no evidence that he lied.", cn: "没有证据表明他说了谎。" },
+  "evident": { en: "It is evident that she is happy with the result.", cn: "显然她对结果很满意。" },
+  "evolve": { en: "The company has evolved into a large firm.", cn: "这家公司已发展成一家大企业。" },
+  "exceed": { en: "The cost must not exceed the budget.", cn: "成本不得超过预算。" },
+  "expand": { en: "The company plans to expand its business overseas.", cn: "公司计划向海外扩展业务。" },
+  "expose": { en: "Don't expose your skin to the sun for too long.", cn: "不要让皮肤在阳光下暴晒太久。" },
+  "extend": { en: "They decided to extend the road to the village.", cn: "他们决定把公路延伸到那个村庄。" },
+  "facility": { en: "The hotel has excellent sports facilities.", cn: "这家酒店有很好的运动设施。" },
+  "feature": { en: "The new phone has many useful features.", cn: "这部新手机有许多实用的功能。" },
+  "flexible": { en: "My working hours are quite flexible.", cn: "我的工作时间相当灵活。" },
+  "focus": { en: "Focus on your studies and ignore the noise.", cn: "专心学习，别理会噪音。" },
+  "fundamental": { en: "Reading is a fundamental skill.", cn: "阅读是一项基本技能。" },
+  "generate": { en: "The new plan generated a lot of interest.", cn: "新计划引起了广泛关注。" },
+  "global": { en: "Climate change is a global problem.", cn: "气候变化是一个全球性问题。" },
+  "gradual": { en: "There has been a gradual improvement in her health.", cn: "她的健康状况逐渐好转。" },
+  "guarantee": { en: "We guarantee that our products are of high quality.", cn: "我们保证我们的产品质量优良。" },
+  "identify": { en: "Can you identify the man in the photo?", cn: "你能认出照片里的那个人吗？" },
+  "ignore": { en: "Don't ignore the doctor's advice.", cn: "不要忽视医生的建议。" },
+  "illustrate": { en: "Let me illustrate my point with an example.", cn: "让我用一个例子来说明我的观点。" },
+  "impact": { en: "The Internet has a great impact on our lives.", cn: "互联网对我们的生活影响巨大。" },
+  "imply": { en: "His silence seemed to imply agreement.", cn: "他的沉默似乎意味着同意。" },
+  "impose": { en: "The government imposed a new tax on cars.", cn: "政府对汽车征收了一项新税。" },
+  "indicate": { en: "The results indicate that the medicine works.", cn: "结果表明这种药有效。" },
+  "individual": { en: "Each individual has his or her own opinion.", cn: "每个人都有自己的看法。" },
+  "inevitable": { en: "Change is inevitable in life.", cn: "变化在生活中是不可避免的。" },
+  "influence": { en: "Parents have a great influence on their children.", cn: "父母对孩子有很大的影响。" },
+  "initial": { en: "My initial plan was to leave early.", cn: "我最初的计划是早点离开。" },
+  "innovate": { en: "Companies must innovate to stay competitive.", cn: "公司必须创新才能保持竞争力。" },
+  "insist": { en: "She insisted on paying for the meal.", cn: "她坚持要付饭钱。" },
+  "inspire": { en: "His speech inspired us to work harder.", cn: "他的演讲激励我们更加努力。" },
+  "install": { en: "They installed a new air conditioner in the room.", cn: "他们在房间里装了一台新空调。" },
+  "intend": { en: "I intend to visit my grandparents this weekend.", cn: "我打算这个周末去看望祖父母。" },
+  "interpret": { en: "Could you interpret this sentence for me?", cn: "你能帮我解释一下这个句子吗？" },
+  "invest": { en: "He decided to invest his money in the stock market.", cn: "他决定把钱投资到股市。" },
+  "involve": { en: "The job involves a lot of traveling.", cn: "这份工作需要经常出差。" },
+  "isolate": { en: "The sick patient was isolated from the others.", cn: "生病的病人被与其他人隔离开。" },
+  "justify": { en: "Nothing can justify such rude behavior.", cn: "任何事都不能为如此无礼的行为辩解。" },
+  "maintain": { en: "It is important to maintain a healthy diet.", cn: "保持健康的饮食很重要。" },
+  "measure": { en: "We need to measure the length of the table.", cn: "我们需要量一下桌子的长度。" },
+  "motivate": { en: "The coach tried to motivate the players.", cn: "教练努力激励队员。" },
+  "obtain": { en: "You can obtain a copy of the report from the office.", cn: "你可以从办公室得到一份报告。" },
+  "obvious": { en: "It is obvious that he is lying.", cn: "很明显他在撒谎。" },
+  "occupy": { en: "The children occupied themselves with drawing.", cn: "孩子们忙着画画。" },
+  "occur": { en: "The accident occurred at midnight.", cn: "事故发生在午夜。" },
+  "opportunity": { en: "This is a good opportunity to practice English.", cn: "这是练习英语的好机会。" },
+  "participate": { en: "Everyone is encouraged to participate in the discussion.", cn: "鼓励大家参与讨论。" },
+  "perform": { en: "The band will perform at the concert tonight.", cn: "乐队今晚将在音乐会上表演。" },
+  "phenomenon": { en: "Snow in May is a rare phenomenon here.", cn: "这里五月下雪是罕见的现象。" },
+  "potential": { en: "She has great potential as a singer.", cn: "她作为歌手很有潜力。" },
+  "predict": { en: "It is hard to predict the weather accurately.", cn: "很难准确预测天气。" },
+  "preserve": { en: "We must preserve our cultural heritage.", cn: "我们必须保护文化遗产。" },
+  "previous": { en: "The previous owner of the house was a teacher.", cn: "这房子的前任房主是位老师。" },
+  "priority": { en: "Safety is our top priority.", cn: "安全是我们的首要任务。" },
+  "purchase": { en: "She purchased a new laptop yesterday.", cn: "她昨天买了一台新笔记本电脑。" },
+  "pursue": { en: "He decided to pursue a career in medicine.", cn: "他决定从事医学事业。" },
+  "recover": { en: "It took him a long time to recover from the illness.", cn: "他花了很长时间才从病中康复。" },
+  "reject": { en: "The committee rejected his proposal.", cn: "委员会否决了他的提议。" },
+  "relevant": { en: "Please include only relevant information.", cn: "请只包含相关信息。" },
+  "rely": { en: "Don't rely on luck; work hard.", cn: "不要靠运气，要努力。" },
+  "remarkable": { en: "She has made remarkable progress this year.", cn: "她今年取得了显著的进步。" },
+  "require": { en: "This job requires a lot of patience.", cn: "这份工作需要很大的耐心。" },
+  "respond": { en: "He didn't respond to my message.", cn: "他没有回复我的信息。" },
+  "restore": { en: "The old building was restored to its original state.", cn: "这座老建筑被恢复到了原来的样子。" },
+  "restrict": { en: "The new rule restricts the use of mobile phones in class.", cn: "新规定限制在课堂上使用手机。" },
+  "reveal": { en: "The report revealed some serious problems.", cn: "报告揭露了一些严重的问题。" },
+  "significant": { en: "There has been a significant change in his attitude.", cn: "他的态度有了显著的变化。" },
+  "specific": { en: "Can you give me a specific example?", cn: "你能给我一个具体的例子吗？" },
+  "strategy": { en: "We need a clear strategy to win the game.", cn: "我们需要一个明确的策略来赢得比赛。" },
+  "sufficient": { en: "Make sure you have sufficient time to finish.", cn: "确保你有足够的时间完成。" },
+  "survive": { en: "Few plants can survive in the desert.", cn: "很少有植物能在沙漠中生存。" },
+  "tend": { en: "People tend to eat more in winter.", cn: "人们在冬天往往吃得更多。" },
+  "transform": { en: "The Internet has transformed the way we live.", cn: "互联网改变了我们的生活方式。" },
+  "unique": { en: "Each person has a unique personality.", cn: "每个人都有独特的个性。" },
+  "universal": { en: "Love is a universal feeling.", cn: "爱是一种普遍的情感。" },
+  "vary": { en: "Prices vary from store to store.", cn: "各店价格不同。" },
+  "vital": { en: "Regular exercise is vital to good health.", cn: "经常锻炼对健康至关重要。" },
+  "volume": { en: "Please turn down the volume of the TV.", cn: "请把电视的音量调低。" },
+  "widespread": { en: "The new technology has become widespread.", cn: "这项新技术已得到广泛应用。" },
+
+  "absent": { en: "He was absent from school because he was ill.", cn: "他因病缺课。" },
+  "absolute": { en: "I have absolute trust in him.", cn: "我绝对信任他。" },
+  "accept": { en: "She accepted the invitation happily.", cn: "她高兴地接受了邀请。" },
+  "accident": { en: "He had a car accident on the way to work.", cn: "他在上班路上出了车祸。" },
+  "account": { en: "Please log in to your account first.", cn: "请先登录你的账户。" },
+  "accuse": { en: "They accused him of stealing the money.", cn: "他们指控他偷了钱。" },
+  "acknowledge": { en: "He acknowledged his mistake at last.", cn: "他终于承认了自己的错误。" },
+  "acquaintance": { en: "She is an old acquaintance of mine.", cn: "她是我的一个老熟人。" },
+  "addition": { en: "In addition to English, he speaks French.", cn: "除了英语，他还会说法语。" },
+  "address": { en: "Please write your address on the form.", cn: "请在表格上写下你的地址。" },
+  "admit": { en: "He admitted that he was wrong.", cn: "他承认自己错了。" },
+  "adopt": { en: "The couple decided to adopt a child.", cn: "这对夫妇决定收养一个孩子。" },
+  "advance": { en: "Technology advances very quickly these days.", cn: "如今技术进步非常快。" },
+  "advertise": { en: "They advertised the new product on TV.", cn: "他们在电视上为新产品做广告。" },
+  "advice": { en: "Let me give you some advice.", cn: "让我给你一些建议。" },
+  "affect": { en: "The weather affects my mood.", cn: "天气影响我的情绪。" },
+  "agency": { en: "He booked the tickets through a travel agency.", cn: "他通过旅行社订了票。" },
+  "agent": { en: "The agent helped us find a house.", cn: "代理人帮我们找到了一所房子。" },
+  "agreement": { en: "The two sides reached an agreement at last.", cn: "双方最终达成了协议。" },
+  "agriculture": { en: "Agriculture is important to the local economy.", cn: "农业对当地经济很重要。" },
+  "aid": { en: "The government sent aid to the flooded area.", cn: "政府向洪灾地区送去了援助。" },
+  "aim": { en: "My aim is to finish the work by Friday.", cn: "我的目标是在周五前完成工作。" },
+  "alarm": { en: "I set the alarm for six o'clock.", cn: "我把闹钟定在六点。" },
+  "alike": { en: "The two brothers look very much alike.", cn: "这两兄弟长得非常像。" },
+  "alive": { en: "The old man is still alive and healthy.", cn: "这位老人仍然健在且健康。" },
+  "allow": { en: "My parents don't allow me to stay out late.", cn: "父母不允许我在外面待到很晚。" },
+  "alter": { en: "We had to alter our plans because of the rain.", cn: "因为下雨我们不得不改变计划。" },
+  "amaze": { en: "Her talent amazed everyone.", cn: "她的才华让所有人惊叹。" },
+  "amount": { en: "A large amount of money was spent on the project.", cn: "这个项目花了一大笔钱。" },
+  "amuse": { en: "His jokes amused the children.", cn: "他的笑话逗乐了孩子们。" },
+  "announce": { en: "The school announced the results yesterday.", cn: "学校昨天公布了成绩。" },
+  "annoy": { en: "The noise from the street annoyed me.", cn: "街上的噪音让我心烦。" },
+  "anticipate": { en: "We anticipate a rise in prices next month.", cn: "我们预计下个月物价会上涨。" },
+  "anxiety": { en: "She felt great anxiety before the interview.", cn: "面试前她非常焦虑。" },
+  "apart": { en: "The two houses are far apart.", cn: "这两座房子相距很远。" },
+  "apologize": { en: "You should apologize for being late.", cn: "你应该为迟到而道歉。" },
+  "apply": { en: "You can apply for the job online.", cn: "你可以在网上申请这份工作。" },
+  "appoint": { en: "They appointed him as the new manager.", cn: "他们任命他为新经理。" },
+  "argue": { en: "The two boys argued about the game.", cn: "两个男孩为游戏争论起来。" },
+  "argument": { en: "They had an argument about money.", cn: "他们为钱发生了争吵。" },
+  "army": { en: "He joined the army at the age of eighteen.", cn: "他十八岁参军。" },
+  "arrest": { en: "The police arrested the thief last night.", cn: "警察昨晚逮捕了那个小偷。" },
+  "arrive": { en: "The train arrived at the station on time.", cn: "火车准时到达车站。" },
+  "article": { en: "I read an interesting article in the newspaper.", cn: "我在报纸上读到一篇有趣的文章。" },
+  "ashamed": { en: "He felt ashamed of his behavior.", cn: "他为自己的行为感到羞愧。" },
+  "aside": { en: "She put some money aside for the future.", cn: "她存了一些钱以备将来。" },
+  "aspect": { en: "We should consider every aspect of the problem.", cn: "我们应该考虑问题的每个方面。" },
+  "associate": { en: "People often associate red with danger.", cn: "人们常把红色与危险联系起来。" },
+  "association": { en: "He is a member of the student association.", cn: "他是学生会的成员。" },
+  "astonish": { en: "The news astonished everyone in the room.", cn: "这个消息让屋里所有人都很惊讶。" },
+  "atmosphere": { en: "The restaurant has a friendly atmosphere.", cn: "这家餐厅气氛友好。" },
+  "attempt": { en: "He made an attempt to climb the mountain.", cn: "他尝试攀登那座山。" },
+  "attend": { en: "All students must attend the meeting.", cn: "所有学生都必须参加会议。" },
+  "attention": { en: "Please pay attention to the teacher.", cn: "请注意听老师讲。" },
+  "author": { en: "She is the author of three novels.", cn: "她是三部小说的作者。" },
+  "authority": { en: "You need permission from the local authority.", cn: "你需要得到当地政府的许可。" },
+  "automatic": { en: "The door opens automatically when you approach.", cn: "你走近时门会自动打开。" },
+  "avenue": { en: "They walked along the avenue.", cn: "他们沿着林荫大道散步。" },
+  "average": { en: "The average temperature this month is 20 degrees.", cn: "本月平均气温是二十度。" },
+
+  "background": { en: "He comes from a poor family background.", cn: "他出身于贫困家庭。" },
+  "bargain": { en: "This coat is a real bargain at only fifty yuan.", cn: "这件外套才五十元，真便宜。" },
+  "behave": { en: "Please behave yourself in public.", cn: "在公共场合请注意举止。" },
+  "behavior": { en: "His behavior at the party was rude.", cn: "他在聚会上的行为很粗鲁。" },
+  "belief": { en: "She has a strong belief in herself.", cn: "她对自己有很强的信念。" },
+  "belong": { en: "This book belongs to me.", cn: "这本书是我的。" },
+  "beneath": { en: "The boat sank beneath the waves.", cn: "小船沉到了波浪下面。" },
+  "beyond": { en: "The village is beyond those mountains.", cn: "村庄在那些山的另一边。" },
+  "blame": { en: "Don't blame others for your own mistakes.", cn: "不要把自己的错误归咎于别人。" },
+  "bother": { en: "Don't bother me while I'm working.", cn: "我工作时别打扰我。" },
+  "brief": { en: "He gave a brief introduction of himself.", cn: "他简要地介绍了自己。" },
+  "brilliant": { en: "She had a brilliant idea.", cn: "她有一个绝妙的主意。" },
+  "burden": { en: "The heavy bag was a burden to carry.", cn: "那个沉重的包背着很累。" },
+
+  "calculate": { en: "Can you calculate the total cost?", cn: "你能算出总费用吗？" },
+  "campaign": { en: "They started a campaign to protect the forest.", cn: "他们发起了一场保护森林的运动。" },
+  "candidate": { en: "He is a strong candidate for the job.", cn: "他是这份工作的有力候选人。" },
+  "capable": { en: "She is capable of doing the job well.", cn: "她有能力把这份工作做好。" },
+  "capital": { en: "Beijing is the capital of China.", cn: "北京是中国的首都。" },
+  "career": { en: "She chose teaching as her career.", cn: "她选择教师作为职业。" },
+  "casual": { en: "He wore casual clothes to the party.", cn: "他穿着便装去参加聚会。" },
+  "category": { en: "This book falls into the category of science.", cn: "这本书属于科学类。" },
+  "caution": { en: "Drive with caution on the icy road.", cn: "在结冰的路上开车要小心。" },
+  "celebrate": { en: "We celebrated her birthday with a big cake.", cn: "我们用一个大蛋糕庆祝她的生日。" },
+  "ceremony": { en: "The opening ceremony will start at nine.", cn: "开幕式将在九点开始。" },
+  "character": { en: "He is a man of good character.", cn: "他是一个品德好的人。" },
+  "characteristic": { en: "Kindness is a characteristic of her.", cn: "善良是她的一个特点。" },
+  "charge": { en: "How much do you charge for a haircut?", cn: "理一次发你收多少钱？" },
+  "cheat": { en: "It is wrong to cheat in an exam.", cn: "考试作弊是不对的。" },
+  "civil": { en: "The country suffered a long civil war.", cn: "这个国家经历了长期的内战。" },
+  "claim": { en: "He claimed that he had seen the accident.", cn: "他声称自己目睹了事故。" },
+  "climate": { en: "The climate here is warm and wet.", cn: "这里的气候温暖潮湿。" },
+  "coach": { en: "The coach trained the team every day.", cn: "教练每天训练球队。" },
+  "collapse": { en: "The old bridge collapsed in the flood.", cn: "那座老桥在洪水中倒塌了。" },
+  "colleague": { en: "I get on well with my colleagues.", cn: "我和同事相处得很好。" },
+  "combine": { en: "The film combines education with entertainment.", cn: "这部电影把教育和娱乐结合起来。" },
+  "comment": { en: "He made no comment on the plan.", cn: "他对这个计划没有发表评论。" },
+  "commercial": { en: "The commercial shows a happy family.", cn: "这则广告展示了一个幸福的家庭。" },
+  "commitment": { en: "She shows great commitment to her work.", cn: "她对工作非常投入。" },
+  "common": { en: "Wang is a very common surname in China.", cn: "王在中国是很常见的姓。" },
+  "communicate": { en: "We communicate with each other by email.", cn: "我们通过电子邮件互相交流。" },
+  "companion": { en: "The dog is a faithful companion to the old man.", cn: "这只狗是老人忠实的伙伴。" },
+  "competent": { en: "She is a competent and careful worker.", cn: "她是一个能干又细心的员工。" },
+  "complain": { en: "He complained about the poor service.", cn: "他抱怨服务差。" },
+  "complete": { en: "Please complete the form before Friday.", cn: "请在周五前填好表格。" },
+  "complicate": { en: "Don't complicate the problem.", cn: "别把问题复杂化。" },
+  "component": { en: "The engine has many small components.", cn: "发动机有许多小部件。" },
+  "compose": { en: "The committee is composed of ten experts.", cn: "委员会由十位专家组成。" },
+  "comprehend": { en: "It is hard to comprehend the meaning of life.", cn: "很难理解生命的意义。" },
+  "comprehensive": { en: "The book gives a comprehensive introduction to history.", cn: "这本书对历史作了全面的介绍。" },
+  "conceal": { en: "He tried to conceal his feelings.", cn: "他试图掩饰自己的感情。" },
+  "conclusion": { en: "We came to the conclusion that he was right.", cn: "我们得出结论：他是对的。" },
+  "condition": { en: "The car is in good condition.", cn: "这辆车状况良好。" },
+  "confident": { en: "I am confident that we will win.", cn: "我相信我们会赢。" },
+  "confine": { en: "Please confine your speech to five minutes.", cn: "请把发言限制在五分钟内。" },
+  "conflict": { en: "There is a conflict between the two countries.", cn: "两国之间存在冲突。" },
+  "confuse": { en: "The instructions confused me.", cn: "那些说明把我搞糊涂了。" },
+  "congratulate": { en: "I congratulated him on passing the exam.", cn: "我祝贺他通过了考试。" },
+  "conquer": { en: "She finally conquered her fear of speaking.", cn: "她终于克服了发言的恐惧。" },
+  "conscious": { en: "He was conscious of his mistake.", cn: "他意识到自己的错误。" },
+  "conservative": { en: "My grandfather has conservative views.", cn: "我爷爷观念保守。" },
+  "considerable": { en: "The project took a considerable amount of time.", cn: "这个项目花了相当多的时间。" },
+  "consistent": { en: "Your actions must be consistent with your words.", cn: "你的行动必须与言语一致。" },
+  "constitute": { en: "Women constitute half of the population.", cn: "女性占人口的一半。" },
+  "consult": { en: "You should consult a doctor about your pain.", cn: "你的疼痛应该去看医生。" },
+  "contact": { en: "Please contact me if you have any questions.", cn: "如果有任何问题请与我联系。" },
+  "contemporary": { en: "The novel describes contemporary city life.", cn: "这部小说描写了当代城市生活。" },
+  "content": { en: "She is content with her simple life.", cn: "她对简单的生活感到满足。" },
+  "contest": { en: "He won first prize in the singing contest.", cn: "他在歌唱比赛中获得一等奖。" },
+  "contract": { en: "They signed a two-year contract.", cn: "他们签了一份两年的合同。" },
+  "contrast": { en: "There is a sharp contrast between the two brothers.", cn: "两兄弟之间反差很大。" },
+  "controversy": { en: "The decision caused a lot of controversy.", cn: "这个决定引起了很多争议。" },
+  "convenient": { en: "The shop is in a convenient location.", cn: "这家商店位置便利。" },
+  "convention": { en: "By convention, we shake hands when meeting.", cn: "按照惯例，见面时我们握手。" },
+  "conversation": { en: "We had a long conversation about the future.", cn: "我们关于未来谈了很久。" },
+  "cope": { en: "She found it hard to cope with the pressure.", cn: "她觉得很难应付压力。" },
+  "correspond": { en: "His words do not correspond with his actions.", cn: "他的言行不一致。" },
+  "courage": { en: "It takes courage to tell the truth.", cn: "说真话需要勇气。" },
+  "create": { en: "The artist created a beautiful painting.", cn: "那位艺术家创作了一幅美丽的画。" },
+  "credit": { en: "You must give credit to those who helped you.", cn: "你必须感谢那些帮助过你的人。" },
+  "crime": { en: "The police are fighting against crime.", cn: "警察正在与犯罪作斗争。" },
+  "crisis": { en: "The company is facing a serious financial crisis.", cn: "公司正面临严重的财务危机。" },
+  "criticize": { en: "Don't criticize him for a small mistake.", cn: "别为一点小错批评他。" },
+  "cure": { en: "The doctor cured her of the disease.", cn: "医生治好了她的病。" },
+  "curious": { en: "Children are curious about everything.", cn: "孩子们对一切都很好奇。" },
+  "current": { en: "The current situation is improving.", cn: "目前的形势正在好转。" },
+  "custom": { en: "It is a local custom to eat dumplings at New Year.", cn: "新年吃饺子是当地的风俗。" },
+
+  "damage": { en: "The storm caused great damage to the crops.", cn: "暴风雨给庄稼造成了很大的损害。" },
+  "debate": { en: "They had a heated debate about the plan.", cn: "他们就这个计划进行了激烈的辩论。" },
+  "decade": { en: "The town has changed greatly in the past decade.", cn: "这个镇在过去十年里变化很大。" },
+  "decide": { en: "She decided to study abroad.", cn: "她决定出国留学。" },
+  "decision": { en: "It was a difficult decision to make.", cn: "这是一个艰难的决定。" },
+  "decorate": { en: "We decorated the room with flowers.", cn: "我们用鲜花装饰房间。" },
+  "defeat": { en: "Our team was defeated in the final.", cn: "我们队在决赛中被打败了。" },
+  "defend": { en: "The soldiers defended the city bravely.", cn: "士兵们英勇地保卫城市。" },
+  "define": { en: "How do you define success?", cn: "你如何定义成功？" },
+  "degree": { en: "He got a degree in computer science.", cn: "他获得了计算机科学学位。" },
+  "delay": { en: "The flight was delayed because of the fog.", cn: "航班因大雾而延误。" },
+  "deliberate": { en: "It was a deliberate attempt to cheat.", cn: "那是故意作弊的行为。" },
+  "deliver": { en: "The mailman delivers letters every morning.", cn: "邮递员每天早上送信。" },
+  "demand": { en: "The workers demanded higher pay.", cn: "工人们要求加薪。" },
+  "department": { en: "She works in the sales department.", cn: "她在销售部门工作。" },
+  "depend": { en: "Success depends on hard work.", cn: "成功取决于努力。" },
+  "deposit": { en: "He put a deposit on the house.", cn: "他为房子付了定金。" },
+  "describe": { en: "Can you describe the man you saw?", cn: "你能描述一下你看到的那个人吗？" },
+  "desert": { en: "The camel can live in the desert.", cn: "骆驼能在沙漠中生活。" },
+  "design": { en: "She designed a new logo for the company.", cn: "她为公司设计了一个新标志。" },
+  "desire": { en: "He has a strong desire to learn.", cn: "他有强烈的求知欲。" },
+  "destroy": { en: "The fire destroyed the whole building.", cn: "大火烧毁了整栋楼。" },
+  "detail": { en: "Please tell me all the details of the story.", cn: "请告诉我故事的所有细节。" },
+  "detect": { en: "The machine can detect small changes in temperature.", cn: "这台机器能检测出温度的微小变化。" },
+  "develop": { en: "The city has developed quickly in recent years.", cn: "这座城市近年来发展很快。" },
+  "device": { en: "This device helps you find your keys.", cn: "这个装置帮你找到钥匙。" },
+  "differ": { en: "The two brothers differ in many ways.", cn: "这两兄弟在许多方面都不同。" },
+  "direct": { en: "Can you direct me to the station?", cn: "你能告诉我去车站怎么走吗？" },
+  "disappear": { en: "The sun disappeared behind the clouds.", cn: "太阳消失在云层后面。" },
+  "disappoint": { en: "His behavior disappointed his parents.", cn: "他的行为让父母失望。" },
+  "discipline": { en: "Strict discipline is needed in the army.", cn: "军队里需要严格的纪律。" },
+  "discover": { en: "Columbus discovered America in 1492.", cn: "哥伦布于1492年发现了美洲。" },
+  "disease": { en: "The disease spread quickly in the village.", cn: "疾病在村里迅速传播。" },
+  "dismiss": { en: "The boss dismissed him for being late.", cn: "老板因为他迟到而解雇了他。" },
+  "display": { en: "The store displayed its new products in the window.", cn: "商店在橱窗里展示新产品。" },
+  "distance": { en: "The distance between the two cities is 300 kilometers.", cn: "两城相距三百公里。" },
+  "distant": { en: "I heard a distant sound of thunder.", cn: "我听到远处传来的雷声。" },
+  "divide": { en: "The teacher divided the class into four groups.", cn: "老师把全班分成四组。" },
+  "document": { en: "Please sign the document at the bottom.", cn: "请在文件底部签字。" },
+  "donate": { en: "He donated money to the poor children.", cn: "他向贫困儿童捐款。" },
+  "double": { en: "The price has doubled in two years.", cn: "价格在两年内翻了一番。" },
+  "doubt": { en: "I doubt whether he will come.", cn: "我怀疑他是否会来。" },
+  "dramatic": { en: "There has been a dramatic change in the weather.", cn: "天气发生了剧烈的变化。" },
+  "duty": { en: "It is our duty to protect the environment.", cn: "保护环境是我们的责任。" },
+
+  "earn": { en: "He earns a good salary from his job.", cn: "他的工作薪水不错。" },
+  "economy": { en: "The country's economy is growing fast.", cn: "这个国家的经济增长很快。" },
+  "educate": { en: "Parents should educate their children about safety.", cn: "父母应该对孩子进行安全教育。" },
+  "effect": { en: "The medicine had a good effect on her.", cn: "这种药对她效果很好。" },
+  "effort": { en: "He made a great effort to pass the exam.", cn: "他为了通过考试付出了很大努力。" },
+  "elder": { en: "My elder brother works in a bank.", cn: "我哥哥在银行工作。" },
+  "elect": { en: "They elected him as their leader.", cn: "他们选他当领导。" },
+  "element": { en: "Honesty is an important element of friendship.", cn: "诚实是友谊的重要要素。" },
+  "embarrass": { en: "Her question embarrassed him.", cn: "她的问题让他很尴尬。" },
+  "emotion": { en: "She tried to control her emotions.", cn: "她努力控制自己的情绪。" },
+  "employ": { en: "The factory employs over 500 workers.", cn: "这家工厂雇用了五百多名工人。" },
+  "encourage": { en: "My teacher encouraged me to try again.", cn: "老师鼓励我再试一次。" },
+  "energy": { en: "The children are full of energy.", cn: "孩子们精力充沛。" },
+  "engage": { en: "She is engaged in medical research.", cn: "她从事医学研究。" },
+  "engine": { en: "The engine of the car stopped suddenly.", cn: "汽车的发动机突然停了。" },
+  "enormous": { en: "The project cost an enormous amount of money.", cn: "这个项目花费了巨额资金。" },
+  "entertain": { en: "The clown entertained the children.", cn: "小丑逗孩子们开心。" },
+  "entire": { en: "He spent the entire day reading.", cn: "他花了一整天读书。" },
+  "environment": { en: "We should do more to protect the environment.", cn: "我们应该做更多来保护环境。" },
+  "equal": { en: "All people are born equal.", cn: "人人生而平等。" },
+  "equip": { en: "The lab is equipped with new computers.", cn: "实验室配备了新电脑。" },
+  "error": { en: "There is an error in your calculation.", cn: "你的计算有一个错误。" },
+  "escape": { en: "The bird escaped from the cage.", cn: "那只鸟从笼子里逃走了。" },
+  "especially": { en: "I love fruit, especially apples.", cn: "我喜欢水果，尤其是苹果。" },
+  "event": { en: "The school sports event will be held next week.", cn: "校运会将于下周举行。" },
+  "eventually": { en: "He eventually found his lost wallet.", cn: "他最终找到了丢失的钱包。" },
+  "exact": { en: "What is the exact time of the meeting?", cn: "会议的确切时间是什么？" },
+  "examine": { en: "The doctor examined the patient carefully.", cn: "医生仔细检查了病人。" },
+  "excellent": { en: "She did an excellent job on the project.", cn: "她在项目上做得非常出色。" },
+  "except": { en: "Everyone came except Tom.", cn: "除了汤姆，所有人都来了。" },
+  "exchange": { en: "We exchanged phone numbers after the meeting.", cn: "会后我们交换了电话号码。" },
+  "excite": { en: "The news excited the whole class.", cn: "这个消息让全班都兴奋起来。" },
+  "exclude": { en: "The price excludes tax.", cn: "这个价格不含税。" },
+  "excuse": { en: "Excuse me, could you tell me the time?", cn: "打扰一下，请问现在几点了？" },
+  "exercise": { en: "Regular exercise keeps you healthy.", cn: "经常锻炼使你保持健康。" },
+  "exist": { en: "Does life exist on other planets?", cn: "其他星球上存在生命吗？" },
+  "expect": { en: "I expect to finish the work by Monday.", cn: "我预计周一前完成工作。" },
+  "expense": { en: "They cut down on living expenses.", cn: "他们削减了生活开支。" },
+  "experience": { en: "He has ten years of teaching experience.", cn: "他有十年的教学经验。" },
+  "experiment": { en: "The students did an experiment in the lab.", cn: "学生们在实验室里做了一个实验。" },
+  "expert": { en: "She is an expert in computer science.", cn: "她是计算机科学方面的专家。" },
+  "explain": { en: "Can you explain why you were late?", cn: "你能解释一下为什么迟到吗？" },
+  "explore": { en: "The children love to explore the woods.", cn: "孩子们喜欢探索树林。" },
+  "express": { en: "It is hard to express my feelings in words.", cn: "很难用语言表达我的感受。" },
+  "extreme": { en: "The desert has extreme temperatures.", cn: "沙漠里温度极端。" },
+
+  "factor": { en: "Hard work is a key factor in success.", cn: "努力是成功的关键因素。" },
+  "familiar": { en: "Her face looks familiar to me.", cn: "她的脸在我看来很熟悉。" },
+  "fashion": { en: "Long skirts are back in fashion this year.", cn: "今年长裙又流行起来了。" },
+  "favor": { en: "Could you do me a favor?", cn: "你能帮我一个忙吗？" },
+  "favorite": { en: "This song is my favorite.", cn: "这首歌是我最喜欢的。" },
+  "feasible": { en: "The plan seems feasible in practice.", cn: "这个计划在实践中似乎可行。" },
+  "figure": { en: "The figure shows the growth of the economy.", cn: "图表显示了经济的增长。" },
+  "finance": { en: "She works in finance.", cn: "她在金融行业工作。" },
+  "firm": { en: "He is firm in his decision.", cn: "他的决定很坚定。" },
+  "fitness": { en: "He goes to the gym to improve his fitness.", cn: "他去健身房锻炼身体。" },
+  "fluent": { en: "She speaks fluent English.", cn: "她说一口流利的英语。" },
+  "forbid": { en: "Smoking is forbidden in this building.", cn: "这座楼里禁止吸烟。" },
+  "forecast": { en: "The weather forecast says it will rain tomorrow.", cn: "天气预报说明天有雨。" },
+  "foreign": { en: "He can speak two foreign languages.", cn: "他会说两门外语。" },
+  "former": { en: "She is a former student of our school.", cn: "她是我们学校以前的学生。" },
+  "fortune": { en: "He made a fortune in business.", cn: "他做生意发了财。" },
+  "frequent": { en: "He is a frequent visitor to the museum.", cn: "他是博物馆的常客。" },
+  "furthermore": { en: "The house is too small, and furthermore it is expensive.", cn: "房子太小，而且又贵。" },
+
+  "gather": { en: "The children gathered around the teacher.", cn: "孩子们围在老师身边。" },
+  "generous": { en: "She is generous with her time.", cn: "她乐于付出时间。" },
+  "genuine": { en: "This bag is made of genuine leather.", cn: "这个包是真皮做的。" },
+  "gesture": { en: "He made a gesture of welcome.", cn: "他做了一个表示欢迎的手势。" },
+  "govern": { en: "The country is governed by a president.", cn: "这个国家由总统治理。" },
+  "grant": { en: "The university granted him a scholarship.", cn: "大学授予他奖学金。" },
+  "grateful": { en: "I am grateful for your kind help.", cn: "我很感激你的热心帮助。" },
+  "grow": { en: "These plants grow fast in warm weather.", cn: "这些植物在温暖的天气里长得很快。" },
+  "guilty": { en: "The judge found him guilty.", cn: "法官判他有罪。" },
+
+  "habit": { en: "Reading before bed is a good habit.", cn: "睡前阅读是个好习惯。" },
+  "handle": { en: "She knows how to handle difficult customers.", cn: "她知道如何应付难缠的顾客。" },
+  "harm": { en: "Smoking does harm to your health.", cn: "吸烟有害健康。" },
+  "harvest": { en: "The farmers had a good harvest this year.", cn: "农民们今年收成很好。" },
+  "hesitate": { en: "Don't hesitate to ask for help.", cn: "别犹豫，尽管求助。" },
+  "hire": { en: "They decided to hire two more workers.", cn: "他们决定再雇两名工人。" },
+  "horizon": { en: "The sun rose above the horizon.", cn: "太阳从地平线上升起。" },
+  "host": { en: "The host welcomed the guests warmly.", cn: "主人热情地欢迎客人。" },
+  "humble": { en: "He remained humble despite his success.", cn: "尽管成功，他依然谦虚。" },
+
+  "ideal": { en: "This is an ideal place for a holiday.", cn: "这是度假的理想之地。" },
+  "identical": { en: "The two pictures look identical.", cn: "这两幅画看起来一模一样。" },
+  "idle": { en: "Don't sit idle all day.", cn: "别整天闲坐着。" },
+  "imagine": { en: "Can you imagine life without the Internet?", cn: "你能想象没有互联网的生活吗？" },
+  "imitate": { en: "Children often imitate their parents.", cn: "孩子常模仿父母。" },
+  "immediate": { en: "We need an immediate answer.", cn: "我们需要立即得到答复。" },
+  "immense": { en: "The project was an immense success.", cn: "这个项目取得了巨大的成功。" },
+  "import": { en: "The country imports oil from abroad.", cn: "这个国家从国外进口石油。" },
+  "importance": { en: "Health is of great importance to everyone.", cn: "健康对每个人都很重要。" },
+  "impress": { en: "Her speech impressed the audience deeply.", cn: "她的演讲给观众留下了深刻的印象。" },
+  "improve": { en: "I want to improve my English.", cn: "我想提高英语水平。" },
+  "include": { en: "The price includes breakfast.", cn: "价格包含早餐。" },
+  "income": { en: "His income is enough to support his family.", cn: "他的收入足以养家。" },
+  "increase": { en: "The number of students increased this year.", cn: "今年学生人数增加了。" },
+  "independent": { en: "She is independent and never asks for help.", cn: "她很独立，从不求助。" },
+  "industry": { en: "The car industry is developing fast.", cn: "汽车工业发展迅速。" },
+  "inform": { en: "Please inform us of any changes.", cn: "如有任何变动请通知我们。" },
+  "injure": { en: "He injured his leg in the accident.", cn: "他在事故中伤了腿。" },
+  "inquire": { en: "I called to inquire about the train times.", cn: "我打电话询问火车时刻。" },
+  "instance": { en: "For instance, you can take the bus.", cn: "例如，你可以坐公共汽车。" },
+  "instant": { en: "The medicine gives instant relief.", cn: "这种药能立刻缓解症状。" },
+  "institute": { en: "She studies at a famous research institute.", cn: "她在一所著名的研究所学习。" },
+  "instruct": { en: "The teacher instructed us to read the text.", cn: "老师让我们读课文。" },
+  "instrument": { en: "The piano is a musical instrument.", cn: "钢琴是一种乐器。" },
+  "insurance": { en: "He bought insurance for his new car.", cn: "他为新车买了保险。" },
+  "intelligence": { en: "She is a woman of great intelligence.", cn: "她是一个极聪明的女人。" },
+  "intense": { en: "He felt intense pain in his back.", cn: "他感到背部剧痛。" },
+  "intention": { en: "I have no intention of giving up.", cn: "我无意放弃。" },
+  "interest": { en: "He lost interest in the game.", cn: "他对这个游戏失去了兴趣。" },
+  "interfere": { en: "Don't interfere in other people's business.", cn: "别干涉别人的事。" },
+  "internal": { en: "The company has an internal problem to solve.", cn: "公司有一个内部问题要解决。" },
+  "interrupt": { en: "Don't interrupt me when I'm speaking.", cn: "我说话时别打断我。" },
+  "introduce": { en: "Let me introduce my friend to you.", cn: "让我把我的朋友介绍给你。" },
+  "invent": { en: "Edison invented the light bulb.", cn: "爱迪生发明了电灯泡。" },
+  "investigate": { en: "The police are investigating the case.", cn: "警方正在调查这个案件。" },
+  "invite": { en: "They invited us to their wedding.", cn: "他们邀请我们参加婚礼。" },
+  "issue": { en: "We discussed the issue of pollution.", cn: "我们讨论了污染问题。" },
+
+  "journey": { en: "The journey to the mountains took five hours.", cn: "去山区的旅程花了五个小时。" },
+  "judge": { en: "Don't judge a person by his appearance.", cn: "不要以貌取人。" },
+  "justice": { en: "We must fight for justice.", cn: "我们必须为正义而战。" },
+
+  "keen": { en: "She is keen on playing the piano.", cn: "她热衷于弹钢琴。" },
+  "knowledge": { en: "Knowledge is power.", cn: "知识就是力量。" },
+
+  "labor": { en: "The work requires much labor.", cn: "这项工作需要大量劳动。" },
+  "lack": { en: "He lacks confidence in himself.", cn: "他缺乏自信。" },
+  "launch": { en: "The company launched a new product last week.", cn: "公司上周推出了一款新产品。" },
+  "legal": { en: "Is it legal to park here?", cn: "在这里停车合法吗？" },
+  "leisure": { en: "I read books in my leisure time.", cn: "空闲时我读书。" },
+  "liberal": { en: "He has a liberal attitude towards life.", cn: "他对生活持开明的态度。" },
+  "license": { en: "You need a license to drive a car.", cn: "开车需要驾照。" },
+  "likely": { en: "It is likely to rain this afternoon.", cn: "今天下午很可能下雨。" },
+  "limit": { en: "There is a limit to everything.", cn: "凡事都有限度。" },
+  "locate": { en: "The office is located in the city center.", cn: "办公室位于市中心。" },
+  "logic": { en: "There is no logic in his argument.", cn: "他的论点没有逻辑。" },
+  "loyal": { en: "A good friend is loyal to you.", cn: "好朋友对你忠诚。" },
+  "luxury": { en: "A holiday on the beach is a luxury for me.", cn: "对我来说在海边度假是一种奢侈。" },
+
+  "magnificent": { en: "We saw a magnificent palace.", cn: "我们参观了一座宏伟的宫殿。" },
+  "major": { en: "This is a major problem for us.", cn: "这对我们来说是个大问题。" },
+  "manage": { en: "She managed to finish the work on time.", cn: "她设法按时完成了工作。" },
+  "manner": { en: "He spoke in a friendly manner.", cn: "他说话态度友好。" },
+  "manufacture": { en: "The company manufactures computers.", cn: "这家公司生产电脑。" },
+  "marry": { en: "He married his college classmate.", cn: "他和大学同学结婚了。" },
+  "material": { en: "The bridge is made of strong material.", cn: "这座桥是用坚固的材料建造的。" },
+  "mature": { en: "She is very mature for her age.", cn: "就她的年龄而言她很成熟。" },
+  "means": { en: "We need to find a means to solve the problem.", cn: "我们需要找到解决问题的方法。" },
+  "medicine": { en: "Take this medicine three times a day.", cn: "这药一天服三次。" },
+  "mental": { en: "He has a strong mental ability.", cn: "他有很强的智力。" },
+  "mention": { en: "Don't mention it to anyone.", cn: "别向任何人提起这件事。" },
+  "merely": { en: "It is merely a suggestion, not an order.", cn: "这只是一个建议，不是命令。" },
+  "method": { en: "This is a new method of teaching.", cn: "这是一种新的教学方法。" },
+  "mild": { en: "The climate here is mild in winter.", cn: "这里冬天气候温和。" },
+  "minor": { en: "It is only a minor problem.", cn: "这只是个小问题。" },
+  "miracle": { en: "It was a miracle that he survived.", cn: "他能活下来真是个奇迹。" },
+  "mission": { en: "Their mission is to help the poor.", cn: "他们的使命是帮助穷人。" },
+  "mobile": { en: "Most people now have a mobile phone.", cn: "现在大多数人都有手机。" },
+  "modest": { en: "She is modest about her success.", cn: "她对自己的成功很谦虚。" },
+  "modify": { en: "We need to modify the design a little.", cn: "我们需要稍微修改一下设计。" },
+  "moral": { en: "The story teaches a moral lesson.", cn: "这个故事讲述了一个道德教训。" },
+  "motive": { en: "What was his motive for the crime?", cn: "他犯罪的动机是什么？" },
+  "mutual": { en: "They have a mutual respect for each other.", cn: "他们互相尊重。" },
+
+  "native": { en: "English is his native language.", cn: "英语是他的母语。" },
+  "negative": { en: "Don't be so negative about the future.", cn: "别对未来这么悲观。" },
+  "neglect": { en: "Don't neglect your health.", cn: "不要忽视你的健康。" },
+  "negotiate": { en: "The two sides negotiated for three hours.", cn: "双方谈判了三个小时。" },
+  "nervous": { en: "He felt nervous before the speech.", cn: "演讲前他感到紧张。" },
+  "neutral": { en: "Switzerland remained neutral during the war.", cn: "战争期间瑞士保持中立。" },
+  "nevertheless": { en: "He was tired; nevertheless, he kept working.", cn: "他很累，但仍然继续工作。" },
+  "normal": { en: "It is normal to feel nervous.", cn: "感到紧张是正常的。" },
+  "notice": { en: "Did you notice the new sign?", cn: "你注意到那个新标志了吗？" },
+  "numerous": { en: "He has numerous friends.", cn: "他有很多朋友。" },
+
+  "objective": { en: "Our objective is to finish the project this year.", cn: "我们的目标是在今年完成项目。" },
+  "obligation": { en: "We have an obligation to help the weak.", cn: "我们有义务帮助弱者。" },
+  "observe": { en: "She likes to observe the stars at night.", cn: "她喜欢在晚上观察星星。" },
+  "obstacle": { en: "Laziness is the biggest obstacle to success.", cn: "懒惰是成功最大的障碍。" },
+  "occasion": { en: "I wear this suit on special occasions.", cn: "我在特殊场合穿这套西装。" },
+  "offer": { en: "He offered me a cup of tea.", cn: "他给了我一杯茶。" },
+  "operate": { en: "The machine is easy to operate.", cn: "这台机器容易操作。" },
+  "opinion": { en: "In my opinion, the plan is good.", cn: "依我看，这个计划很好。" },
+  "opponent": { en: "He defeated his opponent in the match.", cn: "他在比赛中击败了对手。" },
+  "oppose": { en: "Many people oppose the new law.", cn: "许多人反对这项新法律。" },
+  "option": { en: "We have no option but to leave.", cn: "我们别无选择，只能离开。" },
+  "ordinary": { en: "It was an ordinary day.", cn: "那是平凡的一天。" },
+  "organize": { en: "They organized a party for the new students.", cn: "他们为新生组织了一次聚会。" },
+  "origin": { en: "The origin of the word is unknown.", cn: "这个词的起源不详。" },
+  "outcome": { en: "We are waiting for the outcome of the election.", cn: "我们在等待选举的结果。" },
+  "outline": { en: "He gave an outline of the plan.", cn: "他概述了计划。" },
+  "overcome": { en: "She overcame many difficulties to succeed.", cn: "她克服了许多困难才成功。" },
+  "owe": { en: "I owe my success to my teachers.", cn: "我的成功要归功于老师们。" },
+  "own": { en: "She owns a small restaurant.", cn: "她拥有一家小餐馆。" },
+
+  "pace": { en: "He walked at a fast pace.", cn: "他快步走着。" },
+  "pain": { en: "He felt a sharp pain in his chest.", cn: "他感到胸口剧痛。" },
+  "panel": { en: "A panel of judges will decide the winner.", cn: "由评审小组决定获胜者。" },
+  "parallel": { en: "The road runs parallel to the river.", cn: "这条路与河流平行。" },
+  "particular": { en: "Is there any particular reason for your choice?", cn: "你的选择有什么特别的理由吗？" },
+  "partner": { en: "She is my business partner.", cn: "她是我的生意伙伴。" },
+  "passion": { en: "He has a passion for music.", cn: "他酷爱音乐。" },
+  "patience": { en: "Teaching children needs great patience.", cn: "教孩子需要极大的耐心。" },
+  "pattern": { en: "The cloth has a beautiful pattern.", cn: "这块布的花纹很漂亮。" },
+  "pause": { en: "He paused for a moment before answering.", cn: "他停了一下才回答。" },
+  "peculiar": { en: "There is a peculiar smell in the room.", cn: "房间里有一股奇怪的气味。" },
+  "perceive": { en: "I perceived a change in his attitude.", cn: "我察觉到他的态度发生了变化。" },
+  "percent": { en: "Ninety percent of the students passed the exam.", cn: "百分之九十的学生通过了考试。" },
+  "permanent": { en: "She is looking for a permanent job.", cn: "她在找一份长期的工作。" },
+  "permit": { en: "The teacher permitted us to leave early.", cn: "老师允许我们早点离开。" },
+  "persist": { en: "If you persist, you will succeed.", cn: "如果你坚持下去，就会成功。" },
+  "perspective": { en: "Try to see the problem from a different perspective.", cn: "试着从不同的角度看问题。" },
+  "persuade": { en: "I persuaded him to see a doctor.", cn: "我劝他去看医生。" },
+  "pessimistic": { en: "Don't be so pessimistic about the result.", cn: "别对结果这么悲观。" },
+  "physical": { en: "Regular physical exercise is good for you.", cn: "经常进行体育锻炼对你有好处。" },
+  "pleasant": { en: "We had a pleasant evening together.", cn: "我们一起度过了一个愉快的夜晚。" },
+  "plenty": { en: "There is plenty of food for everyone.", cn: "食物足够大家吃。" },
+  "policy": { en: "The school has a strict policy on cheating.", cn: "学校对作弊有严格的规定。" },
+  "pollution": { en: "Air pollution is a serious problem in the city.", cn: "空气污染是这座城市的一个严重问题。" },
+  "popular": { en: "This song is very popular among young people.", cn: "这首歌在年轻人中很流行。" },
+  "portion": { en: "A large portion of the money went to food.", cn: "很大一部分钱花在了食物上。" },
+  "positive": { en: "She has a positive attitude towards life.", cn: "她对生活态度积极。" },
+  "possess": { en: "He possesses great wealth.", cn: "他拥有巨额财富。" },
+  "poverty": { en: "Many families live in poverty.", cn: "许多家庭生活在贫困中。" },
+  "practical": { en: "We need a practical solution.", cn: "我们需要一个切实可行的解决办法。" },
+  "precious": { en: "Time is precious to everyone.", cn: "时间对每个人都很宝贵。" },
+  "precise": { en: "Please give me a precise answer.", cn: "请给我一个准确的答案。" },
+  "prefer": { en: "I prefer tea to coffee.", cn: "比起咖啡我更喜欢茶。" },
+  "pregnant": { en: "She is pregnant with her first child.", cn: "她怀着第一个孩子。" },
+  "prepare": { en: "She is preparing for the exam.", cn: "她正在备考。" },
+  "present": { en: "He was present at the meeting.", cn: "他出席了会议。" },
+  "pressure": { en: "He is under great pressure at work.", cn: "他工作压力很大。" },
+  "prevent": { en: "The rain prevented us from going out.", cn: "雨使我们不能出门。" },
+  "primary": { en: "Education is of primary importance.", cn: "教育是最重要的。" },
+  "principle": { en: "Honesty is an important principle.", cn: "诚实是一条重要的原则。" },
+  "private": { en: "This is a private matter.", cn: "这是私事。" },
+  "privilege": { en: "Education is a right, not a privilege.", cn: "教育是一种权利，而非特权。" },
+  "process": { en: "Learning is a gradual process.", cn: "学习是一个渐进的过程。" },
+  "produce": { en: "The factory produces cars.", cn: "这家工厂生产汽车。" },
+  "profession": { en: "He chose teaching as his profession.", cn: "他选择教师作为职业。" },
+  "profit": { en: "The company made a big profit last year.", cn: "公司去年赚了很多钱。" },
+  "progress": { en: "He is making good progress in his studies.", cn: "他在学习上进步很快。" },
+  "project": { en: "They are working on a new project.", cn: "他们正在做一个新项目。" },
+  "promote": { en: "The company promoted him to manager.", cn: "公司提升他为经理。" },
+  "proper": { en: "Put the books back in their proper place.", cn: "把书放回合适的位置。" },
+  "propose": { en: "He proposed a new plan at the meeting.", cn: "他在会上提出了一个新计划。" },
+  "protect": { en: "We should protect wild animals.", cn: "我们应该保护野生动物。" },
+  "prove": { en: "He tried to prove that he was right.", cn: "他试图证明自己是对的。" },
+  "provide": { en: "The school provides free lunch for students.", cn: "学校为学生提供免费午餐。" },
+  "publish": { en: "The writer published a new novel.", cn: "这位作家出版了一部新小说。" },
+  "punish": { en: "The teacher punished him for being late.", cn: "老师因为他迟到而惩罚他。" },
+  "purpose": { en: "What is the purpose of your visit?", cn: "你此行的目的是什么？" },
+
+  "quality": { en: "The quality of the product is very high.", cn: "这个产品的质量很高。" },
+  "quantity": { en: "Quality is more important than quantity.", cn: "质量比数量更重要。" },
+  "quit": { en: "He quit his job last month.", cn: "他上个月辞了职。" },
+
+  "range": { en: "The store sells a wide range of products.", cn: "这家商店销售多种多样的产品。" },
+  "rapid": { en: "The city has seen rapid growth.", cn: "这座城市发展迅速。" },
+  "rare": { en: "This is a rare kind of bird.", cn: "这是一种稀有鸟类。" },
+  "rather": { en: "I would rather stay at home.", cn: "我宁愿待在家里。" },
+  "react": { en: "How did he react to the news?", cn: "他对这个消息反应如何？" },
+  "realize": { en: "I didn't realize it was so late.", cn: "我没意识到已经这么晚了。" },
+  "reasonable": { en: "The price is quite reasonable.", cn: "价格相当合理。" },
+  "recall": { en: "I can't recall where I put the key.", cn: "我想不起把钥匙放在哪里了。" },
+  "receive": { en: "I received a letter from my friend.", cn: "我收到了朋友的一封信。" },
+  "recent": { en: "He told me about his recent trip.", cn: "他跟我讲了他最近的旅行。" },
+  "recognize": { en: "I recognized her at once.", cn: "我立刻认出了她。" },
+
+  "recommend": { en: "Can you recommend a good restaurant?", cn: "你能推荐一家好餐馆吗？" },
+  "reduce": { en: "We must reduce the cost of production.", cn: "我们必须降低生产成本。" },
+  "refer": { en: "Please refer to the dictionary when needed.", cn: "需要时请查字典。" },
+  "reflect": { en: "The lake reflects the mountains.", cn: "湖面倒映着群山。" },
+  "reform": { en: "The government carried out a tax reform.", cn: "政府进行了税制改革。" },
+  "refuse": { en: "She refused to answer the question.", cn: "她拒绝回答这个问题。" },
+  "regard": { en: "I regard him as my best friend.", cn: "我把他当作我最好的朋友。" },
+  "region": { en: "This region is famous for its tea.", cn: "这个地区以茶叶闻名。" },
+  "regret": { en: "He regretted not working harder.", cn: "他后悔没有更努力。" },
+  "regular": { en: "He takes regular exercise every day.", cn: "他每天坚持锻炼。" },
+  "relate": { en: "This story relates to my own experience.", cn: "这个故事与我的经历有关。" },
+  "release": { en: "The band released a new album.", cn: "乐队发行了一张新专辑。" },
+  "relieve": { en: "The medicine relieved my headache.", cn: "这药缓解了我的头痛。" },
+  "remain": { en: "Please remain seated until the end.", cn: "请一直坐到结束。" },
+  "remind": { en: "Please remind me to call him.", cn: "请提醒我给他打电话。" },
+  "remove": { en: "Please remove your shoes before entering.", cn: "进屋前请脱鞋。" },
+  "rent": { en: "They rent a small apartment in the city.", cn: "他们在城里租了一套小公寓。" },
+  "replace": { en: "We need to replace the old computer.", cn: "我们需要更换那台旧电脑。" },
+  "represent": { en: "The dove represents peace.", cn: "鸽子代表和平。" },
+  "reputation": { en: "The school has a good reputation.", cn: "这所学校声誉很好。" },
+  "request": { en: "He made a request for more time.", cn: "他请求更多时间。" },
+  "rescue": { en: "The firemen rescued the child from the fire.", cn: "消防员从火中救出了孩子。" },
+  "research": { en: "She is doing research on cancer.", cn: "她在做癌症研究。" },
+  "reserve": { en: "I reserved a table for two.", cn: "我订了一张两人的桌子。" },
+  "resist": { en: "I couldn't resist the temptation.", cn: "我抵挡不住诱惑。" },
+  "resolve": { en: "We must resolve this problem quickly.", cn: "我们必须尽快解决这个问题。" },
+  "resource": { en: "The country is rich in natural resources.", cn: "这个国家自然资源丰富。" },
+  "respect": { en: "We should respect our teachers.", cn: "我们应该尊敬老师。" },
+  "responsible": { en: "Who is responsible for this mistake?", cn: "谁对这个错误负责？" },
+  "retire": { en: "He retired at the age of sixty.", cn: "他六十岁退休。" },
+  "reward": { en: "He received a reward for his honesty.", cn: "他因诚实而得到了奖励。" },
+  "risk": { en: "Don't risk your life for money.", cn: "别为钱拿生命冒险。" },
+  "routine": { en: "Exercise is part of my daily routine.", cn: "锻炼是我日常生活的一部分。" },
+  "rude": { en: "It is rude to interrupt others.", cn: "打断别人是不礼貌的。" },
+
+  "salary": { en: "He gets a high salary.", cn: "他薪水很高。" },
+  "satisfy": { en: "The answer did not satisfy the teacher.", cn: "这个答案没能让老师满意。" },
+  "scale": { en: "The problem is on a global scale.", cn: "这个问题是全球性的。" },
+  "scene": { en: "The police arrived at the scene quickly.", cn: "警察很快赶到了现场。" },
+  "schedule": { en: "The train arrived on schedule.", cn: "火车准点到达。" },
+  "scholar": { en: "He is a famous scholar of history.", cn: "他是著名的历史学者。" },
+  "score": { en: "Our team scored three goals.", cn: "我们队进了三个球。" },
+  "secure": { en: "The village is safe and secure.", cn: "这个村子很安全。" },
+  "seek": { en: "Many people seek a better life in the city.", cn: "许多人到城里寻求更好的生活。" },
+  "select": { en: "Please select the correct answer.", cn: "请选出正确答案。" },
+  "sensible": { en: "It was a sensible decision.", cn: "那是一个明智的决定。" },
+  "separate": { en: "The two problems are quite separate.", cn: "这两个问题完全不同。" },
+  "serve": { en: "The restaurant serves delicious food.", cn: "这家餐馆提供美味的食物。" },
+  "settle": { en: "They settled in a small town.", cn: "他们在一个小镇定居下来。" },
+  "severe": { en: "He suffered severe pain.", cn: "他忍受着剧痛。" },
+  "share": { en: "We shared the cake among us.", cn: "我们分着吃了蛋糕。" },
+  "shift": { en: "He works the night shift this week.", cn: "他这周上夜班。" },
+  "sincere": { en: "Please accept my sincere thanks.", cn: "请接受我诚挚的感谢。" },
+  "situation": { en: "The situation is getting better.", cn: "情况正在好转。" },
+  "skill": { en: "Reading is a basic skill.", cn: "阅读是一项基本技能。" },
+  "slight": { en: "There is a slight difference between the two.", cn: "两者之间略有不同。" },
+  "smooth": { en: "The road is smooth and wide.", cn: "这条路又平又宽。" },
+  "social": { en: "She has a busy social life.", cn: "她社交生活很丰富。" },
+  "society": { en: "We live in a modern society.", cn: "我们生活在一个现代社会。" },
+  "solution": { en: "We need to find a solution to the problem.", cn: "我们需要找到问题的解决办法。" },
+  "solve": { en: "Can you solve this math problem?", cn: "你能解出这道数学题吗？" },
+  "somehow": { en: "Somehow he managed to escape.", cn: "不知怎的他设法逃脱了。" },
+  "source": { en: "The sun is a source of energy.", cn: "太阳是能量之源。" },
+  "spare": { en: "I have no spare time today.", cn: "我今天没有空闲时间。" },
+  "special": { en: "Today is a special day for us.", cn: "今天对我们来说是特别的日子。" },
+  "species": { en: "This species of bird is rare.", cn: "这种鸟很稀有。" },
+  "spend": { en: "She spends too much money on clothes.", cn: "她在衣服上花的钱太多。" },
+  "spirit": { en: "He has a strong team spirit.", cn: "他有很强的团队精神。" },
+  "spread": { en: "The news spread quickly through the town.", cn: "消息很快传遍了全镇。" },
+  "stable": { en: "The patient is now in a stable condition.", cn: "病人现在病情稳定。" },
+  "standard": { en: "The quality is up to standard.", cn: "质量达到标准。" },
+  "state": { en: "The house is in a poor state.", cn: "这房子状况很差。" },
+  "status": { en: "He has a high status in society.", cn: "他在社会上有很高的地位。" },
+  "steady": { en: "He has made steady progress.", cn: "他取得了稳步的进步。" },
+  "stick": { en: "He stuck a stamp on the envelope.", cn: "他把邮票贴在信封上。" },
+  "stimulate": { en: "Good books stimulate the mind.", cn: "好书能激发思维。" },
+  "structure": { en: "The structure of the building is strong.", cn: "这座建筑的结构很坚固。" },
+  "struggle": { en: "He struggled to make a living.", cn: "他艰难地谋生。" },
+  "subject": { en: "Math is my favorite subject.", cn: "数学是我最喜欢的科目。" },
+  "submit": { en: "Please submit your report by Friday.", cn: "请在周五前提交报告。" },
+  "substance": { en: "Water is a clear substance.", cn: "水是一种透明的物质。" },
+  "substitute": { en: "You can use honey as a substitute for sugar.", cn: "你可以用蜂蜜代替糖。" },
+  "succeed": { en: "If you work hard, you will succeed.", cn: "如果你努力，就会成功。" },
+  "suffer": { en: "He suffered a lot from the illness.", cn: "他因病受了很多苦。" },
+  "suggest": { en: "I suggest that we leave early.", cn: "我建议我们早点出发。" },
+  "suitable": { en: "This movie is not suitable for children.", cn: "这部电影不适合儿童观看。" },
+  "summary": { en: "Please write a summary of the article.", cn: "请写一篇这篇文章的摘要。" },
+  "supply": { en: "The store supplies fresh fruit.", cn: "这家商店供应新鲜水果。" },
+  "support": { en: "My family supports my decision.", cn: "我的家人支持我的决定。" },
+  "suppose": { en: "I suppose you are right.", cn: "我想你是对的。" },
+  "surface": { en: "The surface of the lake is calm.", cn: "湖面很平静。" },
+  "surround": { en: "Tall trees surround the house.", cn: "高大的树木环绕着房子。" },
+  "survey": { en: "The survey shows that most people agree.", cn: "调查显示大多数人同意。" },
+  "suspect": { en: "I suspect that he is lying.", cn: "我怀疑他在撒谎。" },
+  "sustain": { en: "The good news sustained our hope.", cn: "好消息使我们保持希望。" },
+  "symbol": { en: "The dove is a symbol of peace.", cn: "鸽子是和平的象征。" },
+
+  "talent": { en: "She has a talent for drawing.", cn: "她有绘画的天赋。" },
+  "target": { en: "The company set a target for sales.", cn: "公司设定了销售目标。" },
+  "task": { en: "Finishing this task is not easy.", cn: "完成这项任务不容易。" },
+  "technique": { en: "He has good swimming technique.", cn: "他游泳技术很好。" },
+  "technology": { en: "Modern technology changes our lives fast.", cn: "现代科技迅速改变着我们的生活。" },
+  "temporary": { en: "He took a temporary job in a shop.", cn: "他在一家商店找了份临时工作。" },
+  "tendency": { en: "She has a tendency to talk too much.", cn: "她话有点多。" },
+  "term": { en: "The spring term begins in February.", cn: "春季学期二月开始。" },
+  "territory": { en: "The army entered enemy territory.", cn: "军队进入了敌方领土。" },
+  "theory": { en: "His theory was proved correct.", cn: "他的理论被证明是正确的。" },
+  "thorough": { en: "The doctor gave me a thorough examination.", cn: "医生给我做了彻底的检查。" },
+  "threat": { en: "Pollution is a threat to our health.", cn: "污染对我们的健康构成威胁。" },
+  "thus": { en: "He studied hard, and thus he passed.", cn: "他学习努力，因此通过了考试。" },
+  "tolerate": { en: "I can't tolerate the noise any more.", cn: "我再也忍受不了这噪音了。" },
+  "tough": { en: "It was a tough decision to make.", cn: "这是个艰难的决定。" },
+  "trace": { en: "The police found no trace of the thief.", cn: "警察没有发现小偷的踪迹。" },
+  "tradition": { en: "Eating dumplings is a Chinese tradition.", cn: "吃饺子是中国的传统。" },
+  "transfer": { en: "He transferred to another school.", cn: "他转到了另一所学校。" },
+  "translate": { en: "Please translate this sentence into English.", cn: "请把这句话翻译成英语。" },
+  "transport": { en: "The city has a good public transport system.", cn: "这座城市有良好的公共交通系统。" },
+  "treat": { en: "The doctor treated my wound.", cn: "医生处理了我的伤口。" },
+  "trend": { en: "There is a trend towards online shopping.", cn: "有网上购物的趋势。" },
+  "trial": { en: "The new drug is under trial.", cn: "这种新药正在试验中。" },
+  "trick": { en: "He played a trick on his friend.", cn: "他和朋友开了个玩笑。" },
+  "trouble": { en: "I had trouble finding the place.", cn: "我很难找到那个地方。" },
+  "typical": { en: "It is a typical example of his work.", cn: "这是他作品的典型例子。" },
+
+  "ultimate": { en: "His ultimate goal is to be a writer.", cn: "他的最终目标是成为一名作家。" },
+  "undergo": { en: "The city has undergone great changes.", cn: "这座城市经历了巨大的变化。" },
+  "understand": { en: "Do you understand what I mean?", cn: "你明白我的意思吗？" },
+  "unite": { en: "The two parties united against the plan.", cn: "两党联合起来反对这个计划。" },
+  "universe": { en: "The universe is full of mystery.", cn: "宇宙充满神秘。" },
+  "unless": { en: "You won't pass unless you study hard.", cn: "除非努力学习，否则你无法通过。" },
+  "unusual": { en: "It is unusual for him to be late.", cn: "他迟到是不寻常的。" },
+  "update": { en: "Please update the software regularly.", cn: "请定期更新软件。" },
+  "urge": { en: "He urged us to start at once.", cn: "他催促我们马上出发。" },
+  "urgent": { en: "He received an urgent message.", cn: "他收到了一条紧急消息。" },
+  "usage": { en: "The word has several usages.", cn: "这个词有几种用法。" },
+
+  "valuable": { en: "Thank you for your valuable advice.", cn: "感谢你宝贵的建议。" },
+  "value": { en: "The value of the house has risen.", cn: "这座房子的价值上升了。" },
+  "variety": { en: "The store sells a variety of fruits.", cn: "这家商店出售各种水果。" },
+  "various": { en: "The question can be answered in various ways.", cn: "这个问题可以用多种方式回答。" },
+  "vast": { en: "The desert is vast and empty.", cn: "沙漠广阔而空旷。" },
+  "vehicle": { en: "The road is full of vehicles.", cn: "路上满是车辆。" },
+  "venture": { en: "They ventured into the forest.", cn: "他们冒险进入了森林。" },
+  "version": { en: "This is the new version of the software.", cn: "这是软件的新版本。" },
+  "victim": { en: "The victim was taken to hospital.", cn: "受害者被送往医院。" },
+  "view": { en: "The mountain has a beautiful view.", cn: "这座山的景色很美。" },
+  "violate": { en: "He violated the traffic rules.", cn: "他违反了交通规则。" },
+  "violence": { en: "The movie contains too much violence.", cn: "这部电影暴力内容太多。" },
+  "virtue": { en: "Patience is a virtue.", cn: "耐心是一种美德。" },
+  "visible": { en: "The stars are clearly visible tonight.", cn: "今晚星星清晰可见。" },
+  "vision": { en: "He has good vision.", cn: "他视力很好。" },
+  "vocabulary": { en: "Reading helps enlarge your vocabulary.", cn: "阅读有助于扩大词汇量。" },
+  "volunteer": { en: "She works as a volunteer at the hospital.", cn: "她在医院当志愿者。" },
+
+  "wealth": { en: "Health is more important than wealth.", cn: "健康比财富更重要。" },
+  "weapon": { en: "The police found the weapon.", cn: "警察找到了凶器。" },
+  "welfare": { en: "The government cares about people's welfare.", cn: "政府关心人民的福利。" },
+  "whereas": { en: "He likes coffee, whereas I prefer tea.", cn: "他喜欢咖啡，而我更喜欢茶。" },
+  "willing": { en: "He is willing to help others.", cn: "他乐于助人。" },
+  "wisdom": { en: "Experience brings wisdom.", cn: "经验带来智慧。" },
+  "witness": { en: "He was a witness to the accident.", cn: "他是事故的目击者。" },
+  "wonder": { en: "I wonder what happened to him.", cn: "我想知道他出了什么事。" },
+  "worth": { en: "This book is worth reading.", cn: "这本书值得一读。" },
+  "worthwhile": { en: "It is worthwhile to visit the museum.", cn: "参观这个博物馆是值得的。" }
+};
+
+/* ===================================================================
  * 核心数据与状态管理
  * =================================================================== */
 const STORAGE_KEY = "wordbook_records_v1";   // localStorage 存储键名
@@ -1377,11 +2538,17 @@ let data = loadData();          // 从 localStorage 加载数据
 let currentWord = null;         // 当前正在学习的单词对象
 let currentIndex = -1;          // 当前单词在复习队列中的下标
 let queue = [];                 // 复习队列（生词排在前面）
-let mode = "card";              // 当前模式：card / spell / listen
+let mode = "card";              // 当前模式：card / spell / listen / quiz
 let listenOptions = [];         // 当前听音题的选项列表
 let listenAnswered = false;     // 当前听音题是否已作答
 let spellAnswered = false;      // 当前拼写题是否已作答（防止重复判定）
-let reviewingWrong = false;     // 是否正在复习错题
+let reviewingWrong = false;     // 是否正在复习（错题本或测验错题）
+let reviewSource = null;        // 复习单词列表（null 表示正常学习全部词库）
+
+/* ---------- 单词测验状态 ---------- */
+let quiz = null;                // 当前测验对象 { list, index, correct, wrong, answered, currentType, options }
+let quizCount = 10;             // 默认题量
+let quizType = "mix";           // 题型：choice / blank / mix
 
 /* ---------- 数据持久化 ---------- */
 function loadData() {
@@ -1407,18 +2574,18 @@ function saveData() {
  * 每个单词维护一个“待复习权重”，不认识的词权重更高、更靠前
  * =================================================================== */
 function buildQueue() {
-  // 复习错题时只对错题本中的单词建队，否则使用完整词库
+  // 复习模式只对复习列表中的单词建队，否则使用完整词库
   let source = WORDS;
-  if (reviewingWrong) {
-    const wrongWords = WORDS.filter(function (w) {
-      return data.wrongBook.indexOf(w.word) !== -1;
+  if (reviewSource) {
+    const ws = WORDS.filter(function (w) {
+      return reviewSource.indexOf(w.word) !== -1;
     });
-    if (wrongWords.length > 0) {
-      source = wrongWords;
+    if (ws.length > 0) {
+      source = ws;
     } else {
-      // 复习过程中错题全部掌握，自动退出复习模式
-      reviewingWrong = false;
-      document.getElementById("review-banner").classList.remove("visible");
+      // 复习过程中单词全部掌握，自动退出复习模式
+      exitWrongReview();
+      return;
     }
   }
 
@@ -1465,6 +2632,17 @@ function updateStats() {
   document.getElementById("stat-rate").textContent = rate + "%";
 }
 
+/* 例句渲染工具：将单词的例句填充到指定前缀的元素中，无例句则隐藏 */
+function showExample(prefix) {
+  const wrap = document.getElementById(prefix + "-example");
+  if (!wrap) return;
+  const ex = EXAMPLES[currentWord.word];
+  if (!ex) { wrap.style.display = "none"; return; }
+  document.getElementById(prefix + "-example-en").textContent = ex.en;
+  document.getElementById(prefix + "-example-cn").textContent = ex.cn;
+  wrap.style.display = "block";
+}
+
 /* ===================================================================
  * 卡片模式渲染
  * =================================================================== */
@@ -1475,6 +2653,7 @@ function renderCard() {
   document.getElementById("back-word").textContent = currentWord.word;
   document.getElementById("back-phonetic").textContent = currentWord.phonetic;
   document.getElementById("back-meaning").textContent = currentWord.meaning;
+  showExample("back");
 
   // 进度显示：当前是第几个 / 总共多少个
   document.getElementById("card-progress").textContent =
@@ -1494,6 +2673,7 @@ function renderSpell() {
   document.getElementById("spell-input").value = "";
   document.getElementById("spell-result").className = "spell-result";
   document.getElementById("spell-result").textContent = "";
+  document.getElementById("spell-example").style.display = "none";
   document.getElementById("spell-progress").textContent =
     "第 " + (currentIndex + 1) + " / " + queue.length + " 个单词";
   // 自动聚焦输入框
@@ -1548,8 +2728,13 @@ function renderCurrent() {
     renderCard();
   } else if (mode === "spell") {
     renderSpell();
-  } else {
+  } else if (mode === "listen") {
     renderListen();
+  } else if (mode === "quiz") {
+    renderQuizHome();
+  } else if (mode === "cet") {
+    updateCetStat();
+    buildCetQuestion();
   }
 }
 
@@ -1669,10 +2854,21 @@ function setMode(m) {
   document.getElementById("tab-card").classList.toggle("active", m === "card");
   document.getElementById("tab-spell").classList.toggle("active", m === "spell");
   document.getElementById("tab-listen").classList.toggle("active", m === "listen");
+  document.getElementById("tab-quiz").classList.toggle("active", m === "quiz");
+  document.getElementById("tab-cet").classList.toggle("active", m === "cet");
   document.getElementById("card-mode").style.display = m === "card" ? "block" : "none";
   document.getElementById("spell-mode").classList.toggle("visible", m === "spell");
   document.getElementById("listen-mode").classList.toggle("visible", m === "listen");
-  renderCurrent();
+  document.getElementById("quiz-mode").classList.toggle("visible", m === "quiz");
+  document.getElementById("cet-mode").classList.toggle("visible", m === "cet");
+  if (m === "quiz") {
+    renderQuizHome();  // 进入测验时回到开始界面
+  } else if (m === "cet") {
+    updateCetStat();
+    buildCetQuestion();
+  } else {
+    renderCurrent();
+  }
 }
 
 /* ===================================================================
@@ -1736,6 +2932,8 @@ function bindEvents() {
   document.getElementById("tab-card").addEventListener("click", function () { setMode("card"); });
   document.getElementById("tab-spell").addEventListener("click", function () { setMode("spell"); });
   document.getElementById("tab-listen").addEventListener("click", function () { setMode("listen"); });
+  document.getElementById("tab-quiz").addEventListener("click", function () { setMode("quiz"); });
+  document.getElementById("tab-cet").addEventListener("click", function () { setMode("cet"); });
 
   // 听音选义：点击喇叭重播发音
   document.getElementById("listen-play").addEventListener("click", function () {
@@ -1760,6 +2958,100 @@ function bindEvents() {
 
   // 主题切换
   document.getElementById("theme-btn").addEventListener("click", toggleTheme);
+
+  // ===== 单词测验 =====
+  document.querySelectorAll("#quiz-count button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      quizCount = parseInt(b.dataset.n, 10);
+      document.querySelectorAll("#quiz-count button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+    });
+  });
+  document.querySelectorAll("#quiz-type button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      quizType = b.dataset.t;
+      document.querySelectorAll("#quiz-type button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+    });
+  });
+  document.getElementById("quiz-start").addEventListener("click", startQuiz);
+  document.getElementById("quiz-submit").addEventListener("click", checkQuizBlank);
+  document.getElementById("quiz-input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") checkQuizBlank();
+  });
+  document.getElementById("quiz-to-review").addEventListener("click", function () {
+    if (quiz && quiz.wrong.length > 0) {
+      startReview(quiz.wrong.map(function (w) { return w.word; }));
+    }
+  });
+  document.getElementById("quiz-again").addEventListener("click", startQuiz);
+
+  // ===== AI 单词助手 =====
+  document.getElementById("ai-fab").addEventListener("click", function () {
+    document.getElementById("ai-window").classList.toggle("open");
+  });
+  document.getElementById("ai-close").addEventListener("click", function () {
+    document.getElementById("ai-window").classList.remove("open");
+  });
+  document.getElementById("ai-clear").addEventListener("click", function () {
+    if (confirm("确定清空所有聊天记录？")) clearChat();
+  });
+  document.getElementById("ai-send").addEventListener("click", sendChatFromInput);
+  document.getElementById("ai-input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") sendChatFromInput();
+  });
+  document.getElementById("ai-tooltip").addEventListener("click", function () {
+    const w = this.dataset.word;
+    hideWordTooltip();
+    if (w) queryAIWord(w);
+  });
+
+  // 选中单词后一键查询 AI
+  document.addEventListener("mouseup", function (e) {
+    setTimeout(function () {
+      if (e.target.closest && e.target.closest("#ai-tooltip")) return;
+      const sel = getSelectedWord();
+      if (sel) {
+        showWordTooltip(e.clientX, e.clientY, sel);
+      } else {
+        hideWordTooltip();
+      }
+    }, 10);
+  });
+  document.addEventListener("mousedown", function (e) {
+    if (!(e.target.closest && e.target.closest("#ai-tooltip"))) hideWordTooltip();
+  });
+
+  // ===== 四六级刷题 =====
+  document.querySelectorAll("#cet-level button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      cetLevel = parseInt(b.dataset.level, 10);
+      cetDrillWords = null; // 切换题库时退出错题重刷
+      document.querySelectorAll("#cet-level button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      updateCetStat();
+      buildCetQuestion();
+    });
+  });
+  document.getElementById("cet-submit").addEventListener("click", checkCetAnswer);
+  document.getElementById("cet-next").addEventListener("click", buildCetQuestion);
+  document.getElementById("cet-wb-btn").addEventListener("click", openCetWrongBook);
+  document.getElementById("cet-wb-close").addEventListener("click", closeCetWrongBook);
+  document.getElementById("cet-wb-overlay").addEventListener("click", function (e) {
+    if (e.target === this) closeCetWrongBook(); // 点击遮罩空白处关闭
+  });
+  document.getElementById("cet-wb-review").addEventListener("click", startCetDrill);
+  document.getElementById("cet-wb-clear").addEventListener("click", function () {
+    if (confirm("确定清空四六级错题本？")) {
+      cetData.wrongBook = [];
+      saveCetData();
+      updateCetStat();
+      renderCetWrongBook();
+    }
+  });
+
+  // 生成森林背景落叶
+  createLeaves();
 }
 
 /* 拼写检查逻辑 */
@@ -1779,6 +3071,8 @@ function checkSpell() {
     // 拼错时朗读正确发音，加深记忆
     speak(currentWord.word);
   }
+  // 作答后展示该词的例句，帮助在语境中记忆
+  showExample("spell");
 
   // 显示结果后延迟 1.2 秒自动进入下一个词
   setTimeout(function () {
@@ -1872,25 +3166,774 @@ function renderWrongBook() {
   });
 }
 
-/* 开始复习错题（在当前模式下仅学习错题本中的单词） */
-function startWrongReview() {
-  if (data.wrongBook.length === 0) return; // 没错题不启动
+/* 开始复习指定单词列表（错题本 / 测验错题），在当前模式下仅学习这些词 */
+function startReview(words) {
+  if (!words || words.length === 0) return;
+  reviewSource = words.slice();
   reviewingWrong = true;
   closeWrongBook();
   buildQueue();
   nextWord();
   renderCurrent();
   document.getElementById("review-banner").classList.add("visible");
-  document.getElementById("review-count").textContent = data.wrongBook.length;
+  document.getElementById("review-count").textContent = words.length;
 }
 
-/* 退出错题复习，恢复正常学习 */
+/* 开始复习错题本中的单词 */
+function startWrongReview() {
+  startReview(data.wrongBook);
+}
+
+/* 退出复习模式，恢复正常学习 */
 function exitWrongReview() {
   reviewingWrong = false;
+  reviewSource = null;
   document.getElementById("review-banner").classList.remove("visible");
   buildQueue();
   nextWord();
   renderCurrent();
+}
+
+/* ===================================================================
+ * 单词测验模块
+ * =================================================================== */
+function shuffleArr(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 选择题：为给定单词构造 1 个正确释义 + 3 个干扰释义的选项 */
+function buildMeaningOptions(word) {
+  const correct = word.meaning;
+  const others = WORDS.filter(function (w) { return w.word !== word.word; });
+  const distractors = [];
+  const shuffled = shuffleArr(others);
+  for (let i = 0; i < shuffled.length && distractors.length < 3; i++) {
+    const m = shuffled[i].meaning;
+    if (m !== correct && distractors.indexOf(m) === -1) distractors.push(m);
+  }
+  if (distractors.length < 3) {
+    const all = WORDS.map(function (w) { return w.meaning; });
+    for (let i = 0; i < all.length && distractors.length < 3; i++) {
+      if (all[i] !== correct && distractors.indexOf(all[i]) === -1) distractors.push(all[i]);
+    }
+  }
+  return shuffleArr([correct].concat(distractors));
+}
+
+/* 测验开始界面（回到选题量/题型界面，并重置当前测验） */
+function renderQuizHome() {
+  quiz = null;
+  document.getElementById("quiz-setup").style.display = "block";
+  document.getElementById("quiz-question").style.display = "none";
+  document.getElementById("quiz-report").style.display = "none";
+  document.querySelectorAll("#quiz-count button").forEach(function (b) {
+    b.classList.toggle("active", parseInt(b.dataset.n, 10) === quizCount);
+  });
+  document.querySelectorAll("#quiz-type button").forEach(function (b) {
+    b.classList.toggle("active", b.dataset.t === quizType);
+  });
+}
+
+/* 开始一场测验 */
+function startQuiz() {
+  const n = Math.min(quizCount, WORDS.length);
+  const list = shuffleArr(WORDS).slice(0, n);
+  quiz = { list: list, index: 0, correct: 0, wrong: [], answered: false };
+  document.getElementById("quiz-setup").style.display = "none";
+  document.getElementById("quiz-question").style.display = "block";
+  document.getElementById("quiz-report").style.display = "none";
+  renderQuizQuestion();
+}
+
+function quizFinished() {
+  return quiz && quiz.index >= quiz.list.length;
+}
+
+/* 渲染当前题目 */
+function renderQuizQuestion() {
+  const q = quiz;
+  const w = q.list[q.index];
+  q.answered = false;
+  document.getElementById("quiz-progress").textContent =
+    "第 " + (q.index + 1) + " / " + q.list.length + " 题";
+  document.getElementById("quiz-feedback").className = "quiz-feedback";
+  document.getElementById("quiz-feedback").textContent = "";
+
+  let type = quizType;
+  if (type === "mix") type = (q.index % 2 === 0) ? "choice" : "blank";
+  q.currentType = type;
+
+  const choiceEl = document.getElementById("quiz-choice");
+  const blankEl = document.getElementById("quiz-blank");
+
+  if (type === "choice") {
+    choiceEl.style.display = "block";
+    blankEl.style.display = "none";
+    document.getElementById("quiz-qtype").textContent = "选择题 · 选出正确释义";
+    document.getElementById("quiz-choice-prompt").textContent = w.word;
+    const options = buildMeaningOptions(w);
+    q.options = options;
+    const box = document.getElementById("quiz-options");
+    box.innerHTML = "";
+    options.forEach(function (opt, i) {
+      const btn = document.createElement("button");
+      btn.className = "quiz-opt";
+      btn.textContent = opt;
+      btn.dataset.index = i;
+      btn.addEventListener("click", function () { checkQuizChoice(i); });
+      box.appendChild(btn);
+    });
+  } else {
+    choiceEl.style.display = "none";
+    blankEl.style.display = "block";
+    document.getElementById("quiz-qtype").textContent = "默写填空 · 根据释义拼写单词";
+    document.getElementById("quiz-blank-meaning").textContent = w.meaning;
+    const input = document.getElementById("quiz-input");
+    input.value = "";
+    input.disabled = false;
+    setTimeout(function () { input.focus(); }, 50);
+  }
+}
+
+/* 选择题作答 */
+function checkQuizChoice(index) {
+  const q = quiz;
+  if (!q || q.answered) return;
+  q.answered = true;
+  const w = q.list[q.index];
+  const correct = q.options[index] === w.meaning;
+  document.querySelectorAll(".quiz-opt").forEach(function (btn, i) {
+    btn.disabled = true;
+    if (q.options[i] === w.meaning) btn.classList.add("correct");
+    else if (i === index) btn.classList.add("wrong");
+  });
+  const fb = document.getElementById("quiz-feedback");
+  if (correct) {
+    fb.textContent = "✅ 正确！ " + w.word + " — " + w.meaning;
+    fb.className = "quiz-feedback correct";
+  } else {
+    fb.textContent = "❌ 错误，正确答案：" + w.meaning;
+    fb.className = "quiz-feedback wrong";
+  }
+  finishQuizAnswer(correct);
+}
+
+/* 默写填空题作答 */
+function checkQuizBlank() {
+  const q = quiz;
+  if (!q || q.answered) return;
+  const input = document.getElementById("quiz-input");
+  const val = input.value.trim();
+  if (!val) return;
+  q.answered = true;
+  input.disabled = true;
+  const w = q.list[q.index];
+  const correct = val.toLowerCase() === w.word.toLowerCase();
+  const fb = document.getElementById("quiz-feedback");
+  if (correct) {
+    fb.textContent = "✅ 拼写正确！ " + w.word;
+    fb.className = "quiz-feedback correct";
+  } else {
+    fb.textContent = "❌ 拼写错误，正确答案：" + w.word;
+    fb.className = "quiz-feedback wrong";
+  }
+  finishQuizAnswer(correct);
+}
+
+/* 记录本题结果并进入下一题或显示报告 */
+function finishQuizAnswer(correct) {
+  const q = quiz;
+  const w = q.list[q.index];
+  if (correct) {
+    q.correct += 1;
+  } else {
+    q.wrong.push({ word: w.word, meaning: w.meaning, phonetic: w.phonetic });
+    // 错题自动存入错题本
+    if (data.wrongBook.indexOf(w.word) === -1) {
+      data.wrongBook.push(w.word);
+      saveData();
+      updateWrongBadge();
+    }
+  }
+  setTimeout(function () {
+    q.index += 1;
+    if (quizFinished()) {
+      renderQuizReport();
+    } else {
+      renderQuizQuestion();
+    }
+  }, 900);
+}
+
+/* 生成测验报告：错题列表 + 正确率 */
+function renderQuizReport() {
+  const q = quiz;
+  document.getElementById("quiz-question").style.display = "none";
+  document.getElementById("quiz-setup").style.display = "none";
+  document.getElementById("quiz-report").style.display = "block";
+
+  const total = q.list.length;
+  const acc = Math.round((q.correct / total) * 100);
+  document.getElementById("quiz-score").textContent = q.correct + " / " + total;
+  document.getElementById("quiz-acc").textContent = "正确率 " + acc + "%";
+
+  const list = document.getElementById("quiz-wrong-list");
+  list.innerHTML = "";
+  if (q.wrong.length === 0) {
+    list.innerHTML = '<div class="quiz-empty">🎉 全部答对，太棒了！</div>';
+    document.getElementById("quiz-to-review").style.display = "none";
+  } else {
+    document.getElementById("quiz-to-review").style.display = "block";
+    q.wrong.forEach(function (item) {
+      const div = document.createElement("div");
+      div.className = "quiz-wrong-item";
+      const main = document.createElement("div");
+      main.className = "qw-main";
+      const w = document.createElement("div");
+      w.className = "qw-word";
+      w.textContent = item.word;
+      const m = document.createElement("div");
+      m.className = "qw-mean";
+      m.textContent = item.meaning;
+      main.appendChild(w);
+      main.appendChild(m);
+      const spk = document.createElement("button");
+      spk.className = "icon-btn";
+      spk.style.cssText = "width:34px;height:34px;font-size:15px;flex-shrink:0";
+      spk.textContent = "🔊";
+      spk.title = "朗读";
+      spk.addEventListener("click", function () { speak(item.word); });
+      div.appendChild(main);
+      div.appendChild(spk);
+      list.appendChild(div);
+    });
+  }
+}
+
+/* ===================================================================
+ * AI 单词助手（无后端密钥，仅预留请求接口）
+ * =================================================================== */
+const AI_CONFIG = {
+  // 预留请求接口：将 endpoint 替换为你的后端/代理地址即可接入真实大模型。
+  // 后端需接收 POST 请求，body 为 { word, history }，返回 JSON { text }（或 { content }）。
+  // 后端持有 API 密钥，前端绝不写入密钥。
+  // 留空（默认）时，助手使用本地词库离线兜底。
+  endpoint: ""
+};
+const CHAT_KEY = "wordbook_chat_v1";
+let chatHistory = loadChat();
+
+function loadChat() {
+  try {
+    const raw = localStorage.getItem(CHAT_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return [];
+}
+
+function saveChat() {
+  try { localStorage.setItem(CHAT_KEY, JSON.stringify(chatHistory)); } catch (e) {}
+}
+
+function clearChat() {
+  chatHistory = [];
+  saveChat();
+  renderChat();
+}
+
+function pushChat(role, text) {
+  chatHistory.push({ role: role, text: text, time: Date.now() });
+  if (chatHistory.length > 200) chatHistory = chatHistory.slice(-200);
+  saveChat();
+  renderChat();
+}
+
+function renderChat() {
+  const body = document.getElementById("ai-body");
+  body.innerHTML = "";
+  if (chatHistory.length === 0) {
+    body.innerHTML = '<div class="ai-msg sys">在页面上选中任意单词，点击「🔍 查 AI」即可查询；也可以直接输入单词。</div>';
+    return;
+  }
+  chatHistory.forEach(function (m) {
+    const div = document.createElement("div");
+    div.className = "ai-msg " + m.role;
+    div.textContent = m.text;
+    body.appendChild(div);
+  });
+  body.scrollTop = body.scrollHeight;
+}
+
+/* 本地离线兜底：基于内置词库生成回答 */
+function buildLocalAnswer(word) {
+  const w = WORDS.find(function (x) { return x.word.toLowerCase() === word.toLowerCase(); });
+  if (w) {
+    const ex = EXAMPLES[w.word];
+    let s = "";
+    s += "📖 释义：" + w.meaning + "\n";
+    s += "🔤 音标：" + w.phonetic + "\n";
+    if (ex) s += "🌰 例句：" + ex.en + "\n（" + ex.cn + "）\n";
+    s += "🔗 词根 / 🧠 记忆口诀：当前为离线模式，配置 AI_CONFIG.endpoint 接入大模型后即可获取。";
+    return s;
+  }
+  return "抱歉，本地词库中暂未收录「" + word + "」。\n配置 AI_CONFIG.endpoint 接入大模型后，可查询任意单词的释义、词根、记忆口诀和例句。";
+}
+
+/* 请求 AI（预留接口）：优先调用 endpoint，未配置则本地兜底 */
+async function fetchAI(word, history) {
+  if (AI_CONFIG.endpoint) {
+    try {
+      const resp = await fetch(AI_CONFIG.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ word: word, history: history })
+      });
+      const data = await resp.json();
+      return data.text || data.content || data.message || JSON.stringify(data);
+    } catch (e) {
+      return "⚠️ 请求 AI 接口失败，已切换为本地离线回答：\n\n" + buildLocalAnswer(word);
+    }
+  }
+  return buildLocalAnswer(word);
+}
+
+/* 查询某个单词，展示 AI 回答 */
+async function queryAIWord(word, userText) {
+  openAIWindow();
+  pushChat("user", userText || ("查一下：「" + word + "」"));
+  pushChat("assistant", "🤔 正在查询…");
+  const answer = await fetchAI(word, chatHistory);
+  chatHistory[chatHistory.length - 1].text = answer;
+  saveChat();
+  renderChat();
+}
+
+function openAIWindow() {
+  document.getElementById("ai-window").classList.add("open");
+}
+
+function sendChatFromInput() {
+  const input = document.getElementById("ai-input");
+  const val = input.value.trim();
+  if (!val) return;
+  input.value = "";
+  const wordMatch = val.match(/[A-Za-z][A-Za-z'-]*/);
+  if (wordMatch) {
+    queryAIWord(wordMatch[0], val);
+  } else {
+    pushChat("user", val);
+    pushChat("assistant", "请输入英文单词，例如：abandon");
+  }
+}
+
+/* 选中单词工具 */
+function getSelectedWord() {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return "";
+  const t = sel.toString().trim();
+  if (/^[A-Za-z][A-Za-z'-]{0,19}$/.test(t)) return t;
+  return "";
+}
+
+function showWordTooltip(x, y, word) {
+  const tip = document.getElementById("ai-tooltip");
+  tip.textContent = "🔍 查「" + word + "」";
+  tip.dataset.word = word;
+  tip.style.display = "block";
+  const r = tip.getBoundingClientRect();
+  let left = x;
+  if (left + r.width / 2 > window.innerWidth) left = window.innerWidth - r.width / 2 - 8;
+  if (left - r.width / 2 < 8) left = r.width / 2 + 8;
+  tip.style.left = left + "px";
+  tip.style.top = (y - 12) + "px";
+}
+
+function hideWordTooltip() {
+  document.getElementById("ai-tooltip").style.display = "none";
+}
+
+/* 生成森林背景漂浮落叶 */
+function createLeaves() {
+  const box = document.getElementById("leaves");
+  if (!box) return;
+  const chars = ["🍃", "🍂", "🍀", "🌿"];
+  for (let i = 0; i < 14; i++) {
+    const leaf = document.createElement("span");
+    leaf.className = "leaf";
+    leaf.textContent = chars[i % chars.length];
+    leaf.style.left = (Math.random() * 100) + "vw";
+    leaf.style.fontSize = (14 + Math.random() * 18) + "px";
+    leaf.style.animationDuration = (12 + Math.random() * 14) + "s";
+    leaf.style.animationDelay = (-Math.random() * 20) + "s";
+    box.appendChild(leaf);
+  }
+}
+
+/* ===================================================================
+ * 四六级刷题模块（四级复用 WORDS 词库，六级使用独立词库，数据存于 localStorage）
+ * =================================================================== */
+const CET6_WORDS = [
+  { word: "abide", phonetic: "/əˈbaɪd/", meaning: "v. 遵守；忍受", en: "You must abide by the rules of the club.", cn: "你必须遵守俱乐部的规定。" },
+  { word: "abolish", phonetic: "/əˈbɑːlɪʃ/", meaning: "v. 废除；取消", en: "The government decided to abolish the outdated law.", cn: "政府决定废除这项过时的法律。" },
+  { word: "abrupt", phonetic: "/əˈbrʌpt/", meaning: "adj. 突然的；唐突的", en: "The meeting came to an abrupt end.", cn: "会议突然结束了。" },
+  { word: "absurd", phonetic: "/əbˈsɜːrd/", meaning: "adj. 荒谬的；可笑的", en: "It is absurd to believe the earth is flat.", cn: "相信地球是平的是荒谬的。" },
+  { word: "abundance", phonetic: "/əˈbʌndəns/", meaning: "n. 丰富；充裕", en: "The region has an abundance of natural resources.", cn: "该地区自然资源丰富。" },
+  { word: "accommodate", phonetic: "/əˈkɑːmədeɪt/", meaning: "v. 容纳；适应", en: "The hotel can accommodate up to 500 guests.", cn: "这家旅馆可容纳多达500名客人。" },
+  { word: "adhere", phonetic: "/ədˈhɪr/", meaning: "v. 坚持；黏附", en: "We should adhere to the original plan.", cn: "我们应该坚持原计划。" },
+  { word: "adverse", phonetic: "/ˈædvɜːrs/", meaning: "adj. 不利的；相反的", en: "The drug had no adverse effects on patients.", cn: "这种药对病人没有不良影响。" },
+  { word: "aesthetic", phonetic: "/esˈθetɪk/", meaning: "adj. 美学的；审美的", en: "The building has great aesthetic appeal.", cn: "这座建筑具有很高的审美价值。" },
+  { word: "alleviate", phonetic: "/əˈliːvieɪt/", meaning: "v. 减轻；缓解", en: "The medicine helped alleviate the pain.", cn: "这种药有助于减轻疼痛。" },
+  { word: "allocate", phonetic: "/ˈæləkeɪt/", meaning: "v. 分配；拨给", en: "The government allocated funds for the new school.", cn: "政府为这所新学校拨款。" },
+  { word: "ambiguous", phonetic: "/æmˈbɪɡjuəs/", meaning: "adj. 模棱两可的；含糊的", en: "His answer was deliberately ambiguous.", cn: "他的回答故意含糊其辞。" },
+  { word: "amend", phonetic: "/əˈmend/", meaning: "v. 修改；修正", en: "The committee voted to amend the constitution.", cn: "委员会投票决定修改宪法。" },
+  { word: "ample", phonetic: "/ˈæmpl/", meaning: "adj. 充足的；宽敞的", en: "There is ample time to finish the project.", cn: "有充足的时间完成这个项目。" },
+  { word: "analogy", phonetic: "/əˈnælədʒi/", meaning: "n. 类比；类推", en: "He drew an analogy between the brain and a computer.", cn: "他把大脑比作计算机。" },
+  { word: "anonymous", phonetic: "/əˈnɑːnɪməs/", meaning: "adj. 匿名的", en: "The charity received an anonymous donation.", cn: "该慈善机构收到了一笔匿名捐款。" },
+  { word: "articulate", phonetic: "/ɑːrˈtɪkjuleɪt/", meaning: "adj. 善于表达的", en: "She is an articulate and confident speaker.", cn: "她是一位口齿伶俐、自信的演讲者。" },
+  { word: "ascend", phonetic: "/əˈsend/", meaning: "v. 上升；攀登", en: "The climbers slowly ascended the mountain.", cn: "登山者慢慢爬上山顶。" },
+  { word: "ascertain", phonetic: "/ˌæsərˈteɪn/", meaning: "v. 查明；确定", en: "The police tried to ascertain the facts of the case.", cn: "警方试图查明案件事实。" },
+  { word: "authentic", phonetic: "/ɔːˈθentɪk/", meaning: "adj. 真实的；真正的", en: "The museum displays authentic ancient artifacts.", cn: "博物馆展出真正的古代文物。" },
+  { word: "avert", phonetic: "/əˈvɜːrt/", meaning: "v. 避免；防止", en: "Quick action averted a major disaster.", cn: "迅速的行动避免了一场大灾难。" },
+  { word: "barren", phonetic: "/ˈbærən/", meaning: "adj. 贫瘠的；不毛的", en: "Nothing grows on this barren land.", cn: "这片贫瘠的土地上寸草不生。" },
+  { word: "bewilder", phonetic: "/bɪˈwɪldər/", meaning: "v. 使迷惑；使不知所措", en: "The complex instructions bewildered the students.", cn: "复杂的说明使学生们感到困惑。" },
+  { word: "bizarre", phonetic: "/bɪˈzɑːr/", meaning: "adj. 奇异的；古怪的", en: "He told us a bizarre story about aliens.", cn: "他给我们讲了一个关于外星人的离奇故事。" },
+  { word: "bleak", phonetic: "/bliːk/", meaning: "adj. 荒凉的；黯淡的", en: "The future looked bleak for the failing company.", cn: "这家衰败的公司前景黯淡。" },
+  { word: "blunt", phonetic: "/blʌnt/", meaning: "adj. 钝的；直言不讳的", en: "The knife was too blunt to cut the meat.", cn: "这把刀太钝了，切不动肉。" },
+  { word: "boost", phonetic: "/buːst/", meaning: "v./n. 提高；促进", en: "The win boosted the team's confidence.", cn: "这场胜利增强了球队的信心。" },
+  { word: "brisk", phonetic: "/brɪsk/", meaning: "adj. 轻快的；活跃的", en: "We took a brisk walk in the park.", cn: "我们在公园里快步走。" },
+  { word: "brittle", phonetic: "/ˈbrɪtl/", meaning: "adj. 易碎的；脆弱的", en: "The old bones were dry and brittle.", cn: "这些老骨头又干又脆。" },
+  { word: "brutal", phonetic: "/ˈbruːtl/", meaning: "adj. 残忍的；野蛮的", en: "The brutal murder shocked the whole town.", cn: "这起残忍的谋杀案震惊了全镇。" },
+  { word: "catastrophe", phonetic: "/kəˈtæstrəfi/", meaning: "n. 大灾难；灾祸", en: "The earthquake was a major catastrophe for the region.", cn: "地震对该地区是一场大灾难。" },
+  { word: "cherish", phonetic: "/ˈtʃerɪʃ/", meaning: "v. 珍爱；怀有", en: "I cherish the memories of my childhood.", cn: "我珍爱童年的回忆。" },
+  { word: "chronic", phonetic: "/ˈkrɑːnɪk/", meaning: "adj. 慢性的；长期的", en: "He suffers from chronic back pain.", cn: "他患有慢性背痛。" },
+  { word: "coincide", phonetic: "/ˌkoʊɪnˈsaɪd/", meaning: "v. 同时发生；一致", en: "My holiday coincides with my birthday.", cn: "我的假期与我的生日正好重合。" },
+  { word: "collide", phonetic: "/kəˈlaɪd/", meaning: "v. 碰撞；冲突", en: "The two cars collided at the crossroads.", cn: "两辆汽车在十字路口相撞。" },
+  { word: "commence", phonetic: "/kəˈmens/", meaning: "v. 开始", en: "The ceremony will commence at noon.", cn: "典礼将于中午开始。" },
+  { word: "commodity", phonetic: "/kəˈmɑːdəti/", meaning: "n. 商品；日用品", en: "Coffee is an important export commodity.", cn: "咖啡是一种重要的出口商品。" },
+  { word: "compatible", phonetic: "/kəmˈpætəbl/", meaning: "adj. 兼容的；相容的", en: "The new software is compatible with all devices.", cn: "这款新软件兼容所有设备。" },
+  { word: "compel", phonetic: "/kəmˈpel/", meaning: "v. 强迫；迫使", en: "The evidence compelled him to confess.", cn: "证据迫使他认罪。" },
+  { word: "compensate", phonetic: "/ˈkɑːmpenseɪt/", meaning: "v. 补偿；赔偿", en: "The company compensated workers for their losses.", cn: "公司赔偿了工人们的损失。" },
+  { word: "compile", phonetic: "/kəmˈpaɪl/", meaning: "v. 汇编；编纂", en: "She compiled a list of useful websites.", cn: "她汇编了一份有用网站清单。" },
+  { word: "complement", phonetic: "/ˈkɑːmplɪment/", meaning: "v./n. 补充；互补", en: "The wine complements the meal perfectly.", cn: "这款酒与这顿饭完美搭配。" },
+  { word: "comprehensive", phonetic: "/ˌkɑːmprɪˈhensɪv/", meaning: "adj. 全面的；综合的", en: "The report gives a comprehensive overview.", cn: "该报告作了全面概述。" },
+  { word: "compromise", phonetic: "/ˈkɑːmprəmaɪz/", meaning: "n./v. 妥协；折中", en: "Both sides agreed to a compromise.", cn: "双方同意达成妥协。" },
+  { word: "conceive", phonetic: "/kənˈsiːv/", meaning: "v. 构想；设想", en: "It is hard to conceive of life without electricity.", cn: "很难想象没有电的生活。" },
+  { word: "concession", phonetic: "/kənˈseʃn/", meaning: "n. 让步；特许权", en: "The company made a concession on price.", cn: "公司在价格上做出了让步。" },
+  { word: "concise", phonetic: "/kənˈsaɪs/", meaning: "adj. 简明的；简洁的", en: "Keep your report clear and concise.", cn: "保持你的报告清晰简洁。" },
+  { word: "confer", phonetic: "/kənˈfɜːr/", meaning: "v. 授予；商议", en: "The university conferred a degree on him.", cn: "大学授予他学位。" },
+  { word: "confidential", phonetic: "/ˌkɑːnfɪˈdenʃl/", meaning: "adj. 机密的；保密的", en: "This information is strictly confidential.", cn: "这条信息是绝密的。" },
+  { word: "conform", phonetic: "/kənˈfɔːrm/", meaning: "v. 遵守；符合", en: "The product conforms to safety standards.", cn: "该产品符合安全标准。" },
+  { word: "confront", phonetic: "/kənˈfrʌnt/", meaning: "v. 面对；对抗", en: "We must confront the problem directly.", cn: "我们必须直接面对这个问题。" },
+  { word: "consecutive", phonetic: "/kənˈsekjətɪv/", meaning: "adj. 连续的", en: "It rained for five consecutive days.", cn: "连续下了五天雨。" },
+  { word: "consensus", phonetic: "/kənˈsensəs/", meaning: "n. 共识；一致", en: "The team reached a consensus on the plan.", cn: "团队就计划达成共识。" },
+  { word: "conserve", phonetic: "/kənˈsɜːrv/", meaning: "v. 保存；节约", en: "We should conserve energy whenever possible.", cn: "我们应该尽可能节约能源。" },
+  { word: "consolidate", phonetic: "/kənˈsɑːlɪdeɪt/", meaning: "v. 巩固；合并", en: "The company consolidated its market position.", cn: "该公司巩固了市场地位。" },
+  { word: "conspicuous", phonetic: "/kənˈspɪkjuəs/", meaning: "adj. 显眼的；明显的", en: "Her bright dress made her conspicuous in the crowd.", cn: "她鲜艳的裙子使她在人群中很显眼。" },
+  { word: "contaminate", phonetic: "/kənˈtæmɪneɪt/", meaning: "v. 污染；弄脏", en: "Chemicals contaminated the drinking water.", cn: "化学物质污染了饮用水。" },
+  { word: "contemplate", phonetic: "/ˈkɑːntəmpleɪt/", meaning: "v. 沉思；考虑", en: "He contemplated changing his career.", cn: "他考虑转行。" },
+  { word: "contempt", phonetic: "/kənˈtempt/", meaning: "n. 轻蔑；鄙视", en: "She looked at him with contempt.", cn: "她轻蔑地看着他。" },
+  { word: "contradict", phonetic: "/ˌkɑːntrəˈdɪkt/", meaning: "v. 反驳；矛盾", en: "The two reports contradict each other.", cn: "这两份报告相互矛盾。" },
+  { word: "controversy", phonetic: "/ˈkɑːntrəvɜːrsi/", meaning: "n. 争议；争论", en: "The new law caused great controversy.", cn: "新法律引起了巨大争议。" },
+  { word: "converge", phonetic: "/kənˈvɜːrdʒ/", meaning: "v. 汇聚；集中", en: "Fans converged on the stadium.", cn: "球迷们聚集在体育场。" },
+  { word: "criterion", phonetic: "/kraɪˈtɪriən/", meaning: "n. 标准；准则", en: "Price is not the only criterion for quality.", cn: "价格不是质量的唯一标准。" },
+  { word: "crucial", phonetic: "/ˈkruːʃl/", meaning: "adj. 关键的；至关重要的", en: "Timing is crucial to the plan's success.", cn: "时机对计划成功至关重要。" },
+  { word: "crude", phonetic: "/kruːd/", meaning: "adj. 粗糙的；天然的", en: "The country exports crude oil.", cn: "该国出口原油。" },
+  { word: "cultivate", phonetic: "/ˈkʌltɪveɪt/", meaning: "v. 培养；耕作", en: "Reading helps cultivate the mind.", cn: "阅读有助于培养心智。" },
+  { word: "curb", phonetic: "/kɜːrb/", meaning: "v./n. 抑制；控制", en: "The government tried to curb inflation.", cn: "政府试图抑制通货膨胀。" },
+  { word: "dazzle", phonetic: "/ˈdæzl/", meaning: "v. 使目眩；使惊叹", en: "The bright lights dazzled the audience.", cn: "明亮的灯光使观众目眩。" },
+  { word: "deceive", phonetic: "/dɪˈsiːv/", meaning: "v. 欺骗", en: "He deceived his friends with false promises.", cn: "他用虚假的承诺欺骗了朋友。" },
+  { word: "decent", phonetic: "/ˈdiːsnt/", meaning: "adj. 体面的；正派的", en: "She earns a decent salary.", cn: "她挣一份体面的薪水。" },
+  { word: "dedicate", phonetic: "/ˈdedɪkeɪt/", meaning: "v. 奉献；致力于", en: "She dedicated her life to helping the poor.", cn: "她毕生致力于帮助穷人。" },
+  { word: "deduce", phonetic: "/dɪˈduːs/", meaning: "v. 推断；演绎", en: "We deduced that he was lying.", cn: "我们推断他在撒谎。" },
+  { word: "deficit", phonetic: "/ˈdefɪsɪt/", meaning: "n. 赤字；不足", en: "The country has a large trade deficit.", cn: "该国有巨额贸易逆差。" },
+  { word: "degenerate", phonetic: "/dɪˈdʒenəreɪt/", meaning: "v. 退化；恶化", en: "The debate degenerated into a quarrel.", cn: "辩论恶化成了争吵。" },
+  { word: "deliberate", phonetic: "/dɪˈlɪbərət/", meaning: "adj. 故意的；深思熟虑的", en: "It was a deliberate attempt to mislead us.", cn: "这是故意误导我们的企图。" },
+  { word: "demolish", phonetic: "/dɪˈmɑːlɪʃ/", meaning: "v. 拆除；毁坏", en: "They demolished the old building.", cn: "他们拆除了那座旧建筑。" },
+  { word: "denote", phonetic: "/dɪˈnoʊt/", meaning: "v. 表示；意味着", en: "A red flag denotes danger.", cn: "红旗表示危险。" },
+  { word: "deprive", phonetic: "/dɪˈpraɪv/", meaning: "v. 剥夺", en: "No one should be deprived of basic rights.", cn: "任何人都不应被剥夺基本权利。" },
+  { word: "derive", phonetic: "/dɪˈraɪv/", meaning: "v. 源于；获得", en: "Many English words derive from Latin.", cn: "许多英语单词源自拉丁语。" },
+  { word: "deteriorate", phonetic: "/dɪˈtɪriəreɪt/", meaning: "v. 恶化", en: "His health deteriorated rapidly.", cn: "他的健康状况迅速恶化。" },
+  { word: "deviate", phonetic: "/ˈdiːvieɪt/", meaning: "v. 偏离；背离", en: "The plane deviated from its course.", cn: "飞机偏离了航线。" },
+  { word: "diagnose", phonetic: "/ˌdaɪəɡˈnoʊs/", meaning: "v. 诊断", en: "The doctor diagnosed the illness as flu.", cn: "医生诊断该病为流感。" },
+  { word: "dilemma", phonetic: "/dɪˈlemə/", meaning: "n. 困境；进退两难", en: "She faced a dilemma between two jobs.", cn: "她面临在两份工作之间抉择的困境。" },
+  { word: "diligent", phonetic: "/ˈdɪlɪdʒənt/", meaning: "adj. 勤奋的", en: "He is a diligent student.", cn: "他是个勤奋的学生。" },
+  { word: "diminish", phonetic: "/dɪˈmɪnɪʃ/", meaning: "v. 减少；缩小", en: "The pain gradually diminished.", cn: "疼痛逐渐减轻。" },
+  { word: "discern", phonetic: "/dɪˈsɜːrn/", meaning: "v. 辨别；看出", en: "It is hard to discern the truth from rumors.", cn: "很难从谣言中辨别真相。" },
+  { word: "disclose", phonetic: "/dɪsˈkloʊz/", meaning: "v. 揭露；透露", en: "The company refused to disclose the figures.", cn: "该公司拒绝透露这些数字。" },
+  { word: "discrepancy", phonetic: "/dɪsˈkrepənsi/", meaning: "n. 差异；不一致", en: "There is a discrepancy between the two accounts.", cn: "两种说法之间存在差异。" },
+  { word: "dismay", phonetic: "/dɪsˈmeɪ/", meaning: "n./v. 沮丧；使惊恐", en: "To his dismay, he failed the exam.", cn: "令他沮丧的是，他考试不及格。" },
+  { word: "disperse", phonetic: "/dɪˈspɜːrs/", meaning: "v. 驱散；分散", en: "The crowd dispersed after the concert.", cn: "音乐会结束后人群散去。" },
+  { word: "dispose", phonetic: "/dɪˈspoʊz/", meaning: "v. 处理；处置", en: "Please dispose of the waste properly.", cn: "请妥善处理垃圾。" },
+  { word: "disrupt", phonetic: "/dɪsˈrʌpt/", meaning: "v. 扰乱；中断", en: "The storm disrupted the power supply.", cn: "暴风雨中断了电力供应。" },
+  { word: "dissolve", phonetic: "/dɪˈzɑːlv/", meaning: "v. 溶解；解散", en: "Sugar dissolves quickly in hot water.", cn: "糖在热水中溶解得很快。" },
+  { word: "distinct", phonetic: "/dɪˈstɪŋkt/", meaning: "adj. 明显的；独特的", en: "The two species are quite distinct.", cn: "这两个物种截然不同。" },
+  { word: "distort", phonetic: "/dɪˈstɔːrt/", meaning: "v. 扭曲；歪曲", en: "The media distorted the facts.", cn: "媒体歪曲了事实。" },
+  { word: "distract", phonetic: "/dɪˈstrækt/", meaning: "v. 使分心", en: "The noise distracted me from my work.", cn: "噪音使我无法专心工作。" },
+  { word: "doctrine", phonetic: "/ˈdɑːktrɪn/", meaning: "n. 教义；学说", en: "The church teaches a strict doctrine.", cn: "教会传授严格的教义。" },
+  { word: "dominant", phonetic: "/ˈdɑːmɪnənt/", meaning: "adj. 占主导的；支配的", en: "The company holds a dominant market position.", cn: "该公司在市场上占据主导地位。" },
+  { word: "donate", phonetic: "/ˈdoʊneɪt/", meaning: "v. 捐赠", en: "He donated blood to the hospital.", cn: "他向医院献血。" },
+  { word: "drastic", phonetic: "/ˈdræstɪk/", meaning: "adj. 剧烈的；激烈的", en: "Drastic measures are needed to solve the problem.", cn: "需要采取严厉措施解决这个问题。" }
+];
+
+const CET_STORAGE = "wordbook_cet_v1";
+let cetLevel = 4;         // 当前题库：4 四级 / 6 六级
+let cetQ = null;          // 当前题目对象
+let cetDrillWords = null; // 重刷错题时的词表（null 表示常规随机出题）
+
+let cetData = loadCetData();
+
+function loadCetData() {
+  try {
+    const raw = localStorage.getItem(CET_STORAGE);
+    if (raw) {
+      const d = JSON.parse(raw);
+      return { total: d.total || 0, correct: d.correct || 0, wrongBook: d.wrongBook || [] };
+    }
+  } catch (e) {}
+  return { total: 0, correct: 0, wrongBook: [] };
+}
+
+function saveCetData() {
+  try { localStorage.setItem(CET_STORAGE, JSON.stringify(cetData)); } catch (e) {}
+}
+
+function cetLevelName(level) {
+  return level === 4 ? "四级" : "六级";
+}
+
+function updateCetStat() {
+  const acc = cetData.total === 0 ? 0 : Math.round((cetData.correct / cetData.total) * 100);
+  document.getElementById("cet-stat").textContent =
+    "已刷 " + cetData.total + " 题 · 正确率 " + acc + "%";
+}
+
+/* 生成一道随机单选题（词义选择 / 反选单词） */
+function buildCetQuestion() {
+  let target;
+  if (cetDrillWords && cetDrillWords.length > 0) {
+    target = cetDrillWords.shift(); // 重刷错题时按序取出
+    if (cetDrillWords.length === 0) cetDrillWords = null;
+  } else {
+    const bank = cetLevel === 4 ? WORDS : CET6_WORDS;
+    const w = bank[Math.floor(Math.random() * bank.length)];
+    target = { word: w.word, phonetic: w.phonetic, meaning: w.meaning, level: cetLevel };
+  }
+  const type = Math.random() < 0.5 ? "meaning" : "word";
+  const options = buildCetOptions(target, type);
+  cetQ = {
+    level: target.level, word: target.word, phonetic: target.phonetic, meaning: target.meaning,
+    type: type, options: options, answer: type === "meaning" ? target.meaning : target.word,
+    answered: false, selected: null
+  };
+  renderCetQuestion();
+}
+
+/* 为题目构造 1 个正确 + 3 个干扰选项 */
+function buildCetOptions(target, type) {
+  const bank = target.level === 4 ? WORDS : CET6_WORDS;
+  const correct = type === "meaning" ? target.meaning : target.word;
+  const others = bank.filter(function (w) { return w.word !== target.word; });
+  const distractors = [];
+  const shuffled = shuffleArr(others);
+  for (let i = 0; i < shuffled.length && distractors.length < 3; i++) {
+    const val = type === "meaning" ? shuffled[i].meaning : shuffled[i].word;
+    if (val !== correct && distractors.indexOf(val) === -1) distractors.push(val);
+  }
+  if (distractors.length < 3) {
+    const all = bank.map(function (w) { return type === "meaning" ? w.meaning : w.word; });
+    for (let i = 0; i < all.length && distractors.length < 3; i++) {
+      if (all[i] !== correct && distractors.indexOf(all[i]) === -1) distractors.push(all[i]);
+    }
+  }
+  return shuffleArr([correct].concat(distractors));
+}
+
+/* 渲染当前题目 */
+function renderCetQuestion() {
+  const q = cetQ;
+  document.getElementById("cet-tag").textContent =
+    cetLevelName(q.level) + " · " + (q.type === "meaning" ? "词义选择" : "反选单词");
+  document.getElementById("cet-stem").textContent =
+    q.type === "meaning"
+      ? ("「" + q.word + "」的正确释义是？")
+      : ("「" + q.meaning + "」对应的英文单词是？");
+
+  const box = document.getElementById("cet-options");
+  box.innerHTML = "";
+  const letters = ["A", "B", "C", "D"];
+  q.options.forEach(function (opt, i) {
+    const btn = document.createElement("button");
+    btn.className = "cet-opt";
+    btn.textContent = letters[i] + ". " + opt;
+    btn.dataset.index = i;
+    btn.addEventListener("click", function () { selectCetOption(i); });
+    box.appendChild(btn);
+  });
+
+  document.getElementById("cet-submit").disabled = true;
+  document.getElementById("cet-submit").style.display = "block";
+  document.getElementById("cet-result").className = "quiz-feedback";
+  document.getElementById("cet-result").textContent = "";
+  document.getElementById("cet-explain").style.display = "none";
+  document.getElementById("cet-explain").innerHTML = "";
+  document.getElementById("cet-next").style.display = "none";
+}
+
+/* 选择某个选项 */
+function selectCetOption(i) {
+  if (!cetQ || cetQ.answered) return;
+  cetQ.selected = i;
+  document.querySelectorAll(".cet-opt").forEach(function (btn, idx) {
+    btn.classList.toggle("selected", idx === i);
+  });
+  document.getElementById("cet-submit").disabled = false;
+}
+
+/* 提交答案并自动判分 */
+function checkCetAnswer() {
+  if (!cetQ || cetQ.answered || cetQ.selected === null) return;
+  const q = cetQ;
+  q.answered = true;
+  const correct = q.options[q.selected] === q.answer;
+
+  document.querySelectorAll(".cet-opt").forEach(function (btn, i) {
+    btn.disabled = true;
+    btn.classList.remove("selected");
+    if (q.options[i] === q.answer) btn.classList.add("correct");
+    else if (i === q.selected) btn.classList.add("wrong");
+  });
+  document.getElementById("cet-submit").style.display = "none";
+
+  const resultEl = document.getElementById("cet-result");
+  if (correct) {
+    resultEl.textContent = "✅ 回答正确！";
+    resultEl.className = "quiz-feedback correct";
+  } else {
+    resultEl.textContent = "❌ 回答错误，正确答案：" + q.answer;
+    resultEl.className = "quiz-feedback wrong";
+  }
+
+  // 统计刷题数量与正确率
+  cetData.total += 1;
+  if (correct) {
+    cetData.correct += 1;
+  } else {
+    // 错题自动存入四六级错题本（按 单词 + 级别 去重）
+    const exists = cetData.wrongBook.some(function (x) { return x.word === q.word && x.level === q.level; });
+    if (!exists) {
+      cetData.wrongBook.push({ word: q.word, level: q.level, meaning: q.meaning, phonetic: q.phonetic });
+    }
+  }
+  saveCetData();
+  updateCetStat();
+
+  renderCetExplain();
+  document.getElementById("cet-next").style.display = "block";
+}
+
+/* 展示题目解析（释义 + 音标 + 例句） */
+function renderCetExplain() {
+  const q = cetQ;
+  let ex = null;
+  if (q.level === 4) {
+    const e = EXAMPLES[q.word];
+    if (e) ex = { en: e.en, cn: e.cn };
+  } else {
+    const w = CET6_WORDS.find(function (x) { return x.word === q.word; });
+    if (w && w.en) ex = { en: w.en, cn: w.cn };
+  }
+  const el = document.getElementById("cet-explain");
+  let html = '<div class="ce-title">📖 解析</div>';
+  html += "<div>单词：" + q.word + " <span style='color:var(--text-sub)'>" + q.phonetic + "</span></div>";
+  html += "<div>释义：" + q.meaning + "</div>";
+  if (ex) {
+    html += "<div>例句：" + ex.en + "</div>";
+    html += "<div style='color:var(--text-sub)'>译：" + ex.cn + "</div>";
+  }
+  el.innerHTML = html;
+  el.style.display = "block";
+}
+
+/* ===== 四六级错题本 ===== */
+function openCetWrongBook() {
+  renderCetWrongBook();
+  document.getElementById("cet-wb-overlay").classList.add("visible");
+}
+function closeCetWrongBook() {
+  document.getElementById("cet-wb-overlay").classList.remove("visible");
+}
+function renderCetWrongBook() {
+  const list = document.getElementById("cet-wb-list");
+  list.innerHTML = "";
+  document.getElementById("cet-wb-meta").textContent = "共 " + cetData.wrongBook.length + " 个错题";
+  if (cetData.wrongBook.length === 0) {
+    list.innerHTML = '<div class="wb-empty">🎉 太棒了，暂无四六级错题！</div>';
+    document.getElementById("cet-wb-review").disabled = true;
+    document.getElementById("cet-wb-clear").disabled = true;
+    return;
+  }
+  document.getElementById("cet-wb-review").disabled = false;
+  document.getElementById("cet-wb-clear").disabled = false;
+
+  cetData.wrongBook.forEach(function (item) {
+    const div = document.createElement("div");
+    div.className = "wb-item";
+
+    const main = document.createElement("div");
+    main.className = "wb-main";
+    const wordEl = document.createElement("div");
+    wordEl.className = "wb-word";
+    const badge = document.createElement("span");
+    badge.className = "cet-wb-badge";
+    badge.textContent = cetLevelName(item.level);
+    wordEl.appendChild(badge);
+    wordEl.appendChild(document.createTextNode(item.word));
+    const phEl = document.createElement("span");
+    phEl.style.cssText = "color:var(--text-sub);font-size:12px;font-weight:400";
+    phEl.textContent = " " + item.phonetic;
+    wordEl.appendChild(phEl);
+    const meanEl = document.createElement("div");
+    meanEl.className = "wb-mean";
+    meanEl.textContent = item.meaning;
+    main.appendChild(wordEl);
+    main.appendChild(meanEl);
+
+    const speakBtn = document.createElement("button");
+    speakBtn.className = "icon-btn wb-speak";
+    speakBtn.textContent = "🔊";
+    speakBtn.title = "朗读";
+    speakBtn.addEventListener("click", function () { speak(item.word); });
+
+    const rmBtn = document.createElement("button");
+    rmBtn.className = "icon-btn wb-remove";
+    rmBtn.textContent = "✓";
+    rmBtn.title = "标记已掌握并移除";
+    rmBtn.addEventListener("click", function () {
+      cetData.wrongBook = cetData.wrongBook.filter(function (x) {
+        return !(x.word === item.word && x.level === item.level);
+      });
+      saveCetData();
+      renderCetWrongBook();
+    });
+
+    div.appendChild(main);
+    div.appendChild(speakBtn);
+    div.appendChild(rmBtn);
+    list.appendChild(div);
+  });
+}
+
+/* 重刷错题：仅从错题中出题，刷完自动回到常规题库 */
+function startCetDrill() {
+  if (cetData.wrongBook.length === 0) return;
+  cetDrillWords = shuffleArr(cetData.wrongBook);
+  closeCetWrongBook();
+  buildCetQuestion();
 }
 
 /* ===================================================================
@@ -1903,6 +3946,8 @@ function init() {
   renderCurrent();
   updateStats();
   updateWrongBadge();
+  updateCetStat();
+  renderChat();
   bindEvents();
 }
 
