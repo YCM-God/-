@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-四六级单词 · 联机对战后端
-==========================
-- HTTP  + WebSocket + 内存房间（无数据库，重启即清空）
-- 严格按「联机对战」契约实现，题目答案只保存在服务端，绝不下发
+四六级单词 · 联机对战（前后端同源，单服务部署）
+================================================
+- HTTP + WebSocket + 内存房间（无数据库，重启即清空）
+- 题目答案只保存在服务端，绝不下发前端
+- 同时托管前端静态页（index.html / multiplayer.js），前后端同源，
+  前端无需配置任何后端网址（MP_BACKEND_URL 留空即可）
 
 部署到 Replit：
   1. 仓库根目录的 .replit 指向本目录（backend），推到 GitHub 后导入 Replit
   2. Replit 用 .replit 里的 run 命令装依赖并启动（端口 8080）
+  3. 启动后直接访问 Replit 分配的域名即可使用（前后端同一个域名）
 
 注意：内存房间要求「单实例」运行；保持一个 Repl 即可，不要开多个。
 """
@@ -20,11 +23,12 @@ import uuid
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 app = FastAPI(title="CET Word Battle Backend")
 
 # ---------------- 配置 ----------------
-# CORS：默认只允许前端站点（github.io）。本地联调可设置 CORS_ORIGINS 追加来源。
+# CORS：前后端同源托管时无需 CORS。若前端另部署在其它域名，用环境变量 CORS_ORIGINS 追加来源。
 ALLOWED_ORIGINS = [
     o.strip()
     for o in os.environ.get("CORS_ORIGINS", "https://ycm-god.github.io").split(",")
@@ -292,10 +296,29 @@ async def remove_player(room, uid):
     await broadcast(room, build_room_state(room))
 
 
-# ---------------- HTTP 接口 ----------------
+# ---------------- 前端静态页（同源托管，前端无需配网址） ----------------
+SITE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")  # 仓库根目录
+
+
 @app.get("/")
-def root():
-    return {"ok": True, "service": "cet-word-battle"}
+def index():
+    return FileResponse(os.path.join(SITE_DIR, "index.html"))
+
+
+@app.get("/index.html")
+def index_html():
+    return FileResponse(os.path.join(SITE_DIR, "index.html"))
+
+
+@app.get("/multiplayer.js")
+def multiplayer_js():
+    return FileResponse(
+        os.path.join(SITE_DIR, "multiplayer.js"),
+        media_type="application/javascript",
+    )
+
+
+# ---------------- HTTP 接口 ----------------
 
 
 @app.get("/health")
