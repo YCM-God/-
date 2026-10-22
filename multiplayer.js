@@ -1,52 +1,67 @@
 /* =====================================================================
- * 联机对战（单词测验）
+ * 联机对战（单词测验）· P2P 点对点版（无需后端）
  * ---------------------------------------------------------------------
  * 纯原生 JS，IIFE 隔离，暴露 window.Multiplayer.open()。
- * 依赖 index.html 已存在的全局：speak()、CSS 变量（--card-bg/--text 等）。
+ * 依赖 index.html 已存在的全局：WORDS（词库）、speak()、CSS 变量。
+ * 依赖 PeerJS（加载本文件前需先引入 peerjs，见 index.html）。
  *
- * 部署后端后，把下面两个常量改成你的 Replit 域名即可；
- * 留空则按「同源」自动推导，且 https 会自动转成 wss。
- * 也可在加载本文件前设置 window.MP_BACKEND_URL / window.MP_WS_URL 覆盖。
+ * 原理：房主浏览器当「服务器」——出题、判分、结算都在房主端；
+ *       访客通过 PeerJS 数据通道与房主直连，收发同样的 room_state 消息。
+ * 说明：P2P 需双方能连到 PeerJS 信令服务器（0.peerjs.com）且网络能打洞；
+ *       同一 WiFi/局域网最稳，跨网络（不同宽带/手机流量）可能连不上。
  * ===================================================================== */
 (function () {
   "use strict";
 
-  /* ------------------ 配置（顶部，便于修改） ------------------ */
-  var BACKEND_URL = window.MP_BACKEND_URL || "";      // 留空 = 与页面同源
-  var WS_URL = window.MP_WS_URL || (BACKEND_URL
-    ? BACKEND_URL.replace(/^http/, "ws")               // http->ws, https->wss
-    : (location.protocol === "https:" ? "wss://" : "ws://") + location.host);
+  /* ------------------ 配置 ------------------ */
+  var ICE_SERVERS = [                       // STUN：帮助双方在 NAT 后找到对方
+    { urls: "stun:stun.miwifi.com:3478" },
+    { urls: "stun:stun.l.google.com:19302" }
+  ];
 
-  var HEARTBEAT_INTERVAL = 20000;    // 心跳间隔 ms
-  var HEARTBEAT_TIMEOUT = 45000;     // 超过该时长未收到 pong 视为断线
-  var RECONNECT_BASE = 1000;         // 重连初始间隔 ms
-  var RECONNECT_MAX = 15000;         // 重连最大间隔 ms
+  var TOTAL_QUESTIONS = 20;    // 每局题数
+  var TIME_LIMIT = 30;         // 每题作答秒数
+  var START_HP = TOTAL_QUESTIONS;  // 初始血量（20 格，答错扣 1 格）
+  var ROOM_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";  // 去掉 0/O、1/I
 
-  var SESSION_KEY = "cet_word_battle_session";  // 会话（房间+身份），刷新后恢复
   var NICK_KEY = "cet_word_battle_nickname";    // 昵称记忆
+
+  /* ------------------ 词库（读 index.html 里的全局 WORDS） ------------------ */
+  var WORD_LIST = (typeof WORDS !== "undefined") ? WORDS : [];
 
   /* ------------------ 内部状态 ------------------ */
   var mpMode = "solo";         // solo | multi
-  var session = null;          // { roomCode, userId, nickname }
-  var ws = null;
-  var roomState = null;        // 最近一次 room_state
+  var role = null;             // host | guest | null
+  var session = null;          // { roomCode, userId: "host"/"guest", nickname }
+  var peer = null;
+  var conn = null;
+  var roomState = null;        // 最近一次 room_state（访客为同步副本，房主为权威）
+  var hostState = null;        // 仅房主使用：权威房间状态
   var currentQuestionId = null;
   var currentQuestion = null;
-  var myChoice = null;         // 本题我选的选项下标
-  var answered = false;        // 本题我是否已提交
-  var reconnectAttempt = 0;
-  var reconnectTimer = null;
-  var heartbeatTimer = null;
-  var lastPong = 0;
+  var myChoice = null;
+  var answered = false;
   var timerInterval = null;
   var timerDeadline = 0;
-  var intentionalClose = false;  // 主动离开，不再重连
+  var intentionalClose = false;  // 主动离开，不再提示断开
   var inited = false;
 
   /* ------------------ 工具 ------------------ */
   function $(id) { return document.getElementById(id); }
   function setText(id, text) { var el = $(id); if (el) el.textContent = text; }
   function clampNick(n) { return (n || "").trim().slice(0, 12); }
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function genCode() {
+    var c = "";
+    for (var i = 0; i < 6; i++) c += ROOM_CODE_CHARS[Math.floor(Math.random() * ROOM_CODE_CHARS.length)];
+    return c;
+  }
 
   /* ------------------ 注入 UI ------------------ */
   function injectStyle() {
@@ -85,6 +100,16 @@
       ".mp-rank-item.me{border-color:var(--primary);}",
       ".mp-opt:disabled{opacity:.9;cursor:default;}",
       ".mp-opt.dim{opacity:.45;}",
+      ".mp-hud{margin-bottom:12px;}",
+      ".mp-hud-player{margin-bottom:14px;}",
+      ".mp-hud-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}",
+      ".mp-hud-name{font-weight:700;color:var(--text);font-size:14px;}",
+      ".mp-hud-hp{font-size:12px;color:var(--text-sub);font-weight:800;}",
+      ".mp-hpbar{display:flex;gap:2px;width:100%;}",
+      ".mp-hpseg{flex:1;height:14px;border-radius:3px;background:var(--border);transition:background .2s;}",
+      ".mp-hpbar .mp-hpseg.on{background:#10b981;}",
+      ".mp-hpbar.low .mp-hpseg.on{background:#f59e0b;}",
+      ".mp-hpbar.crit .mp-hpseg.on{background:#ef4444;}",
     ].join("\n");
     var st = document.createElement("style");
     st.setAttribute("data-mp", "1");
@@ -125,7 +150,7 @@
       '  </div>' +
       // 对战中
       '  <div id="mp-view-play" style="display:none">' +
-      '    <div class="mp-scoreboard" id="mp-hud"></div>' +
+      '    <div class="mp-hud" id="mp-hud"></div>' +
       '    <div class="quiz-qtype" id="mp-progress"></div>' +
       '    <div class="mp-speak" id="mp-speak"></div>' +
       '    <button class="mp-speak-btn" id="mp-speak-btn" title="播放发音">🔊</button>' +
@@ -140,7 +165,7 @@
       '  </div>' +
       // 结算
       '  <div id="mp-view-finished" style="display:none">' +
-      '    <h3>🏆 对战结果</h3>' +
+      '    <h3 id="mp-finished-title">🏆 对战结果</h3>' +
       '    <div class="mp-rank" id="mp-ranking"></div>' +
       '    <button class="btn start" id="mp-again" style="display:none">🔁 再来一局</button>' +
       '    <div class="mp-hint" id="mp-finished-hint"></div>' +
@@ -186,12 +211,10 @@
   function setMpMode(m) {
     mpMode = m === "multi" ? "multi" : "solo";
     var multi = mpMode === "multi";
-    // 切换按钮高亮
     var seg = $("mp-mode-field");
     if (seg) seg.querySelectorAll("button").forEach(function (b) {
       b.classList.toggle("active", b.dataset.m === mpMode);
     });
-    // 隐藏/显示单机字段与标题
     ["quiz-count", "quiz-type"].forEach(function (id) {
       var el = $(id);
       var field = el && el.closest(".quiz-field");
@@ -201,14 +224,10 @@
     if (startBtn) startBtn.style.display = multi ? "none" : "";
     var h3 = $("quiz-setup") && $("quiz-setup").querySelector("h3");
     if (h3) h3.style.display = multi ? "none" : "";
-    // 联机面板
     var panel = $("mp-panel");
     if (panel) panel.style.display = multi ? "block" : "none";
 
-    if (multi) {
-      ensureConnected();
-      renderAll();
-    }
+    if (multi) renderAll();
   }
 
   /* ------------------ 视图切换 ------------------ */
@@ -250,15 +269,10 @@
     var map = {
       connecting: "🟡 连接中…",
       online: "🟢 已连接",
-      offline: "🔴 连接断开，正在重连…",
+      offline: "🔴 连接已断开",
     };
-    if (state === "offline") {
-      el.textContent = "🔴 连接断开，重连中（第 " + reconnectAttempt + " 次）…";
-      el.className = "mp-conn off";
-    } else {
-      el.textContent = map[state] || "";
-      el.className = "mp-conn";
-    }
+    el.textContent = map[state] || "";
+    el.className = "mp-conn" + (state === "offline" ? " off" : "");
   }
 
   /* ------------------ 大厅渲染 ------------------ */
@@ -300,19 +314,52 @@
       var status = document.createElement("div");
       status.className = "mp-pstatus";
       if (showStatus) status.textContent = p.connected ? "在线" : "已离开";
-      var score = document.createElement("div");
-      score.className = "mp-pscore";
-      score.textContent = p.score;
       div.appendChild(name);
       div.appendChild(status);
-      div.appendChild(score);
+      box.appendChild(div);
+    });
+  }
+
+  /* ------------------ 血条 HUD ------------------ */
+  function renderHud(st) {
+    var box = $("mp-hud");
+    if (!box) return;
+    var myUid = session.userId;
+    var maxHp = st.total_questions || START_HP;
+    box.innerHTML = "";
+    st.players.forEach(function (p) {
+      var hp = Math.max(0, Math.min(maxHp, p.score));
+      var div = document.createElement("div");
+      div.className = "mp-hud-player";
+
+      var head = document.createElement("div");
+      head.className = "mp-hud-head";
+      var name = document.createElement("span");
+      name.className = "mp-hud-name";
+      name.textContent = p.nickname + (p.user_id === myUid ? "（我）" : "") + (p.is_host ? " ·房主" : "");
+      var hpNum = document.createElement("span");
+      hpNum.className = "mp-hud-hp";
+      hpNum.textContent = hp + " / " + maxHp;
+      head.appendChild(name);
+      head.appendChild(hpNum);
+      div.appendChild(head);
+
+      var bar = document.createElement("div");
+      bar.className = "mp-hpbar" + (hp <= maxHp * 0.25 ? " crit" : hp <= maxHp * 0.5 ? " low" : "");
+      for (var i = 0; i < maxHp; i++) {
+        var seg = document.createElement("span");
+        seg.className = "mp-hpseg" + (i < hp ? " on" : "");
+        bar.appendChild(seg);
+      }
+      div.appendChild(bar);
+
       box.appendChild(div);
     });
   }
 
   /* ------------------ 对战渲染 ------------------ */
   function renderPlay(st) {
-    renderPlayers(st.players, "mp-hud", false);
+    renderHud(st);
 
     var q = st.current_question;
     if (!q) return;
@@ -332,7 +379,6 @@
     renderSubmitStatus(st);
     renderNextControls(st);
 
-    // 计时器：仅在新题、未作答、进行中时启动
     if (st.status === "playing") {
       if (changed || timerInterval === null) {
         if (!answered) startTimer(q.time_limit);
@@ -428,10 +474,10 @@
     var fb = $("mp-feedback");
     if (!fb || !myResult) return;
     if (myResult.correct) {
-      fb.textContent = "✅ 正确！ +" + myResult.points + " 分";
+      fb.textContent = "✅ 答对了！血条不变";
       fb.className = "quiz-feedback correct";
     } else {
-      fb.textContent = "❌ 答错了，正确答案已标绿";
+      fb.textContent = "❌ 答错了，血条 -1";
       fb.className = "quiz-feedback wrong";
     }
   }
@@ -460,12 +506,22 @@
       name.textContent = p.nickname + (p.user_id === myUid ? "（我）" : "");
       var score = document.createElement("div");
       score.className = "mp-rscore";
-      score.textContent = p.score + " 分";
+      score.textContent = p.score + " / " + (st.total_questions || START_HP);
       div.appendChild(medal);
       div.appendChild(name);
       div.appendChild(score);
       box.appendChild(div);
     });
+
+    var title = $("mp-finished-title");
+    if (title) {
+      var sorted = st.players.slice().sort(function (a, b) { return b.score - a.score; });
+      if (sorted.length >= 2 && sorted[0].score === sorted[1].score) {
+        title.textContent = "🤝 平局";
+      } else if (sorted.length) {
+        title.textContent = "🏆 " + sorted[0].nickname + " 获胜";
+      }
+    }
 
     var me = st.players.find(function (p) { return p.user_id === myUid; });
     var isHost = me && me.is_host;
@@ -511,7 +567,11 @@
     if (roomState && roomState.status !== "playing") return;
     answered = true;
     myChoice = -1;
-    sendMsg({ type: "timeout", question_id: currentQuestionId });
+    if (role === "guest") {
+      sendMsg({ type: "timeout", question_id: currentQuestionId });
+    } else {
+      recordAnswer("host", -1, currentQuestionId);
+    }
     setText("mp-submit-status", "⏰ 超时，等待对手…");
   }
 
@@ -522,8 +582,11 @@
     if (roomState && roomState.status !== "playing") return;
     answered = true;
     myChoice = choice;
-    sendMsg({ type: "submit", question_id: currentQuestionId, choice: choice });
-    // 立即给本地反馈（禁用选项、提示已提交）
+    if (role === "guest") {
+      sendMsg({ type: "submit", question_id: currentQuestionId, choice: choice });
+    } else {
+      recordAnswer("host", choice, currentQuestionId);
+    }
     var box = $("mp-options");
     if (box) box.querySelectorAll(".mp-opt").forEach(function (b) {
       b.disabled = true;
@@ -533,15 +596,82 @@
     stopTimer();
   }
 
+  /* 动态加载 PeerJS（无需在 index.html 里加 <script>） */
+  var PEER_CDNS = [
+    "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js",
+    "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"
+  ];
+  var peerReadyPromise = null;
+
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = src;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { reject(new Error("load failed: " + src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function loadPeer() {
+    if (window.Peer) return Promise.resolve();
+    if (peerReadyPromise) return peerReadyPromise;
+    function tryNext(i) {
+      if (window.Peer) return Promise.resolve();
+      if (i >= PEER_CDNS.length) return Promise.reject(new Error("PeerJS 加载失败"));
+      return loadScript(PEER_CDNS[i]).then(
+        function () { return window.Peer ? Promise.resolve() : tryNext(i + 1); },
+        function () { return tryNext(i + 1); }
+      );
+    }
+    peerReadyPromise = tryNext(0);
+    return peerReadyPromise;
+  }
+
   function createRoom() {
     var nick = clampNick($("mp-nickname").value) || "玩家";
-    showSetupMsg("");
-    api("POST", "/api/rooms", { nickname: nick }, function (err, data) {
-      if (err) { showSetupMsg("❌ " + err, "wrong"); return; }
-      adoptSession(data.room_code, data.user_id, nick);
+    showSetupMsg("⏳ 正在加载联机组件…");
+    loadPeer().then(function () {
+      showSetupMsg("");
+      role = "host";
+      var code = genCode();
+      session = { roomCode: code, userId: "host", nickname: nick };
       rememberNick(nick);
-      connect();
-      renderAll();
+      hostState = {
+        code: code,
+        hostNick: nick,
+        guestNick: null,
+        guestConnected: false,
+        scores: { host: 0, guest: 0 },
+        questions: [],
+        questionIndex: 0,
+        currentAnswers: {},
+        currentQid: null,
+        status: "waiting",
+        lastResults: null,
+        totalQuestions: TOTAL_QUESTIONS,
+        timeLimit: TIME_LIMIT,
+      };
+      updateConnStatus("connecting");
+      peer = new Peer(code, { debug: 0, config: { iceServers: ICE_SERVERS } });
+      peer.on("open", function () {
+        updateConnStatus("online");
+        broadcastState();
+      });
+      peer.on("connection", function (c) {
+        conn = c;
+        wireConnection(c);
+      });
+      peer.on("error", function (e) {
+        if (e && e.type === "unavailable-id") {
+          showSetupMsg("⚠️ 房间号冲突，请重新创建", "wrong");
+          resetToSetup();
+        } else {
+          updateConnStatus("offline");
+        }
+      });
+    }).catch(function () {
+      showSetupMsg("⚠️ 联机库加载失败，请检查网络后刷新页面", "wrong");
     });
   }
 
@@ -549,33 +679,80 @@
     var nick = clampNick($("mp-nickname").value) || "玩家";
     var code = clampNick($("mp-join-code").value).toUpperCase();
     if (!code) { showSetupMsg("请输入房间号", "wrong"); return; }
-    showSetupMsg("");
-    api("POST", "/api/rooms/" + encodeURIComponent(code) + "/join", { nickname: nick }, function (err, data) {
-      if (err) { showSetupMsg("❌ " + err, "wrong"); return; }
-      adoptSession(data.room_code, data.user_id, nick);
+    showSetupMsg("⏳ 正在加载联机组件…");
+    loadPeer().then(function () {
+      showSetupMsg("");
+      role = "guest";
+      session = { roomCode: code, userId: "guest", nickname: nick };
       rememberNick(nick);
-      connect();
-      renderAll();
+      updateConnStatus("connecting");
+      peer = new Peer({ debug: 0, config: { iceServers: ICE_SERVERS } });
+      peer.on("open", function () {
+        var c = peer.connect(code, { reliable: true });
+        conn = c;
+        wireConnection(c);
+      });
+      peer.on("error", function (e) {
+        if (e && e.type === "peer-unavailable") {
+          showSetupMsg("⚠️ 房间不存在或对方已关闭", "wrong");
+          resetToSetup();
+        } else {
+          updateConnStatus("offline");
+        }
+      });
+    }).catch(function () {
+      showSetupMsg("⚠️ 联机库加载失败，请检查网络后刷新页面", "wrong");
     });
   }
 
   function leaveRoom() {
     intentionalClose = true;
-    if (ws && session) sendMsg({ type: "leave" });
-    closeWs();
-    clearSession();
-    currentQuestionId = null;
-    currentQuestion = null;
-    myChoice = null;
-    answered = false;
-    roomState = null;
-    showView("setup");
-    renderAll();
+    if (role === "guest" && conn && conn.open) {
+      try { conn.send(JSON.stringify({ type: "leave" })); } catch (e) {}
+    }
+    closePeer();
+    resetToSetup();
   }
 
-  function startGame() { sendMsg({ type: "start" }); }
-  function nextQuestion() { sendMsg({ type: "next_question" }); }
-  function again() { sendMsg({ type: "start" }); }  // 复用 start 触发再来一局
+  function startGame() {
+    if (!hostState) return;
+    if (hostState.status !== "waiting" && hostState.status !== "finished") return;
+    if (hostState.guestNick === null) return;
+    hostState.scores = { host: START_HP, guest: START_HP };
+    hostState.questionIndex = 0;
+    hostState.questions = generateQuestions();
+    hostState.currentAnswers = {};
+    hostState.lastResults = null;
+    hostState.status = "playing";
+    hostState.currentQid = hostState.questions[0].id;
+    currentQuestionId = null;
+    myChoice = null;
+    answered = false;
+    broadcastState();
+    hostScheduleResolve(hostState.currentQid);
+  }
+
+  function nextQuestion() {
+    if (!hostState) return;
+    if (hostState.status !== "awaiting_next") return;
+    hostState.questionIndex += 1;
+    if (hostState.questionIndex >= hostState.totalQuestions) {
+      hostState.status = "finished";
+      broadcastState();
+      return;
+    }
+    hostState.currentAnswers = {};
+    hostState.lastResults = null;
+    hostState.status = "playing";
+    hostState.currentQid = hostState.questions[hostState.questionIndex].id;
+    currentQuestionId = null;
+    myChoice = null;
+    answered = false;
+    broadcastState();
+    hostScheduleResolve(hostState.currentQid);
+  }
+
+  function again() { startGame(); }
 
   function showSetupMsg(text, cls) {
     var el = $("mp-setup-msg");
@@ -584,141 +761,229 @@
     el.className = "quiz-feedback" + (cls ? " " + cls : "");
   }
 
-  /* ------------------ 会话持久化 ------------------ */
-  function adoptSession(code, uid, nick) {
-    session = { roomCode: code, userId: uid, nickname: nick };
-    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch (e) {}
-    currentQuestionId = null;
-    myChoice = null;
-    answered = false;
-    roomState = null;
-    intentionalClose = false;
-  }
-
-  function clearSession() {
-    session = null;
-    try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
-  }
-
-  function restoreSession() {
-    try {
-      var raw = sessionStorage.getItem(SESSION_KEY);
-      if (raw) session = JSON.parse(raw);
-    } catch (e) { session = null; }
-  }
-
+  /* ------------------ 昵称记忆 ------------------ */
   function rememberNick(nick) {
     try { localStorage.setItem(NICK_KEY, nick); } catch (e) {}
   }
-
   function recallNick() {
     try { return localStorage.getItem(NICK_KEY) || ""; } catch (e) { return ""; }
   }
 
-  /* ------------------ HTTP 请求 ------------------ */
-  function api(method, path, body, cb) {
-    var url = BACKEND_URL + path;
-    var opt = { method: method, headers: { "Content-Type": "application/json" } };
-    if (body) opt.body = JSON.stringify(body);
-    fetch(url, opt)
-      .then(function (r) {
-        return r.json().catch(function () { return null; }).then(function (j) {
-          if (r.ok) return cb(null, j);
-          var msg = (j && j.detail) ? j.detail : ("请求失败（" + r.status + "）");
-          if (typeof j === "string") msg = j;
-          if (j && j.detail && typeof j.detail === "object") msg = JSON.stringify(j.detail);
-          return cb(msg, null);
-        });
-      })
-      .catch(function () {
-        cb("网络错误，请检查后端是否在线", null);
-      });
-  }
-
-  /* ------------------ WebSocket ------------------ */
-  function connect() {
-    if (!session) return;
-    closeWs();
-    intentionalClose = false;
-    updateConnStatus("connecting");
-    try {
-      ws = new WebSocket(WS_URL);
-    } catch (e) {
-      updateConnStatus("offline");
-      scheduleReconnect();
-      return;
-    }
-    ws.onopen = function () {
-      reconnectAttempt = 0;
-      lastPong = Date.now();
-      updateConnStatus("online");
-      sendMsg({ type: "join", room_code: session.roomCode, user_id: session.userId, nickname: session.nickname });
-      startHeartbeat();
-    };
-    ws.onmessage = function (ev) {
-      var msg;
-      try { msg = JSON.parse(ev.data); } catch (e) { return; }
-      handleMessage(msg);
-    };
-    ws.onclose = function () {
-      stopHeartbeat();
-      stopTimer();
-      ws = null;
-      if (!intentionalClose && session) {
-        updateConnStatus("offline");
-        scheduleReconnect();
-      }
-    };
-    ws.onerror = function () { /* 由 onclose 统一处理 */ };
-  }
-
-  function closeWs() {
-    if (ws) {
-      try { ws.onclose = null; ws.close(); } catch (e) {}
-      ws = null;
-    }
-    stopHeartbeat();
-  }
-
+  /* ------------------ P2P 传输 ------------------ */
   function sendMsg(obj) {
-    if (ws && ws.readyState === 1) {
-      ws.send(JSON.stringify(obj));
+    if (conn && conn.open) {
+      try { conn.send(JSON.stringify(obj)); } catch (e) {}
     }
   }
 
-  function ensureConnected() {
-    if (session && !ws) connect();
+  function closePeer() {
+    if (conn) { try { conn.close(); } catch (e) {} conn = null; }
+    if (peer) { try { peer.destroy(); } catch (e) {} peer = null; }
+    stopTimer();
   }
 
-  function scheduleReconnect() {
-    if (reconnectTimer) return;
-    var delay = Math.min(RECONNECT_MAX, RECONNECT_BASE * Math.pow(2, reconnectAttempt));
-    reconnectAttempt += 1;
-    reconnectTimer = setTimeout(function () {
-      reconnectTimer = null;
-      if (intentionalClose || !session) return;
-      connect();
-    }, delay);
+  function resetToSetup() {
+    closePeer();
+    session = null;
+    role = null;
+    roomState = null;
+    hostState = null;
+    currentQuestionId = null;
+    currentQuestion = null;
+    myChoice = null;
+    answered = false;
+    intentionalClose = false;
+    showView("setup");
+    renderAll();
   }
 
-  function startHeartbeat() {
-    stopHeartbeat();
-    heartbeatTimer = setInterval(function () {
-      if (!ws || ws.readyState !== 1) return;
-      if (Date.now() - lastPong > HEARTBEAT_TIMEOUT) {
-        // 心跳超时，主动断开触发重连
-        try { ws.close(); } catch (e) {}
-        return;
+  function wireConnection(c) {
+    c.on("open", function () {
+      updateConnStatus("online");
+      if (role === "guest") {
+        sendMsg({ type: "join", nickname: session.nickname });
       }
-      sendMsg({ type: "ping" });
-    }, HEARTBEAT_INTERVAL);
+    });
+    c.on("data", function (d) {
+      var msg;
+      try { msg = JSON.parse(d); } catch (e) { return; }
+      if (role === "host") handleGuestMessage(msg);
+      else handleMessage(msg);
+    });
+    c.on("close", function () {
+      conn = null;
+      if (intentionalClose) return;
+      if (role === "host") {
+        showSetupMsg("⚠️ 对方已离开房间", "wrong");
+        handleGuestLeave();
+      } else {
+        showSetupMsg("⚠️ 对方已断开连接", "wrong");
+        resetToSetup();
+      }
+    });
+    c.on("error", function () {
+      updateConnStatus("offline");
+    });
   }
 
-  function stopHeartbeat() {
-    if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
+  /* ------------------ 房主：处理访客消息 + 游戏逻辑 ------------------ */
+  function handleGuestMessage(msg) {
+    if (!msg || !msg.type) return;
+    switch (msg.type) {
+      case "join":
+        if (hostState.guestNick !== null) {
+          sendMsg({ type: "error", code: "ROOM_FULL", message: "房间已满" });
+          return;
+        }
+        hostState.guestNick = clampNick(msg.nickname) || "玩家";
+        hostState.guestConnected = true;
+        broadcastState();
+        break;
+      case "submit":
+        recordAnswer("guest", msg.choice, msg.question_id);
+        break;
+      case "timeout":
+        recordAnswer("guest", -1, msg.question_id);
+        break;
+      case "leave":
+        handleGuestLeave();
+        break;
+      case "ping":
+        sendMsg({ type: "pong" });
+        break;
+    }
   }
 
-  /* ------------------ 服务端消息处理 ------------------ */
+  function handleGuestLeave() {
+    if (!hostState) return;
+    hostState.guestNick = null;
+    hostState.guestConnected = false;
+    hostState.status = "waiting";
+    hostState.questions = [];
+    hostState.questionIndex = 0;
+    hostState.currentAnswers = {};
+    hostState.currentQid = null;
+    hostState.lastResults = null;
+    hostState.scores = { host: 0, guest: 0 };
+    broadcastState();
+  }
+
+  function recordAnswer(uid, choice, qid) {
+    if (!hostState || hostState.status !== "playing") return;
+    if (qid !== hostState.currentQid) return;
+    if (hostState.currentAnswers[uid] !== undefined) return;
+    hostState.currentAnswers[uid] = choice;
+    if (hostState.currentAnswers.host !== undefined && hostState.currentAnswers.guest !== undefined) {
+      resolveQuestion();
+    } else {
+      broadcastState();
+    }
+  }
+
+  function resolveQuestion() {
+    if (!hostState || hostState.status !== "playing") return;
+    var q = hostState.questions[hostState.questionIndex];
+    if (!q) return;
+    var results = ["host", "guest"].map(function (uid) {
+      var choice = hostState.currentAnswers[uid];
+      var correct = choice === q.answerIndex;
+      var delta = correct ? 0 : -1;                    // 答对不掉血，答错扣 1 格
+      hostState.scores[uid] = Math.max(0, hostState.scores[uid] + delta);
+      return { user_id: uid, correct: correct, answer_index: q.answerIndex, points: delta };
+    });
+    hostState.lastResults = results;
+    hostState.status = "awaiting_next";
+    broadcastState();
+  }
+
+  function hostScheduleResolve(qid) {
+    setTimeout(function () {
+      if (!hostState || hostState.status !== "playing") return;
+      if (hostState.currentQid !== qid) return;
+      if (hostState.currentAnswers.host === undefined) recordAnswer("host", -1, qid);
+      if (hostState.currentAnswers.guest === undefined) recordAnswer("guest", -1, qid);
+    }, (TIME_LIMIT + 3) * 1000);
+  }
+
+  function generateQuestions() {
+    var all = WORD_LIST.slice();
+    shuffle(all);
+    var picked = all.slice(0, Math.min(TOTAL_QUESTIONS, all.length));
+
+    var meanings = [];
+    WORD_LIST.forEach(function (w) {
+      if (w.meaning && meanings.indexOf(w.meaning) === -1) meanings.push(w.meaning);
+    });
+
+    return picked.map(function (w, i) {
+      var correct = w.meaning;
+      var opts = [correct];
+      shuffle(meanings);
+      for (var j = 0; j < meanings.length && opts.length < 4; j++) {
+        var m = meanings[j];
+        if (m !== correct && opts.indexOf(m) === -1) opts.push(m);
+      }
+      while (opts.length < 4) opts.push("——");
+      shuffle(opts);
+      return { id: i + 1, word: w.word, options: opts, answerIndex: opts.indexOf(correct) };
+    });
+  }
+
+  function buildQuestion(index) {
+    var q = hostState.questions[index];
+    if (!q) return null;
+    return {
+      id: q.id,
+      speak_text: q.word,
+      options: q.options,               // 不含答案
+      index: index,
+      total: hostState.totalQuestions,
+      time_limit: hostState.timeLimit,
+    };
+  }
+
+  function buildRoomState() {
+    if (!hostState) return null;
+    var players = [
+      { user_id: "host", nickname: hostState.hostNick, score: hostState.scores.host, is_host: true, connected: true }
+    ];
+    if (hostState.guestNick !== null) {
+      players.push({ user_id: "guest", nickname: hostState.guestNick, score: hostState.scores.guest, is_host: false, connected: hostState.guestConnected });
+    }
+    var currentQuestion = null;
+    if (
+      (hostState.status === "playing" || hostState.status === "awaiting_next") &&
+      hostState.questions.length
+    ) {
+      currentQuestion = buildQuestion(hostState.questionIndex);
+    }
+    var ranking = players.slice().sort(function (a, b) { return b.score - a.score; });
+
+    return {
+      type: "room_state",
+      room_code: hostState.code,
+      host_id: "host",
+      status: hostState.status,
+      players: players,
+      question_index: hostState.questionIndex,
+      total_questions: hostState.totalQuestions,
+      current_question: currentQuestion,
+      scores: hostState.scores,
+      submitted: hostState.status === "playing" ? Object.keys(hostState.currentAnswers) : [],
+      last_results: hostState.lastResults,
+      ranking: ranking,
+    };
+  }
+
+  function broadcastState() {
+    var st = buildRoomState();
+    if (!st) return;
+    roomState = st;        // 房主本地也更新
+    renderAll();
+    sendMsg(st);           // 同步给访客
+  }
+
+  /* ------------------ 访客：处理房主消息 ------------------ */
   function handleMessage(msg) {
     if (!msg || !msg.type) return;
     switch (msg.type) {
@@ -726,63 +991,18 @@
         roomState = msg;
         renderAll();
         break;
-      case "question":
-        // room_state 已携带 current_question；这里作为兜底触发渲染
-        if (roomState) { roomState.current_question = msg; renderPlay(roomState); }
-        break;
-      case "answer_result":
-        // 结算在 room_state(last_results) 中统一渲染；这里仅作即时反馈
-        if (roomState && msg.user_id === session.userId) {
-          var r = { user_id: msg.user_id, correct: msg.correct, answer_index: msg.answer_index, points: msg.points };
-          if (!roomState.last_results) roomState.last_results = [];
-          roomState.last_results = roomState.last_results.filter(function (x) { return x.user_id !== r.user_id; }).concat(r);
-          renderPlay(roomState);
-        }
-        break;
-      case "score_update":
-        if (roomState && msg.scores) {
-          roomState.scores = msg.scores;
-          roomState.players.forEach(function (p) { if (msg.scores[p.user_id] != null) p.score = msg.scores[p.user_id]; });
-        }
-        break;
-      case "game_finished":
-        if (roomState) {
-          roomState.status = "finished";
-          if (msg.ranking) roomState.ranking = msg.ranking;
-          renderAll();
-        }
-        break;
-      case "player_joined":
-      case "player_left":
-      case "host_changed":
-        // 权威状态由随后的 room_state 推送，无需额外处理
-        break;
-      case "pong":
-        lastPong = Date.now();
-        break;
       case "error":
         handleError(msg);
+        break;
+      case "pong":
         break;
     }
   }
 
   function handleError(msg) {
-    if (msg.code === "ROOM_NOT_FOUND" || msg.code === "USER_NOT_FOUND") {
-      // 房间过期/不存在：友好提示并回到创建界面，不无限重试
-      intentionalClose = true;
-      closeWs();
-      clearSession();
-      roomState = null;
-      currentQuestionId = null;
-      currentQuestion = null;
-      answered = false;
-      myChoice = null;
-      renderAll();
-      showSetupMsg("⚠️ " + (msg.message || "房间不存在，请重新创建房间"), "wrong");
-    } else if (msg.code === "NOT_HOST") {
-      showSetupMsg("⚠️ " + msg.message, "wrong");
-    } else {
-      showSetupMsg("⚠️ " + (msg.message || "出错了"), "wrong");
+    showSetupMsg("⚠️ " + (msg.message || "出错了"), "wrong");
+    if (msg.code === "ROOM_FULL") {
+      resetToSetup();
     }
   }
 
@@ -805,7 +1025,6 @@
 
   /* ------------------ 对外 API ------------------ */
   function open() {
-    // 切到单词测验标签页（复用现有 setMode，若存在）
     if (window.setMode) window.setMode("quiz");
     setMpMode("multi");
   }
@@ -813,14 +1032,9 @@
   function init() {
     if (inited) return;
     inited = true;
-    restoreSession();
     if (!injectUI()) return;
-    // 预填昵称
     var nick = $("mp-nickname");
     if (nick) nick.value = recallNick();
-    // 若有会话则建立连接（刷新后恢复）
-    if (session) connect();
-    // 初始状态：默认单机
     setMpMode("solo");
   }
 
