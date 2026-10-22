@@ -27,11 +27,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # 网站只需这两个文件（图片/数据已内嵌在 index.html 里）
+      # 网站主文件 + P2P 连通性测试 demo（临时，验证跨网络连通后可移除 p2p-demo.html）
       - name: Build site
         run: |
           mkdir -p _site
-          cp index.html multiplayer.js _site/
+          cp index.html multiplayer.js p2p-demo.html _site/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
