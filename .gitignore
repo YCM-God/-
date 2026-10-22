@@ -1,0 +1,33 @@
+# ---- 源数据与构建产物（体积大，不上 GitHub）----
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.doc
+*.docx
+*.gif
+
+# 生成的数据目录与中间产物
+data/
+machine-readable/
+pdf-text/
+manifest.json
+_cet_data2.js
+_boy_cutout.png
+
+# 本地 Python 转换/辅助脚本（不在网站上运行，后端除外）
+convert_cxm.py
+_embed_cet.py
+_embed_cet2.py
+_embed_cet3.py
+_inject_boy.py
+_inject_boy2.py
+_inject_data.py
+_validate.py
+_cutout.py
+
+# ---- 系统 / 编辑器 ----
+.DS_Store
+Thumbs.db
+*.pyc
+__pycache__/
