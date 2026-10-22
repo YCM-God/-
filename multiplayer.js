@@ -4,7 +4,7 @@
  * 纯原生 JS，IIFE 隔离，暴露 window.Multiplayer.open()。
  * 依赖 index.html 已存在的全局：speak()、CSS 变量（--card-bg/--text 等）。
  *
- * 部署后端后，把下面两个常量改成你的 Railway 域名即可；
+ * 部署后端后，把下面两个常量改成你的 Render 域名即可；
  * 留空则按「同源」自动推导，且 https 会自动转成 wss。
  * 也可在加载本文件前设置 window.MP_BACKEND_URL / window.MP_WS_URL 覆盖。
  * ===================================================================== */

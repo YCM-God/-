@@ -8,25 +8,25 @@ FastAPI + WebSocket + 内存房间（无数据库）。题目答案只保存在�
 |------|------|
 | `main.py` | 后端全部代码（HTTP + WebSocket + 内存房间） |
 | `requirements.txt` | 依赖（fastapi、uvicorn） |
-| `railway.json` | Railway 部署配置（启动命令自动读 `$PORT`） |
+| `render.yaml`（仓库根目录） | Render 部署配置（Blueprint，含启动命令读 `$PORT`） |
 | `words.json` | 四级题库（1260 词），由 `extract_words.py` 从 `../index.html` 生成 |
 | `extract_words.py` | 题库生成脚本，改了前端 WORDS 后可重新运行 |
 
-## 部署到 Railway
+## 部署到 Render
 
-1. 把 `backend/` 目录作为仓库根推到 GitHub。
-2. Railway → New Project → Deploy from GitHub，选该仓库。
-3. Railway 的 Nixpacks 会自动识别 Python 并安装 `requirements.txt`；启动命令已在 `railway.json` 中配好（`uvicorn main:app --host 0.0.0.0 --port $PORT`），无需手动填写。
-4. 部署完成后记下 Railway 分配的域名（形如 `https://xxx.up.railway.app`）。
+1. 仓库根目录的 `render.yaml`（Blueprint）已指向 `backend/` 目录。
+2. Render → New + → Blueprint，连接 GitHub 并选该仓库，会自动读取 `render.yaml`、识别 Python 并安装 `requirements.txt`；启动命令（`uvicorn main:app --host 0.0.0.0 --port $PORT`）无需手动填写。
+3. （或手动 New + → Web Service，把 Root Directory 设为 `backend`、Start Command 设为上面的 uvicorn 命令。）
+4. 部署完成后记下 Render 分配的域名（形如 `https://xxx.onrender.com`）。
 
-**注意**：内存房间要求「单实例」运行。Railway 默认 1 个副本即可，不要横向扩容，否则两个玩家可能连到不同实例、找不到同一个房间。
+**注意**：内存房间要求「单实例」运行。Render 免费档默认 1 个实例即可，不要横向扩容，否则两个玩家可能连到不同实例、找不到同一个房间。免费档空闲会休眠、冷启动较慢，属正常。
 
 ## 前端如何指向这里
 
 前端 `multiplayer.js` 默认按「同源」推导后端地址。若前端部署在别的域名（如 GitHub Pages），在加载 `multiplayer.js` **之前**加一行：
 
 ```html
-<script>window.MP_BACKEND_URL = "https://你的域名.up.railway.app";</script>
+<script>window.MP_BACKEND_URL = "https://你的域名.onrender.com";</script>
 <script src="multiplayer.js"></script>
 ```
 
@@ -35,7 +35,7 @@ FastAPI + WebSocket + 内存房间（无数据库）。题目答案只保存在�
 ## CORS
 
 默认只允许 `https://ycm-god.github.io`（`main.py` 顶部 `ALLOWED_ORIGINS`）。
-本地联调如需放行其它来源，可设置环境变量 `CORS_ORIGINS`（逗号分隔多个来源），例如 Railway 的环境变量里填：
+本地联调如需放行其它来源，可设置环境变量 `CORS_ORIGINS`（逗号分隔多个来源），例如 Render 的环境变量里填：
 `https://ycm-god.github.io,http://localhost:5500`。
 
 ## 本地运行
