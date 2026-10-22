@@ -5,11 +5,11 @@
 - HTTP  + WebSocket + 内存房间（无数据库，重启即清空）
 - 严格按「联机对战」契约实现，题目答案只保存在服务端，绝不下发
 
-部署到 Render：
-  1. 仓库根目录的 render.yaml 指向本目录（backend），推到 GitHub 后连接 Render
-  2. Render 自动装 requirements.txt，启动命令读 Render 注入的 $PORT
+部署到 Replit：
+  1. 仓库根目录的 .replit 指向本目录（backend），推到 GitHub 后导入 Replit
+  2. Replit 用 .replit 里的 run 命令装依赖并启动（端口 8080）
 
-注意：内存房间要求「单实例」运行；Render 免费档默认 1 个实例即可，不要横向扩容。
+注意：内存房间要求「单实例」运行；保持一个 Repl 即可，不要开多个。
 """
 import asyncio
 import json
