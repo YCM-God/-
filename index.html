@@ -6,48 +6,49 @@
 <title>英语背单词 · 四级高频词汇</title>
 <style>
   /* ==================== 全局样式与主题变量 ==================== */
+  /* 蓝绿主色调：以「浅海 / 湖水」为基调，去掉模板化的 Tailwind 蓝绿 */
   :root {
-    /* 浅色主题变量 */
-    --bg: #e9f3e6;
-    --card-bg: rgba(255, 255, 255, 0.78);
-    --text: #1f2430;
-    --text-sub: #6b7280;
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --success: #22c55e;
-    --danger: #ef4444;
-    --border: #e5e7eb;
-    --shadow: 0 10px 30px rgba(31, 36, 48, 0.08);
-    --chip-bg: #e8f3fd;
+    --bg: #eef5f1;
+    --card-bg: #ffffff;
+    --text: #1b3940;
+    --text-sub: #5f7680;
+    --primary: #147a72;
+    --primary-dark: #0f625c;
+    --success: #2c8a63;
+    --danger: #d24a43;
+    --border: #dce8e2;
+    --shadow: 0 1px 2px rgba(23, 62, 70, 0.04), 0 10px 28px rgba(23, 62, 70, 0.06);
+    --chip-bg: #eaf4f0;
+    --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+    --font-display: Georgia, "Iowan Old Style", "Times New Roman", "Songti SC", "STSong", "SimSun", "Noto Serif SC", "Source Han Serif SC", serif;
   }
 
   /* 深色主题：给 <html> 或 <body> 加 .dark 类后覆盖变量 */
   body.dark {
-    --bg: #16211a;
-    --card-bg: rgba(28, 31, 43, 0.80);
-    --text: #e6e8ef;
-    --text-sub: #9aa1b2;
-    --primary: #60a5fa;
-    --primary-dark: #3b82f6;
-    --success: #34d399;
-    --danger: #f87171;
-    --border: #3a4a3e;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-    --chip-bg: rgba(37, 58, 79, 0.55);
+    --bg: #12242a;
+    --card-bg: #1b333a;
+    --text: #e2ece9;
+    --text-sub: #92a7a6;
+    --primary: #45c0b4;
+    --primary-dark: #33a89c;
+    --success: #4fc08a;
+    --danger: #ef6a62;
+    --border: #2b4a50;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.3);
+    --chip-bg: #223c42;
     background:
-      radial-gradient(1100px 500px at 85% -10%, rgba(255, 255, 255, 0.07), transparent 62%),
-      linear-gradient(160deg, #1c2a20 0%, #17241b 42%, #122019 100%);
+      radial-gradient(1100px 500px at 85% -10%, rgba(255, 255, 255, 0.05), transparent 62%),
+      linear-gradient(160deg, #14303a 0%, #11272f 45%, #0e232b 100%);
     background-attachment: fixed;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-sans);
     background:
-      radial-gradient(1100px 500px at 85% -10%, rgba(255, 255, 255, 0.55), transparent 62%),
-      linear-gradient(160deg, #eaf6e7 0%, #dcefd4 34%, #cbe6c2 68%, #b9dcb0 100%);
+      radial-gradient(1000px 460px at 85% -8%, rgba(255, 255, 255, 0.5), transparent 62%),
+      linear-gradient(180deg, #f4f9f6 0%, #ebf3ee 42%, #e0ede6 100%);
     background-attachment: fixed;
     color: var(--text);
     min-height: 100vh;
@@ -182,17 +183,18 @@
   }
   .app-title {
     position: relative; z-index: 2;
-    margin: 0 0 10px;
-    font-size: clamp(32px, 6vw, 54px);
-    font-weight: 800; line-height: 1.05; letter-spacing: .04em;
-    color: #0b0b0b;
-    text-shadow: 0 0 16px rgba(255, 255, 255, 0.6), 0 2px 24px rgba(255, 255, 255, 0.45);
+    margin: 0 0 12px;
+    font-family: var(--font-display);
+    font-size: clamp(34px, 6vw, 56px);
+    font-weight: 700; line-height: 1.08; letter-spacing: .02em;
+    color: #17343c;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
   }
   .app-subtitle {
     position: relative; z-index: 2;
     margin: 0;
-    font-size: 14px; font-weight: 600; letter-spacing: .16em;
-    color: rgba(27, 50, 71, 0.72);
+    font-size: 14px; font-weight: 600; letter-spacing: .02em;
+    color: rgba(31, 72, 84, 0.68);
   }
   .icon-btn {
     width: 40px; height: 40px;
@@ -217,21 +219,21 @@
   .app-footer .foot-cloud {
     width: 130px; height: 79px;
     margin: 0 auto 14px;
-    opacity: 0.92;
+    opacity: 0.9;
   }
   .app-footer .foot-tagline {
-    font-size: 13px; font-weight: 700; letter-spacing: .18em;
+    font-size: 14px; font-weight: 600; letter-spacing: .01em;
     margin-bottom: 18px;
   }
   .app-footer .foot-btn {
     cursor: pointer;
-    font-size: 14px; font-weight: 700;
-    padding: 10px 26px; border: none; border-radius: 999px;
-    color: #fff; background: linear-gradient(135deg, #5aa2f7, #2f6fe0);
-    box-shadow: 0 10px 24px rgba(47, 111, 224, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.35);
-    transition: transform .16s, box-shadow .2s;
+    font-size: 14px; font-weight: 600;
+    padding: 10px 24px; border: 1px solid var(--primary);
+    border-radius: 10px;
+    color: var(--primary); background: transparent;
+    transition: background .16s, color .16s;
   }
-  .app-footer .foot-btn:hover { transform: translateY(-2px); }
+  .app-footer .foot-btn:hover { background: var(--primary); color: #fff; }
 
   /* ==================== 统计面板 ==================== */
   .stats {
@@ -265,7 +267,7 @@
     display: flex;
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 4px;
     margin-bottom: 16px;
     gap: 4px;
@@ -274,18 +276,18 @@
     flex: 1;
     padding: 10px 0;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     background: transparent;
     color: var(--text-sub);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all .2s;
+    transition: background .16s, color .16s;
   }
   .mode-tabs button.active {
     background: var(--primary);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(79, 110, 247, .35);
+    box-shadow: none;
   }
 
   /* ==================== 卡片 ==================== */
@@ -310,7 +312,7 @@
     -webkit-backface-visibility: hidden;
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 20px;
+    border-radius: 16px;
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
@@ -322,9 +324,11 @@
   .card-back { transform: rotateY(180deg); }
 
   .word {
+    font-family: var(--font-display);
     font-size: 40px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: .5px;
+    color: var(--text);
   }
   .phonetic {
     font-size: 15px;
@@ -395,8 +399,9 @@
   .spell-panel.visible { display: block; }
 
   .spell-word {
+    font-family: var(--font-display);
     font-size: 44px;
-    font-weight: 800;
+    font-weight: 700;
     text-align: center;
     margin-bottom: 6px;
   }
@@ -457,7 +462,7 @@
     color: #fff;
     font-size: 30px;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(79, 110, 247, .4);
+    box-shadow: 0 8px 20px rgba(20, 122, 114, 0.26);
     transition: transform .15s;
   }
   .listen-play:hover { transform: scale(1.06); }
@@ -516,7 +521,7 @@
     display: none;
     align-items: center; justify-content: space-between;
     gap: 10px;
-    background: rgba(79, 110, 247, .12);
+    background: var(--chip-bg);
     border: 1px solid var(--primary);
     border-radius: 12px;
     padding: 10px 14px;
@@ -622,11 +627,10 @@
     100% { transform: translate3d(-3vw, 108vh, 0) rotate(340deg); opacity: 0; }
   }
 
-  /* 半透明卡片统一毛玻璃效果 */
+  /* 卡片统一为实底白面 + 细描边（去掉毛玻璃，保持清爽、更有设计感） */
   .stat-card, .card-face, .listen-box, .mode-tabs, .wrongbook, .review-banner,
   .quiz-setup, .quiz-question, .quiz-report, .ai-window {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: var(--card-bg);
   }
 
   /* ==================== 单词测验 ==================== */
@@ -660,7 +664,8 @@
     text-align: center; font-size: 13px; color: var(--text-sub); margin-bottom: 8px;
   }
   .quiz-prompt {
-    font-size: 38px; font-weight: 800; text-align: center; margin: 10px 0 18px;
+    font-family: var(--font-display);
+    font-size: 38px; font-weight: 700; text-align: center; margin: 10px 0 18px;
     letter-spacing: .5px;
   }
   .quiz-blank-meaning {
@@ -807,19 +812,19 @@
     padding: 22px 16px 60px;
     background:
       radial-gradient(1200px 600px at 85% -10%, rgba(255, 255, 255, 0.35), transparent 60%),
-      linear-gradient(160deg, #cfe8f7 0%, #b6dcf0 30%, #a9e0c8 62%, #7fd0a3 100%);
+      linear-gradient(160deg, #d3ece6 0%, #bfe4d9 30%, #a8ddc8 62%, #8bd0b2 100%);
     background-attachment: fixed;
     /* 强制浅色变量，让搬入的卡片/拼写面板始终贴合蓝绿主题，不随深色主题变暗 */
-    --card-bg: rgba(255, 255, 255, 0.9);
-    --text: #1f2430;
-    --text-sub: #5b6472;
-    --border: #d6e6f2;
-    --chip-bg: #e3f0f7;
-    --primary: #2f7fe0;
-    --primary-dark: #2563eb;
-    --success: #22c55e;
-    --danger: #ef4444;
-    --shadow: 0 10px 30px rgba(31, 111, 174, 0.14);
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --text: #1b3940;
+    --text-sub: #5f7680;
+    --border: #d6ebe4;
+    --chip-bg: #e2f1ec;
+    --primary: #147a72;
+    --primary-dark: #0f625c;
+    --success: #2c8a63;
+    --danger: #d24a43;
+    --shadow: 0 10px 30px rgba(23, 62, 70, 0.10);
   }
   .liankan-page[hidden] { display: none; }
   .liankan-inner { max-width: 860px; margin: 0 auto; }
@@ -864,8 +869,8 @@
     cursor: pointer; transition: all .2s;
   }
   .liankan-tabs button.active {
-    background: linear-gradient(135deg, #2f8fe0, #25b07a);
-    color: #fff; box-shadow: 0 5px 14px rgba(37, 150, 190, 0.4);
+    background: linear-gradient(135deg, #1b8a7e, #2c9b74);
+    color: #fff; box-shadow: 0 5px 14px rgba(20, 122, 114, 0.3);
   }
 
   .liankan-game {
@@ -893,7 +898,7 @@
     box-shadow: 0 6px 16px rgba(31, 111, 174, 0.18); word-break: break-word;
   }
   .liankan-face.front {
-    background: linear-gradient(160deg, #3aa3e8, #2b7fd0); color: #fff; font-size: 24px;
+    background: linear-gradient(160deg, #219a8e, #147a72); color: #fff; font-size: 24px;
   }
   .liankan-face.back {
     background: #fff; color: #123a5c; border: 2px solid #cfe8f7;
@@ -905,9 +910,9 @@
   .liankan-card.matched .liankan-face.back { border-color: #7fd0a3; background: #e9f9f0; }
   .liankan-restart {
     border: none; border-radius: 999px; padding: 12px 30px; cursor: pointer;
-    font-size: 15px; font-weight: 800; color: #fff;
-    background: linear-gradient(135deg, #2f8fe0, #25b07a);
-    box-shadow: 0 8px 20px rgba(37, 150, 190, 0.35); transition: transform .15s;
+    font-size: 15px; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, #1b8a7e, #2c9b74);
+    box-shadow: 0 8px 20px rgba(20, 122, 114, 0.28); transition: transform .15s;
   }
   .liankan-restart:hover { transform: translateY(-2px); }
   .liankan-restart:active { transform: scale(.97); }
@@ -1139,21 +1144,23 @@
   max-width: 62%; padding: 0 6vw; pointer-events: none;
 }
 .home-title {
-  margin: 0 0 24px; font-size: clamp(34px, 7vw, 96px);
-  font-weight: 800; line-height: 1.02; letter-spacing: .04em;
-  color: #0b0b0b; text-transform: uppercase;
-  text-shadow: 0 0 14px rgba(255,255,255,.55), 0 2px 22px rgba(255,255,255,.4);
+  margin: 0 0 24px;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 6vw, 72px);
+  font-weight: 700; line-height: 1.15; letter-spacing: .02em;
+  color: #17343c;
+  text-shadow: 0 1px 0 rgba(255,255,255,.7);
 }
 .home-btn {
   pointer-events: auto; cursor: pointer;
-  font-size: clamp(16px, 1.9vw, 20px); font-weight: 700;
-  padding: 14px 34px; border: none; border-radius: 999px;
-  color: #fff; background: linear-gradient(135deg, #5aa2f7, #2f6fe0);
-  box-shadow: 0 12px 30px rgba(47,111,224,.42), inset 0 2px 0 rgba(255,255,255,.35);
+  font-size: clamp(16px, 1.9vw, 20px); font-weight: 600;
+  padding: 14px 32px; border: none; border-radius: 12px;
+  color: #fff; background: var(--primary);
+  box-shadow: 0 10px 26px rgba(20, 122, 114, 0.28);
   transition: transform .16s, box-shadow .2s;
 }
-.home-btn:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(47,111,224,.5), inset 0 2px 0 rgba(255,255,255,.35); }
-.home-btn:active { transform: scale(.96); }
+.home-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(20, 122, 114, 0.34); }
+.home-btn:active { transform: scale(.97); }
 
 /* 移动端：标题缩小，避免横向溢出 */
 @media (max-width: 640px) {
@@ -1350,7 +1357,7 @@
 
   <!-- 标题与入口按钮 -->
   <div class="home-content">
-    <h1 class="home-title">DREAM CHASER<br>DARE TO CHALLENGE</h1>
+    <h1 class="home-title">把单词，背进云里</h1>
     <button class="home-btn" id="start-btn" type="button">开始背单词</button>
   </div>
 </div>
@@ -1370,7 +1377,7 @@
     <svg class="hero-cloud" style="top:-22px; right:16%" width="150" height="92" viewBox="-90 -60 180 110" aria-hidden="true"><use href="#cloud" transform="scale(0.85)"/></svg>
     <svg class="hero-cloud" style="bottom:34px; right:22%" width="54" height="46" viewBox="-14 -12 28 24" aria-hidden="true"><use href="#bird"/></svg>
     <h1 class="app-title">背单词</h1>
-    <p class="app-subtitle">DARE TO CHALLENGE · 坚持每天进步</p>
+    <p class="app-subtitle">四六级高频词汇 · 坚持每天进步</p>
   </div>
 
   <!-- 学习统计面板 -->
@@ -1573,7 +1580,7 @@
           <line x1="340" y1="88" x2="340" y2="30"/>
           <line x1="660" y1="70" x2="660" y2="30"/>
         </g>
-        <g fill="#22c55e">
+        <g fill="#2fae72">
           <circle cx="60" cy="30" r="4"/>
           <circle cx="100" cy="30" r="4"/>
           <circle cx="140" cy="30" r="4"/>
@@ -1721,7 +1728,7 @@
 <!-- ============ 页脚：呼应首页主题 ============ -->
 <footer class="app-footer">
   <svg class="foot-cloud" viewBox="-90 -60 180 110" aria-hidden="true"><use href="#cloud"/></svg>
-  <div class="foot-tagline">DREAM CHASER · DARE TO CHALLENGE</div>
+  <div class="foot-tagline">每天进步一点点，稳稳拿下四六级</div>
   <button class="foot-btn" type="button" id="back-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ 回到顶部</button>
 </footer>
 
